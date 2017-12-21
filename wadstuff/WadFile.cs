@@ -5,6 +5,8 @@ using System.Text;
 using System;
 using System.Text.RegularExpressions;
 
+using UnityEngine;
+
 /*
 Class for loading and pulling lumps from wad files
 */
@@ -22,7 +24,11 @@ public class DirectoryEntry {
 			char[] array = value.ToCharArray();
 			_name = "";
 			for (int i = 0; i < 8; i++) {
-				if ((int) array[i] != 0) _name += value[i];
+				if ((int) array[i] == 0) {
+					break;
+				} else {
+					_name += value[i];
+				} 
 			}
 		}
 	}
@@ -36,10 +42,16 @@ public class WadFile {
 	public List<DirectoryEntry> directory;
 	public byte[] wadData;
 
+	public string GetLumpAsText(string name) {
+		byte[] data = GetLump(name);
+		return Encoding.UTF8.GetString(data);
+	}
+
 	public byte[] GetLump(string name) {
-		for (int i = 0; i < directory.Count; i++) {
+		for (int i = directory.Count - 1; i >= 0; i--) {
 			if (directory[i].name == name) return GetLump(directory[i]);
 		}
+		Debug.LogError("Can't find lump: "+name);
 		return null;
 	}
 
@@ -58,17 +70,43 @@ public class WadFile {
 	}
 
 	public int GetIndex(string name) {
-		for (int i = 0; i < directory.Count; i++) {
+		for (int i = directory.Count - 1; i >= 0; i--) {
 			if (directory[i].name == name) return i;
 		}
 		return -1;
 	}
 
-	public DirectoryEntry GetEntry(string name) {
+	public bool Contains(string name) {
 		for (int i = 0; i < directory.Count; i++) {
+			if (directory[i].name == name) return true;
+		}
+		return false;
+	}
+
+	public DirectoryEntry GetEntry(string name) {
+		for (int i = directory.Count - 1; i >= 0; i--) {
 			if (directory[i].name == name) return directory[i];
 		}
 		return null;
+	}
+
+	public void Merge(string wadPath) {
+		Merge(new WadFile(wadPath));
+	}
+
+	public void Merge(WadFile wad) {
+		numLumps += wad.numLumps;
+		
+		for (int i = 0; i < wad.directory.Count; i++) {
+			wad.directory[i].position += wadData.Length;
+		}
+
+		directory.AddRange(wad.directory);
+
+		byte[] newWadData = new byte[wadData.Length + wad.wadData.Length];
+		Buffer.BlockCopy(wadData, 0, newWadData, 0, wadData.Length);
+		Buffer.BlockCopy(wad.wadData, 0, newWadData, wadData.Length, wad.wadData.Length);
+		wadData = newWadData;
 	}
 
 	public WadFile(string path) {
@@ -98,7 +136,8 @@ public class WadFile {
 		char[] array = input.ToCharArray();
 		string output = "";
 		for (int i = 0; i < 8; i++) {
-			if ((int) array[i] != 0) output += input[i];
+			if ((int) array[i] == 0) break;
+			output += input[i];
 		}
 		return output;
 	}

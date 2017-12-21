@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 
+/*
+This handles processing map data from a wad.
+*/
+
 public class Vertex {
 	public int x;
 	public int y;
@@ -27,13 +31,13 @@ public class Linedef {
 	public int back;
 
 	public bool impassable { get { return (flags & 1) == 1; } }
-	public bool blockMonster { get { return (flags & 2) == 1; } }
-	public bool twoSided { get { return (flags & 4) == 1; } }
-	public bool upperUnpegged { get { return (flags & 8) == 1; } }
-	public bool lowerUnpegged { get { return (flags & 16) == 1; } }
-	public bool secret { get { return (flags & 32) == 1; } }
-	public bool blockSound { get { return (flags & 64) == 1; } }
-	public bool alwaysShow { get { return (flags & 128) == 1; } }
+	public bool blockMonster { get { return (flags & 2) == 2; } }
+	public bool twoSided { get { return (flags & 4) == 4; } }
+	public bool upperUnpegged { get { return (flags & 8) == 8; } }
+	public bool lowerUnpegged { get { return (flags & 16) == 16; } }
+	public bool secret { get { return (flags & 32) == 32; } }
+	public bool blockSound { get { return (flags & 64) == 64; } }
+	public bool alwaysShow { get { return (flags & 128) == 128; } }
 
 }
 
@@ -55,10 +59,10 @@ public class Thing {
 	public int flags;
 
 	public bool skill2 { get { return (flags & 1) == 1; }}
-	public bool skill3 { get { return (flags & 2) == 1; }}
-	public bool skill4 { get { return (flags & 4) == 1; }}
-	public bool ambush { get { return (flags & 8) == 1; }}
-	public bool multiplayer { get { return (flags & 16) == 1; }}
+	public bool skill3 { get { return (flags & 2) == 2; }}
+	public bool skill4 { get { return (flags & 4) == 4; }}
+	public bool ambush { get { return (flags & 8) == 8; }}
+	public bool multiplayer { get { return (flags & 16) == 16; }}
 }
 
 public class MapData {
@@ -79,12 +83,7 @@ public class MapData {
 	}
 
 	private string FixString(string input) {
-		char[] array = input.ToCharArray();
-		string output = "";
-		for (int i = 0; i < 8; i++) {
-			if ((int) array[i] != 0) output += input[i];
-		}
-		return output;
+		return WadFile.FixString(input);
 	}
 
 	public void LoadVertices(byte[] data) {

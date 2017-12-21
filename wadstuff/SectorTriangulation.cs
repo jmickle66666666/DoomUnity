@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+This handles triangulating a sector from a map.
+
+It will give up and return null when a sector cannot be triangulated properly.
+There are still situations to add to make sure it can handle anything that is thrown at it.
+It does the best it can.
+*/
+
 public class SectorPolygon {
 	public List<Vector2> points;
 	public List<int> triangles;
@@ -25,6 +33,13 @@ public class SectorPolygon {
 			output.Add(new Vector3(points[i].x, z, points[i].y));
 		}
 		return output;
+	}
+
+	public bool ThingInside(Thing thing) {
+		if (SectorTriangulation.PointInPolygon(new Vector2(thing.x, thing.y), points)) {
+			return true;
+		}
+		return false;
 	}
 }
 
@@ -104,10 +119,11 @@ public class SectorTriangulation {
 				if (closestLine == -1) {
 					Debug.LogError("SectorIsland.Cut(): Couldn't intersect with shell?");
 					//Debug.Log(hPoint);
+					return null;
 				}
 
 				Vector2 shellPoint = shell[closestLine];
-				Vector2 shellPoint2 = shell[closestLine+1];
+				Vector2 shellPoint2 = shell[(closestLine+1)%shell.Count];
 
 				// Step 3: check if that new line intersects any holes
 				bool topIntersectsHoles = false;
@@ -127,11 +143,11 @@ public class SectorTriangulation {
 				if (topIntersectsHoles == false) {
 					MakeCut(0, closestLine, rIndex);
 				} else if (botIntersectsHoles == false) {
-					MakeCut(0, closestLine+1, rIndex);
+					MakeCut(0, (closestLine+1) % shell.Count, rIndex);
 				} else {
 					// can't do it for now
-					Debug.LogError("Line we used intersected holes");
-					Debug.Log(hPoint + " " + shellPoint);
+					Debug.LogWarning("Line we used intersected holes");
+					//Debug.Log(hPoint + " " + shellPoint);
 					return null;
 				}
 			}
@@ -166,7 +182,12 @@ public class SectorTriangulation {
 		this.map = map;
 	}
 
-	public List<SectorPolygon> Triangulate(int sector) {
+	public List<SectorPolygon> Triangulate(int sector, bool benchmark = false) {
+
+		float time = 0f;
+		if (benchmark) {
+			time = Time.realtimeSinceStartup;
+		}
 		int i;
 
 		// Trace sector lines 
@@ -175,6 +196,7 @@ public class SectorTriangulation {
 		//Debug.Log("Polygons: " + polygons.Count);
 
 		// Determine islands
+		if (polygons.Count == 0) return null;
 		List<SectorIsland> islands = BuildIslands(polygons);
 
 		// Cut islands
@@ -200,6 +222,11 @@ public class SectorTriangulation {
 		// }
 		
 		// Output
+
+		if (benchmark) {
+			Debug.Log("Triangulation time: "+(Time.realtimeSinceStartup - time));
+		}
+
 		return output;
 	}
 
@@ -317,8 +344,13 @@ public class SectorTriangulation {
 			safe --;
 			bool done = false;
 
+			// Debug.Log(output.Count);
+			// Debug.Log(polygons[0].Count);
+
 			for (int i = 0; i < output.Count; i++) {
-				if (PointInPolygon(polygons[0][0], output[i].shell)) {
+
+				if (PointInPolygon(polygons[0][0], 
+					output[i].shell)) {
 					output[i].holes.Add(polygons[0]);
 					polygons.RemoveAt(0);
 					done = true;
@@ -331,6 +363,11 @@ public class SectorTriangulation {
 							done = true;
 						}
 					}
+				}
+
+				if (polygons.Count == 0) {
+					//Debug.Log(output[i].shell.Count);
+					break;
 				}
 			}
 
@@ -351,7 +388,7 @@ public class SectorTriangulation {
 		return output;
 	}
 
-	private bool PointInPolygon(Vector2 point, List<Vector2> polygon) {
+	public static bool PointInPolygon(Vector2 point, List<Vector2> polygon) {
 		int crosses = 0;
 		Vector2 leftPoint = new Vector2(point.x - 10000f, point.y);
 		for (int i = 0; i < polygon.Count; i++) {
@@ -452,7 +489,7 @@ public class SectorTriangulation {
 		int polygonCount = polygon.Count;
 		int i = 0;
 		int i1, i2, i3;
-		int safe = 1000;
+		int safe = 500;
 		while (clippedIndexes.Count < polygonCount - 2 && safe >= 0) { // be careful!!!
 			safe -= 1;
 
@@ -518,7 +555,7 @@ public class SectorTriangulation {
 		}
 
 		if (safe <= 0) { 
-			Debug.LogError("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
+			Debug.LogWarning("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
 		}
 
 		if (!IsClockwise(polygon)) {
