@@ -18,6 +18,8 @@ Drop the "DoomUnity" folder into your project and try some stuff out!
 `MapData map = new MapData(wad, "MAP01");`
 `Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);`
 
+To run the engine stuff, you'll need to put `nasty.wad` and (at least one) IWAD in the root folder of your project (just below Assets).
+
 And various other stuff. It's probably still gonna be a bit messy while I'm developing it!
 
 # when?
