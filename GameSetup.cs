@@ -196,7 +196,7 @@ public class GameSetup : MonoBehaviour {
 				int item = menu.Accept();
 				if (item == 0) {
 					title.gameObject.active = false;
-					menu.Show(false);
+					menu.Show(false, true);
 					menuActive = false;
 					BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));
 				}

@@ -31,6 +31,8 @@ public class DoomMenu {
 
 	public bool background = true;
 
+	private AudioSource audioSource;
+
 	public DoomMenu (WadFile inwad) {
 		wad = inwad;
 		gameObject = new GameObject("Menu");
@@ -56,6 +58,34 @@ public class DoomMenu {
 		BuildCursor(mainMenu);
 
 		mainMenu.active = false;
+
+		InitSounds();
+	}
+
+	// Sounds
+	private AudioClip soundActivate;
+	private AudioClip soundBackup;
+	private AudioClip soundPrompt;
+	private AudioClip soundCursor;
+	private AudioClip soundChange;
+	private AudioClip soundInvalid;
+	private AudioClip soundDismiss;
+	private AudioClip soundChoose;
+	private AudioClip soundClear;
+
+	private void InitSounds() {
+		audioSource = gameObject.AddComponent<AudioSource>();
+		audioSource.spatialBlend = 0.0f;
+
+		soundActivate = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Activate").ToAudioClip();
+		soundBackup = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Backup").ToAudioClip();
+		soundPrompt = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Prompt").ToAudioClip();
+		soundCursor = new DoomSound(wad.GetLump("DSPSTOP"), "Menu/Cursor").ToAudioClip();
+		soundChange = new DoomSound(wad.GetLump("DSSTNMOV"), "Menu/Change").ToAudioClip();
+		soundInvalid = new DoomSound(wad.GetLump("DSOOF"), "Menu/Invalid").ToAudioClip();
+		soundDismiss = new DoomSound(wad.GetLump("DSSWTCHX"), "Menu/Dismiss").ToAudioClip();
+		soundChoose = new DoomSound(wad.GetLump("DSPISTOL"), "Menu/Choose").ToAudioClip();
+		soundClear = new DoomSound(wad.GetLump("DSSWTCHX"), "Menu/Clear").ToAudioClip();
 	}
 
 	private void BuildMenu(GameObject parent) {
@@ -94,11 +124,13 @@ public class DoomMenu {
 		return img;
 	}
 
-	public void Show(bool show) {
-		mainMenu.active = show;
+	public void Show(bool show, bool silent = false) {
+		if (!silent) audioSource.PlayOneShot(show?soundActivate:soundDismiss);
+		mainMenu.SetActive(show);
 	}
 
 	public int Accept() {
+		audioSource.PlayOneShot(soundChoose);
 		return currentItem;
 	}
 
@@ -107,12 +139,14 @@ public class DoomMenu {
 	}
 
 	public void Up() {
+		audioSource.PlayOneShot(soundCursor);
 		currentItem -= 1;
 		if (currentItem < 0) currentItem = itemCount - 1;
 		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (83 +(currentItem * 16)) );
 	}
 
 	public void Down() {
+		audioSource.PlayOneShot(soundCursor);
 		currentItem += 1;
 		if (currentItem == itemCount) currentItem = 0;
 		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (83 +(currentItem * 16)) );
