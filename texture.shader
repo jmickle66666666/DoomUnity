@@ -7,7 +7,6 @@ Properties {
     _Palette ("Palette", 2D) = "white" {}
     _Colormap ("Colormap", 2D) = "white" {}
     _Brightness ("Brightness", float) = 1.0
-//  _DepthImpact("Depth Impact", float) = 1.0
 }
 
 SubShader {
@@ -34,7 +33,6 @@ SubShader {
             sampler2D _Colormap;
             float _Brightness;
             float4 _MainTex_ST;
-        //  float _DepthImpact;
 
             v2f vert (appdata_base v)
             {
