@@ -116,9 +116,9 @@ public class TextureTable {
 			int offset = (int) offsets[i];
 
 			uint patchCount = BitConverter.ToUInt16(lumpData, offset + 20);
-			List<Patch> patches = new List<Patch>();
+			List<DoomPatch> patches = new List<DoomPatch>();
 			for (int j = offset + 22; j < (offset+22) + (patchCount * 10); j+= 10) {
-				Patch np = new Patch(
+				DoomPatch np = new DoomPatch(
 					(int) BitConverter.ToInt16(lumpData, j),
 					(int) BitConverter.ToInt16(lumpData, j + 2),
 					(int) BitConverter.ToUInt16(lumpData, j + 4)
@@ -147,9 +147,9 @@ public class DoomTexture {
 	public string name;
 	public int width;
 	public int height;
-	public List<Patch> patches; 
+	public List<DoomPatch> patches; 
 
-	public DoomTexture(string name, int width, int height, List<Patch> patches) {
+	public DoomTexture(string name, int width, int height, List<DoomPatch> patches) {
 		this.name = name;
 		this.width = width;
 		this.height = height;
@@ -157,12 +157,12 @@ public class DoomTexture {
 	}
 }
 
-public class Patch {
+public class DoomPatch {
 	public int originX;
 	public int originY;
 	public int patchIndex;
 
-	public Patch(int originX, int originY, int patchIndex) {
+	public DoomPatch(int originX, int originY, int patchIndex) {
 		this.originX = originX;
 		this.originY = originY;
 		this.patchIndex = patchIndex;
@@ -361,7 +361,7 @@ public class DoomGraphic {
 
 		Texture2D output = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
 		for (int i = 0; i < texture.patches.Count; i++) {
-			Patch p = texture.patches[i];
+			DoomPatch p = texture.patches[i];
 			Texture2D patch2d = DoomGraphic.BuildPatch(p.patchIndex, pnames, wad);
 
 			if (patch2d == null) return null;

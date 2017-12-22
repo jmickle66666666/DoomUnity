@@ -22,10 +22,6 @@ public class DoomSound {
 		sampleCount = (int) BitConverter.ToInt32(data, 4) - 32;
 
 		sampleData = new byte[sampleCount];
-		Debug.Log(name);
-		Debug.Log(formatNumber);
-		Debug.Log(sampleRate);
-		Debug.Log(sampleCount);
 
 		Buffer.BlockCopy(data, 24, sampleData, 0, sampleCount);
 

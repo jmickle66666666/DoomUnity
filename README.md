@@ -20,6 +20,9 @@ Drop the "DoomUnity" folder into your project and try some stuff out!
 
 To run the engine stuff, you'll need to put `nasty.wad` and (at least one) IWAD in the root folder of your project (just below Assets).
 
+For Midi, you must have a soundfont file in the root directory, and merge in a wad with MIDI files.
+The IWADS use MUS files and those are not supported yet.
+
 And various other stuff. It's probably still gonna be a bit messy while I'm developing it!
 
 # when?

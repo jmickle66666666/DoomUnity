@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
+using UnityMidi;
+using AudioSynthesis.Midi;
+using AudioSynthesis.Bank;
 
 [System.Serializable]
 public class IwadInfo {
@@ -50,8 +54,19 @@ public class GameSetup : MonoBehaviour {
 	private bool iwadSelector = false;
 	private List<IwadInfo> foundIwads;
 
+	private MidiPlayer midiPlayer;
+	private Dictionary<string,MapInfo> mapinfo;
+	public bool midiEnabled = false;
+
 	// Use this for initialization
 	void Start () {
+		if (File.Exists("Roland_SoundCanvas.sf2") && midiEnabled) {
+			midiPlayer = GetComponent<MidiPlayer>();
+			midiPlayer.LoadBank(new PatchBank(File.OpenRead("Roland_SoundCanvas.sf2")));
+		} else {
+			Debug.LogError("No soundfont found, disabling midi");
+		}
+
 		cheatCodes = new List<string>() {
 			"idclev",
 			"kill",
@@ -60,6 +75,7 @@ public class GameSetup : MonoBehaviour {
 
 		engineWad = new WadFile("nasty.wad");
 		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
+		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText("NMAPINFO"));
 
 		foundIwads = new List<IwadInfo>();
 
@@ -90,7 +106,7 @@ public class GameSetup : MonoBehaviour {
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
 
-		//wad.Merge("testmap.wad");
+		//wad.Merge("btsx_e1.wad");
 
 		StartGame();
 	}
@@ -109,7 +125,17 @@ public class GameSetup : MonoBehaviour {
 		mapBuilder = new MapBuilder();
 		title = GameObject.Find("TitleQuad").GetComponent<TitleSetup>();
 		title.Build(wad);
+		PlayMidi("D_DM2TTL");
 		menu = new DoomMenu(wad);
+	}
+
+	void PlayMidi(string name) {
+		if (midiPlayer != null) {
+			midiPlayer.Stop();
+			MidiFile midi = new MidiFile(wad.GetLump(name));
+			midiPlayer.LoadMidi(midi);
+			midiPlayer.Play();
+		}
 	}
 
 	void BuildMap(string mapname) {
@@ -119,6 +145,7 @@ public class GameSetup : MonoBehaviour {
 		mapBuilder.BuildMap(wad, mapname);
 		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
 		CreatePlayer();
+		PlayMidi(mapinfo[currentMap].music);
 	}
 
 	void CreatePlayer() {
