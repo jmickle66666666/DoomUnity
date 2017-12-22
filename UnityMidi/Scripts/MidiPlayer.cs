@@ -16,7 +16,7 @@ namespace UnityMidi
         //[SerializeField] public StreamingAssetResouce midiSource;
         [SerializeField] bool loadOnAwake = true;
         [SerializeField] bool playOnAwake = true;
-        [SerializeField] int channel = 1;
+        [SerializeField] int channel = 2;
         [SerializeField] int sampleRate = 44100;
         [SerializeField] int bufferSize = 1024;
         PatchBank bank;

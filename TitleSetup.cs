@@ -39,12 +39,12 @@ public class TitleSetup : MonoBehaviour {
 		mesh.uv = uvs;
 		mf.mesh = mesh;
 		mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
-		mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
-		mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
 	}
 
 	public void Build(WadFile wad) {
 		if (mr == null) InitSelf(wad);
+		mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
+		mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
 		mr.material.SetTexture("_MainTex", DoomGraphic.BuildPatch("TITLEPIC", wad, true));
 	}
 
