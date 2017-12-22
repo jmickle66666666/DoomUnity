@@ -8,12 +8,17 @@ using UnityEngine;
 public class TitleSetup : MonoBehaviour {
 
 	private MeshRenderer mr;
+	private AudioListener al;
 
 	// Use this for initialization
 	void Start () {
+
+	}
+
+	void InitSelf(WadFile wad) {
 		mr = gameObject.AddComponent<MeshRenderer>();
 		MeshFilter mf = gameObject.AddComponent<MeshFilter>();
-		gameObject.AddComponent<AudioListener>();
+		al = gameObject.AddComponent<AudioListener>();
 		Mesh mesh = new Mesh();
 		Vector2[] uvs = new Vector2[4] {
 			new Vector2(0f, 0f),
@@ -33,17 +38,23 @@ public class TitleSetup : MonoBehaviour {
 		mesh.triangles = triangles;
 		mesh.uv = uvs;
 		mf.mesh = mesh;
-	}
-
-	public void Build(WadFile wad) {
 		mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
 		mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
 		mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
-		mr.material.SetTexture("_MainTex", DoomGraphic.BuildPatch("TITLEPIC", wad));
+	}
+
+	public void Build(WadFile wad) {
+		if (mr == null) InitSelf(wad);
+		mr.material.SetTexture("_MainTex", DoomGraphic.BuildPatch("TITLEPIC", wad, true));
 	}
 
 	public void Darken(bool dark) {
 		mr.material.SetFloat("_Brightness", dark?0.5f:1f);
+	}
+
+	public void DisableCamera() {
+		transform.parent.gameObject.GetComponent<Camera>().enabled = false;
+		al.enabled = false;
 	}
 	
 	// Update is called once per frame

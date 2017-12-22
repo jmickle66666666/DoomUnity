@@ -60,7 +60,6 @@ public class GameSetup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		SetupTitleCamera();
 
 
 		if (File.Exists("Roland_SoundCanvas.sf2") && midiEnabled) {
@@ -77,6 +76,7 @@ public class GameSetup : MonoBehaviour {
 		};
 
 		engineWad = new WadFile("nasty.wad");
+		SetupTitleCamera();
 		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
 		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText("NMAPINFO"));
 
@@ -113,6 +113,7 @@ public class GameSetup : MonoBehaviour {
 		titleQuad.transform.localPosition = new Vector3(0f, 0f, 1f);
 		titleQuad.transform.localScale = new Vector3(3.2f, -2f, 1f);
 		title = titleQuad.AddComponent<TitleSetup>();
+		title.Build(engineWad);
 	}
 
 	void SetupWad(IwadInfo info) {
@@ -237,7 +238,7 @@ public class GameSetup : MonoBehaviour {
 			if (Input.GetKeyDown(KeyCode.Return)) {
 				int item = menu.Accept();
 				if (item == 0) {
-					title.gameObject.active = false;
+					title.DisableCamera();
 					menu.Show(false, true);
 					menuActive = false;
 					BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));

@@ -313,7 +313,7 @@ public class DoomGraphic {
 		return output;
 	}
 
-	public static Texture2D BuildPatch(string name, WadFile wad) {
+	public static Texture2D BuildPatch(string name, WadFile wad, bool ignoreCache = false) {
 
 		if (!wad.Contains(name.ToUpper())) {
 			return null;
@@ -321,14 +321,18 @@ public class DoomGraphic {
 
 		if (patchCache == null) patchCache = new Dictionary<string, Texture2D>();
 
-		if (patchCache.ContainsKey(name)) {
-			return patchCache[name];
-		} 
+		if (!ignoreCache) {
+			if (patchCache.ContainsKey(name)) {
+				return patchCache[name];
+			} 
+		}
 
 		Texture2D output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToRenderMap();
 		
-		patchCache.Add(name, output);
-
+		if (!ignoreCache) {
+			patchCache.Add(name, output);
+		}
+		
 		return output;
 
 	}
