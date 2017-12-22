@@ -8,6 +8,9 @@ wadfilespath = "enginewad/"
 wad = omg.WAD()
 files = [f for f in listdir(wadfilespath) if isfile(join(wadfilespath, f))]
 for f in files:
+	ext = f.find('.meta')
+	if ext != -1:
+		continue
 	ext = f[f.find('.')+1:]
 	if ext == "png":
 		graphic = omg.Graphic()
