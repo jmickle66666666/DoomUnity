@@ -143,7 +143,7 @@ public class MapBuilder {
 			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
 			if (map.sectors[index].floorTexture != "F_SKY1") {
 				mr.material = doomMaterial;
-				mr.material.SetTexture("_RenderMap", GetFlat(map.sectors[index].floorTexture));
+				mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].floorTexture));
 				mr.material.SetFloat("_Brightness", brightness);
 			} else {
 				mr.material = skyMaterial;
@@ -165,7 +165,7 @@ public class MapBuilder {
 			mr = newObj.AddComponent<MeshRenderer>();
 			if (map.sectors[index].ceilingTexture != "F_SKY1") {
 				mr.material = doomMaterial;
-				mr.material.SetTexture("_RenderMap", GetFlat(map.sectors[index].ceilingTexture));
+				mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].ceilingTexture));
 				mr.material.SetFloat("_Brightness", brightness);
 			} else {
 				mr.material = skyMaterial;
@@ -348,7 +348,7 @@ public class MapBuilder {
 			mr.material = skyMaterial;
 		} else {
 			mr.material = doomMaterial;
-			mr.material.SetTexture("_RenderMap", tex);
+			mr.material.SetTexture("_MainTex", tex);
 			mr.material.SetFloat("_Brightness", light);
 		}
 		newObj.AddComponent<MeshFilter>().mesh = mesh;

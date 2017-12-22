@@ -3,11 +3,11 @@
 Shader "Doom/Texture" {
  
 Properties {
-    _RenderMap ("Render Map", 2D) = "white" {}
+    _MainTex ("Render Map", 2D) = "white" {}
     _Palette ("Palette", 2D) = "white" {}
     _Colormap ("Colormap", 2D) = "white" {}
     _Brightness ("Brightness", float) = 1.0
-    _DepthImpact("Depth Impact", float) = 1.0
+//  _DepthImpact("Depth Impact", float) = 1.0
 }
 
 SubShader {
@@ -18,48 +18,36 @@ SubShader {
 
     Pass {  
         CGPROGRAM
-// Upgrade NOTE: excluded shader from DX11; has structs without semantics (struct v2f members depth)
-#pragma exclude_renderers d3d11
             #pragma vertex vert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
 
-            /*
-            struct appdata_t {
-                float4 vertex : POSITION;
-                float2 texcoord : TEXCOORD0;
-            };
-            */
-
             struct v2f {
                 float4 vertex : SV_POSITION;
                 float2 texcoord : TEXCOORD0;
-                float2 depth : TEXCOORD1;
+                float depth : TEXCOORD1;
             };
 
-            sampler2D _RenderMap;
+            sampler2D _MainTex;
             sampler2D _Palette;
             sampler2D _Colormap;
-            //uniform sampler2D _CameraDepthTexture;
             float _Brightness;
-            float4 _RenderMap_ST;
+            float4 _MainTex_ST;
+        //  float _DepthImpact;
 
             v2f vert (appdata_base v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-
-                o.depth = o.vertex.z;
-                
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _RenderMap);
+                o.depth = length(WorldSpaceViewDir(v.vertex));
+                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 float depth = saturate(1.0 - (i.depth) * 0.1);
-
                 float li = (_Brightness * 2.0) - (224.0 / 256.0);
                 li = saturate(li);
                 float maxlight = (_Brightness * 2.0) - (40.0 / 256.0);
@@ -69,9 +57,9 @@ SubShader {
 
 
 
-                float indexCol = tex2D(_RenderMap, i.texcoord).r;
+                float indexCol = tex2D(_MainTex, i.texcoord).r;
 
-                float alpha = tex2D(_RenderMap, i.texcoord).a;
+                float alpha = tex2D(_MainTex, i.texcoord).a;
                 float colormapIndex = indexCol;
                 float brightnessLookup = (floor((1.0-odepth) * 32.0)) / 32.0;
 
