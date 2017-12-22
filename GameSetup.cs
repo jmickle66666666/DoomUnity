@@ -19,6 +19,20 @@ public class IwadData {
 	public IwadInfo[] iwads;
 }
 
+public class CommandlineArguments {
+	public List<string> pwads;
+	public string iwad;
+	public string warp;
+	public string soundfont;
+
+	public CommandlineArguments() {
+		pwads = new List<string>();
+		iwad = "";
+		warp = "";
+		soundfont = "";
+	}
+}
+
 /*
 
 The "Master" controller. Does most things
@@ -58,15 +72,20 @@ public class GameSetup : MonoBehaviour {
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
 
+	private CommandlineArguments args;
+
 	// Use this for initialization
 	void Start () {
 
+		ParseArguments();
 
-		if (File.Exists("Roland_SoundCanvas.sf2") && midiEnabled) {
+		if (args.soundfont == "") midiEnabled = false;
+
+		if (File.Exists(args.soundfont) && midiEnabled) {
 			midiPlayer = gameObject.AddComponent<MidiPlayer>();
-			midiPlayer.LoadBank(new PatchBank(File.OpenRead("Roland_SoundCanvas.sf2")));
+			midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont)));
 		} else {
-			if (midiEnabled) Debug.LogError("No soundfont found, disabling midi");
+			Debug.LogError("No soundfont found, disabling midi");
 		}
 
 		cheatCodes = new List<string>() {
@@ -77,30 +96,45 @@ public class GameSetup : MonoBehaviour {
 
 		engineWad = new WadFile("nasty.wad");
 		SetupTitleCamera();
-		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
 		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText("NMAPINFO"));
 
-		foundIwads = new List<IwadInfo>();
+		
+		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
+		
 
-		for (int i = 0; i < iwadData.iwads.Length; i++) {
-			for (int j = 0; j < iwadData.iwads[i].filenames.Length; j++) {
-				if (System.IO.File.Exists(iwadData.iwads[i].filenames[j])) {
-					foundIwads.Add(iwadData.iwads[i]);
+		if (args.iwad == "") { // Run IWAD selection tool
+
+			foundIwads = new List<IwadInfo>();
+			for (int i = 0; i < iwadData.iwads.Length; i++) {
+				for (int j = 0; j < iwadData.iwads[i].filenames.Length; j++) {
+					if (System.IO.File.Exists(iwadData.iwads[i].filenames[j])) {
+						foundIwads.Add(iwadData.iwads[i]);
+					}
+				}
+			}
+
+			if (foundIwads.Count == 0) {
+				Debug.LogError("Cannot find any iwads!");
+			}
+			if (foundIwads.Count > 1) {
+				iwadSelector = true;
+			}
+
+			if (foundIwads.Count == 1) {
+				SetupWad(foundIwads[0]);
+			}
+
+		} else {
+			for (int i = 0; i < iwadData.iwads.Length; i++) {
+				if (args.iwad == iwadData.iwads[i].filenames[0]) {
+					SetupWad(iwadData.iwads[i]);
+					break;
 				}
 			}
 		}
 
-		if (foundIwads.Count == 0) {
-			Debug.LogError("Cannot find any iwads!");
-		}
 
-		if (foundIwads.Count > 1) {
-			iwadSelector = true;
-		}
-
-		if (foundIwads.Count == 1) {
-			SetupWad(foundIwads[0]);
-		}
+		
 	}
 
 	void SetupTitleCamera() {
@@ -122,7 +156,9 @@ public class GameSetup : MonoBehaviour {
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
 
-		wad.Merge("btsx_e1.wad");
+		for (int i = 0; i < args.pwads.Count; i++) {
+			wad.Merge(args.pwads[i]);
+		}
 
 		StartGame();
 	}
@@ -137,11 +173,44 @@ public class GameSetup : MonoBehaviour {
 		}
 	}
 
+	void ParseArguments() {
+		string[] arguments = System.Environment.GetCommandLineArgs();
+		args = new CommandlineArguments();
+
+		for (int i = 0; i < arguments.Length; i++) {
+			if (arguments[i] == "-iwad") {
+				args.iwad = arguments[i+1];
+			}
+
+			if (arguments[i] == "-file") {
+				int j = i + 1;
+				while (j < arguments.Length && arguments[j][0] != '-') {
+					args.pwads.Add(arguments[j]);
+					j++;
+				}
+			}
+
+			if (arguments[i] == "-warp") {
+				args.warp = arguments[i+1];
+			}
+
+			if (arguments[i] == "-soundfont") {
+				args.soundfont = arguments[i+1];
+			}
+		}
+	}
+
 	void StartGame() {
 		mapBuilder = new MapBuilder();
 
-		title.Build(wad);
-		PlayMidi("D_DM2TTL");
+		if (args.warp == "") {
+			title.Build(wad);
+			PlayMidi("D_DM2TTL");
+		} else {
+			title.DisableCamera();
+			menuActive = false;
+			BuildMap(args.warp);
+		}
 		menu = new DoomMenu(wad);
 	}
 
