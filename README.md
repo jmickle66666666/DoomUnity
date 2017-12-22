@@ -24,8 +24,10 @@ For Midi, you must have a soundfont file in the root directory, and merge in a w
 The IWADS use MUS files and those are not supported yet.
 
 To build the engine wad: you need to have python 3, omgifol, and pillow
-`pip install omgifol`
+
+`pip install omgifol`  
 `pip install pillow`
+
 you will want to change the path to the root directory of the project or build.
 then just run `python3 build_wad.py` to generate the engine wad.
 
