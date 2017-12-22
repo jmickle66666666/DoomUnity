@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using System;
 using System.IO;
 using UnityMidi;
 using AudioSynthesis.Midi;
 using AudioSynthesis.Bank;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class IwadInfo {
