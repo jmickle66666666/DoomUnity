@@ -1,34 +1,164 @@
 {
 	"mapinfo" : [
-		{
-			"lump":"MAP01",
-			"music":"D_RUNNIN",
-			"name":"Entryway"
+		{ 
+			"lump" : "MAP01", 
+			"music":"D_RUNNIN", 
+			"name" : "entryway"
 		},
-		{
-			"lump":"MAP02",
-			"music":"D_STALKS",
-			"name":"Not Entryway"
+		{ 
+			"lump" : "MAP02", 
+			"music":"D_STALKS", 
+			"name" : "underhalls"
 		},
-		{
-			"lump":"MAP03",
-			"music":"D_COUNTD",
-			"name":"Not Entryway"
+		{ 
+			"lump" : "MAP03", 
+			"music":"D_COUNTD", 
+			"name" : "the gantlet"
 		},
-		{
-			"lump":"MAP04",
-			"music":"D_BETWEE",
-			"name":"Not Entryway"
+		{ 
+			"lump" : "MAP04", 
+			"music":"D_BETWEE", 
+			"name" : "the focus"
 		},
-		{
-			"lump":"MAP05",
-			"music":"D_DOOM",
-			"name":"Not Entryway"
+		{ 
+			"lump" : "MAP05", 
+			"music":"D_DOOM", 
+			"name" : "the waste tunnels"
 		},
-		{
-			"lump":"MAP06",
-			"music":"D_THE_DA",
-			"name":"Not Entryway"
+		{ 
+			"lump" : "MAP06", 
+			"music":"D_THE_DA", 
+			"name" : "the crusher"
+		},
+		{ 
+			"lump" : "MAP07", 
+			"music":"D_SHAWN", 
+			"name" : "dead simple"
+		},
+		{ 
+			"lump" : "MAP08", 
+			"music":"D_DDTBLU", 
+			"name" : "tricks and traps"
+		},
+		{ 
+			"lump" : "MAP09", 
+			"music":"D_IN_CIT", 
+			"name" : "the pit"
+		},
+		{ 
+			"lump" : "MAP10", 
+			"music":"D_DEAD", 
+			"name" : "refueling base"
+		},
+		{ 
+			"lump" : "MAP11", 
+			"music":"D_STLKS2", 
+			"name" : "'o' of destruction!"
+		},
+		{ 
+			"lump" : "MAP12", 
+			"music":"D_THEDA2", 
+			"name" : "the factory"
+		},
+		{ 
+			"lump" : "MAP13", 
+			"music":"D_DOOM2", 
+			"name" : "downtown"
+		},
+		{ 
+			"lump" : "MAP14", 
+			"music":"D_DDTBL2", 
+			"name" : "the inmost dens"
+		},
+		{ 
+			"lump" : "MAP15", 
+			"music":"D_RUNNI2", 
+			"name" : "industrial zone"
+		},
+		{ 
+			"lump" : "MAP16", 
+			"music":"D_DEAD2", 
+			"name" : "suburbs"
+		},
+		{ 
+			"lump" : "MAP17", 
+			"music":"D_STLKS3", 
+			"name" : "tenements"
+		},
+		{ 
+			"lump" : "MAP18", 
+			"music":"D_ROMERO", 
+			"name" : "the courtyard"
+		},
+		{ 
+			"lump" : "MAP19", 
+			"music":"D_SHAWN2", 
+			"name" : "the citadel"
+		},
+		{ 
+			"lump" : "MAP20", 
+			"music":"D_MESSAG", 
+			"name" : "gotcha!"
+		},
+		{ 
+			"lump" : "MAP21", 
+			"music":"D_COUNT2", 
+			"name" : "nirvana"
+		},
+		{ 
+			"lump" : "MAP22", 
+			"music":"D_DDTBL3", 
+			"name" : "the catacombs"
+		},
+		{ 
+			"lump" : "MAP23", 
+			"music":"D_AMPIE", 
+			"name" : "barrels o' fun"
+		},
+		{ 
+			"lump" : "MAP24", 
+			"music":"D_THEDA3", 
+			"name" : "the chasm"
+		},
+		{ 
+			"lump" : "MAP25", 
+			"music":"D_ADRIAN", 
+			"name" : "bloodfalls"
+		},
+		{ 
+			"lump" : "MAP26", 
+			"music":"D_MESSG2", 
+			"name" : "the abandoned mines"
+		},
+		{ 
+			"lump" : "MAP27", 
+			"music":"D_ROMER2", 
+			"name" : "monster condo"
+		},
+		{ 
+			"lump" : "MAP28", 
+			"music":"D_TENSE", 
+			"name" : "the spirit world"
+		},
+		{ 
+			"lump" : "MAP29", 
+			"music":"D_SHAWN3", 
+			"name" : "the living end"
+		},
+		{ 
+			"lump" : "MAP30", 
+			"music":"D_OPENIN", 
+			"name" : "icon of sin"
+		},
+		{ 
+			"lump" : "MAP31", 
+			"music":"D_EVIL", 
+			"name" : "wolfenstein"
+		},
+		{ 
+			"lump" : "MAP32", 
+			"music":"D_ULTIMA", 
+			"name" : "grosse"
 		}
 	]
 }
