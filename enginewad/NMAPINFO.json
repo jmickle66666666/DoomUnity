@@ -1,0 +1,34 @@
+{
+	"mapinfo" : [
+		{
+			"lump":"MAP01",
+			"music":"D_RUNNIN",
+			"name":"Entryway"
+		},
+		{
+			"lump":"MAP02",
+			"music":"D_STALKS",
+			"name":"Not Entryway"
+		},
+		{
+			"lump":"MAP03",
+			"music":"D_COUNTD",
+			"name":"Not Entryway"
+		},
+		{
+			"lump":"MAP04",
+			"music":"D_BETWEE",
+			"name":"Not Entryway"
+		},
+		{
+			"lump":"MAP05",
+			"music":"D_DOOM",
+			"name":"Not Entryway"
+		},
+		{
+			"lump":"MAP06",
+			"music":"D_THE_DA",
+			"name":"Not Entryway"
+		}
+	]
+}

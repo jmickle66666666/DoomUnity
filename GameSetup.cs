@@ -64,7 +64,7 @@ public class GameSetup : MonoBehaviour {
 			midiPlayer = GetComponent<MidiPlayer>();
 			midiPlayer.LoadBank(new PatchBank(File.OpenRead("Roland_SoundCanvas.sf2")));
 		} else {
-			Debug.LogError("No soundfont found, disabling midi");
+			if (midiEnabled) Debug.LogError("No soundfont found, disabling midi");
 		}
 
 		cheatCodes = new List<string>() {
@@ -106,7 +106,7 @@ public class GameSetup : MonoBehaviour {
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
 
-		//wad.Merge("btsx_e1.wad");
+		wad.Merge("btsx_e1.wad");
 
 		StartGame();
 	}

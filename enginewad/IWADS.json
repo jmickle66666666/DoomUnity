@@ -1,0 +1,39 @@
+{
+	"iwads" : [
+		{ 
+			"name": "Doom II: Hell on Earth",
+			"filenames": ["DOOM2.WAD"],
+			"mapnameFormat": "MAP"
+		},
+		{ 
+			"name": "Doom",
+			"filenames": ["DOOM.WAD"],
+			"mapnameFormat": "EM"
+		},
+		{ 
+			"name": "Chex Quest",
+			"filenames": ["chex.wad"],
+			"mapnameFormat": "EM"
+		},
+		{ 
+			"name": "TNT: Evilution",
+			"filenames": ["TNT.WAD"],
+			"mapnameFormat": "MAP"
+		},
+		{ 
+			"name": "The Plutonia Experiment",
+			"filenames": ["PLUTONIA.WAD"],
+			"mapnameFormat": "MAP"
+		},
+		{ 
+			"name": "FreeDoom: Phase 1",
+			"filenames": ["freedoom1.wad"],
+			"mapnameFormat": "EM"
+		},
+		{ 
+			"name": "FreeDoom: Phase 2",
+			"filenames": ["freedoom2.wad"],
+			"mapnameFormat": "MAP"
+		}
+	]
+}

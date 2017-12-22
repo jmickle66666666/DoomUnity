@@ -23,6 +23,11 @@ To run the engine stuff, you'll need to put `nasty.wad` and (at least one) IWAD 
 For Midi, you must have a soundfont file in the root directory, and merge in a wad with MIDI files.
 The IWADS use MUS files and those are not supported yet.
 
+To build the engine wad: you need to have python 3 and omgifol
+`pip install omgifol`
+you will want to change the path to the root directory of the project or build.
+then just run `python3 build_wad.py` to generate the engine wad.
+
 And various other stuff. It's probably still gonna be a bit messy while I'm developing it!
 
 # when?
