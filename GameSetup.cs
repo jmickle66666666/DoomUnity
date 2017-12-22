@@ -12,6 +12,7 @@ public class IwadInfo {
 	public string name;
 	public string[] filenames;
 	public string mapnameFormat;
+	public string titleMusic;
 }
 
 [System.Serializable]
@@ -162,7 +163,7 @@ public class GameSetup : MonoBehaviour {
 			wad.Merge(args.pwads[i]);
 		}
 
-		StartGame();
+		StartGame(info);
 	}
 
 	void OnGUI() {
@@ -202,12 +203,12 @@ public class GameSetup : MonoBehaviour {
 		}
 	}
 
-	void StartGame() {
+	void StartGame(IwadInfo info) {
 		mapBuilder = new MapBuilder();
 
 		if (args.warp == "") {
 			title.Build(wad);
-			PlayMidi("D_DM2TTL");
+			PlayMidi(info.titleMusic);
 		} else {
 			title.DisableCamera();
 			menuActive = false;
