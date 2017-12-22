@@ -106,7 +106,7 @@ public class GameSetup : MonoBehaviour {
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
 
-		wad.Merge("btsx_e1.wad");
+		//wad.Merge("btsx_e1.wad");
 
 		StartGame();
 	}
