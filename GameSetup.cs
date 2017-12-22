@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System;
 using System.IO;
 using UnityMidi;
@@ -72,6 +73,7 @@ public class GameSetup : MonoBehaviour {
 	private MidiPlayer midiPlayer;
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
+	[SerializeField] private string editorArgs;
 
 	private CommandlineArguments args;
 
@@ -178,6 +180,9 @@ public class GameSetup : MonoBehaviour {
 
 	void ParseArguments() {
 		string[] arguments = System.Environment.GetCommandLineArgs();
+		#if UNITY_EDITOR
+		arguments = editorArgs.Split(' ');
+		#endif
 		args = new CommandlineArguments();
 
 		for (int i = 0; i < arguments.Length; i++) {
@@ -317,7 +322,9 @@ public class GameSetup : MonoBehaviour {
 				}
 
 				if (item == 4) {
-					Debug.Log("Quit");
+					#if UNITY_EDITOR
+						EditorApplication.isPlaying = false;
+					#endif
 					Application.Quit();
 				}
 			}
