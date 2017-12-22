@@ -11,11 +11,31 @@ public class TitleSetup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		mr = gameObject.AddComponent<MeshRenderer>();
+		MeshFilter mf = gameObject.AddComponent<MeshFilter>();
+		gameObject.AddComponent<AudioListener>();
+		Mesh mesh = new Mesh();
+		Vector2[] uvs = new Vector2[4] {
+			new Vector2(0f, 0f),
+			new Vector2(1f, 0f),
+			new Vector2(0f, 1f),
+			new Vector2(1f, 1f)
+		};
+		Vector3[] vertices = new Vector3[4] {
+			new Vector3(-0.5f, -0.5f, 0f),
+			new Vector3(0.5f, -0.5f, 0f),
+			new Vector3(-0.5f, 0.5f, 0f),
+			new Vector3(0.5f, 0.5f, 0f)
+		};
+		int[] triangles = new int[6] {0,2,1,2,3,1};
+		
+		mesh.vertices = vertices;
+		mesh.triangles = triangles;
+		mesh.uv = uvs;
+		mf.mesh = mesh;
 	}
 
 	public void Build(WadFile wad) {
-		mr = gameObject.GetComponent<MeshRenderer>();
 		mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
 		mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
 		mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());

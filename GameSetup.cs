@@ -60,6 +60,9 @@ public class GameSetup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		SetupTitleCamera();
+
+
 		if (File.Exists("Roland_SoundCanvas.sf2") && midiEnabled) {
 			midiPlayer = GetComponent<MidiPlayer>();
 			midiPlayer.LoadBank(new PatchBank(File.OpenRead("Roland_SoundCanvas.sf2")));
@@ -100,6 +103,18 @@ public class GameSetup : MonoBehaviour {
 		}
 	}
 
+	void SetupTitleCamera() {
+		GameObject titleCameraObject = new GameObject("TitleCamera");
+		Camera titleCamera = titleCameraObject.AddComponent<Camera>();
+		titleCamera.orthographic = true;
+		titleCamera.orthographicSize = 1f;
+		GameObject titleQuad = new GameObject("TitleQuad");
+		titleQuad.transform.parent = titleCameraObject.transform;
+		titleQuad.transform.localPosition = new Vector3(0f, 0f, 1f);
+		titleQuad.transform.localScale = new Vector3(3.2f, -2f, 1f);
+		title = titleQuad.AddComponent<TitleSetup>();
+	}
+
 	void SetupWad(IwadInfo info) {
 		wad = new WadFile(info.filenames[0]);
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
@@ -123,7 +138,7 @@ public class GameSetup : MonoBehaviour {
 
 	void StartGame() {
 		mapBuilder = new MapBuilder();
-		title = GameObject.Find("TitleQuad").GetComponent<TitleSetup>();
+
 		title.Build(wad);
 		PlayMidi("D_DM2TTL");
 		menu = new DoomMenu(wad);
