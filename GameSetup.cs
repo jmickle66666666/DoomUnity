@@ -81,11 +81,13 @@ public class GameSetup : MonoBehaviour {
 
 		if (args.soundfont == "") midiEnabled = false;
 
-		if (File.Exists(args.soundfont) && midiEnabled) {
-			midiPlayer = gameObject.AddComponent<MidiPlayer>();
-			midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont)));
-		} else {
-			Debug.LogError("No soundfont found, disabling midi");
+		if (midiEnabled) {
+			if (File.Exists(args.soundfont)) {
+				midiPlayer = gameObject.AddComponent<MidiPlayer>();
+				midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont)));
+			} else {
+				Debug.LogError("No soundfont found, disabling midi");
+			}
 		}
 
 		cheatCodes = new List<string>() {
