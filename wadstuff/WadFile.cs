@@ -71,6 +71,11 @@ public class WadFile {
 		return Encoding.UTF8.GetString(data);
 	}
 
+	public MemoryStream GetLumpAsMemoryStream(string name) {
+		byte[] data = GetLump(name);
+		return new MemoryStream(data);
+	}
+
 	public byte[] GetLump(string name) {
 		for (int i = directory.Count - 1; i >= 0; i--) {
 			if (directory[i].name == name) return GetLump(directory[i]);

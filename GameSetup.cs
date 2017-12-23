@@ -85,14 +85,19 @@ public class GameSetup : MonoBehaviour {
 
 		ParseArguments();
 
-		if (args.soundfont == "") midiEnabled = false;
+		engineWad = new WadFile("nasty.wad");
 
 		if (midiEnabled) {
-			if (File.Exists(args.soundfont)) {
+			if (args.soundfont != "" && File.Exists(args.soundfont)) {
 				midiPlayer = gameObject.AddComponent<MidiPlayer>();
-				midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont)));
+				midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont), "sf2"));
 			} else {
-				Debug.LogError("No soundfont found, disabling midi");
+				if (engineWad.Contains("GMBANK")) {
+					midiPlayer = gameObject.AddComponent<MidiPlayer>();
+					midiPlayer.LoadBank(new PatchBank(engineWad.GetLumpAsMemoryStream("GMBANK"), "bank"));
+				} else {
+					Debug.LogError("No soundfont found, disabling midi");
+				}
 			}
 		}
 
@@ -102,7 +107,6 @@ public class GameSetup : MonoBehaviour {
 			"test"
 		};
 
-		engineWad = new WadFile("nasty.wad");
 		SetupTitleCamera();
 		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText("NMAPINFO"));
 

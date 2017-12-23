@@ -61,12 +61,13 @@ namespace AudioSynthesis.Bank
             comment = string.Empty;
         }
 
-        public PatchBank(Stream data) {
+        public PatchBank(Stream data, string type) {
             bank = new Dictionary<int, Patch[]>();
             assets = new AssetManager();
             bankName = string.Empty;
             comment = string.Empty;
-            LoadSf2(data);
+            if (type == "sf2") LoadSf2(data);
+            if (type == "bank") LoadMyBank(data);
         }
 
         public PatchBank(IResource bankFile)
