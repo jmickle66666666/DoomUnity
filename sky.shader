@@ -28,7 +28,7 @@ SubShader {
 
             sampler2D _RenderMap;
             sampler2D _Palette;
-            float4 _RenderMap_ST;
+            float4 _RenderMap_TexelSize;
             float _CameraAngle;
 
             v2f vert (appdata_base v)
@@ -40,9 +40,9 @@ SubShader {
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 texcoord=i.vertex / _ScreenParams.xy;
-                texcoord.x += (_CameraAngle * (3.0/360)) ;
-                texcoord.y = 1.0 - texcoord.y;
+                float2 texcoord = i.vertex / _ScreenParams.xy;
+                texcoord.x += (_CameraAngle * (3.0/360));
+                texcoord.y = -texcoord.y * (_RenderMap_TexelSize.z / _RenderMap_TexelSize.w) * 0.5;
                 float indexCol = tex2D(_RenderMap, texcoord).r;
                 float4 col = tex2D(_Palette, float2(indexCol + (.5/256.0), 0.0));
                 return col;
