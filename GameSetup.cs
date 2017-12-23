@@ -177,6 +177,14 @@ public class GameSetup : MonoBehaviour {
 
 	void OnGUI() {
 		if (iwadSelector) {
+
+			if (GUI.Button(new Rect(260, 110, 40, 20), "Quit")) {
+				#if UNITY_EDITOR
+					EditorApplication.isPlaying = false;
+				#endif
+				Application.Quit();
+			}
+
 			for (int i = 0; i < foundIwads.Count; i++) {
 				if (GUI.Button(new Rect(10, 10 + (i * 25), 200, 20), foundIwads[i].name)) {
 					SetupWad(foundIwads[i]);
