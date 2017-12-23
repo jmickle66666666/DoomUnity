@@ -32,7 +32,7 @@ public class MapBuilder {
 	private string skyName;
 
 	public  int GetIndexOfThing(int thingType) {
-		for (int i = 0; i < map.things.Count; i++) {
+		for (int i = map.things.Count - 1; i >= 0; i--) {
 			if (map.things[i].type == thingType) {
 				return i;
 			}
