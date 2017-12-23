@@ -34,6 +34,12 @@ public class DirectoryEntry {
 	}
 }
 
+public enum DataType {
+	MIDI,
+	MUS,
+	UNKNOWN
+}
+
 public class WadFile {
 
 	public string type;
@@ -41,6 +47,24 @@ public class WadFile {
 	public int directoryPos;
 	public List<DirectoryEntry> directory;
 	public byte[] wadData;
+
+	public DataType DetectType(string name) {
+		byte[] lump = GetLump(name);
+		if (lump[0] == Convert.ToByte('M') &&
+			lump[1] == Convert.ToByte('T') &&
+			lump[2] == Convert.ToByte('h') &&
+			lump[3] == Convert.ToByte('d')) {
+			return DataType.MIDI;
+		}
+
+		if (lump[0] == Convert.ToByte('M') &&
+			lump[1] == Convert.ToByte('U') &&
+			lump[2] == Convert.ToByte('S')) {
+			return DataType.MUS;
+		}
+
+		return DataType.UNKNOWN;
+	}
 
 	public string GetLumpAsText(string name) {
 		byte[] data = GetLump(name);

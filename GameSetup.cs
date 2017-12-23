@@ -227,10 +227,22 @@ public class GameSetup : MonoBehaviour {
 
 	void PlayMidi(string name) {
 		if (midiPlayer != null) {
-			midiPlayer.Stop();
-			MidiFile midi = new MidiFile(wad.GetLump(name));
-			midiPlayer.LoadMidi(midi);
-			midiPlayer.Play();
+
+			MidiFile midi = null;
+			DataType musType = wad.DetectType(name);
+			if (musType == DataType.MIDI) {
+				midi = new MidiFile(wad.GetLump(name));
+			} else if (musType == DataType.MUS) {
+				midi = new MidiFile(new Mus2Mid(wad.GetLump(name)).MidiData());
+			} else {
+				Debug.LogError("Not a midi or mus which are the only thigns supported rn surprisingly enough");
+			}
+
+			if (midi != null) {
+				midiPlayer.Stop();
+				midiPlayer.LoadMidi(midi);
+				midiPlayer.Play();
+			}
 		}
 	}
 
