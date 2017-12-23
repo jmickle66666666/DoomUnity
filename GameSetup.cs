@@ -262,7 +262,7 @@ public class GameSetup : MonoBehaviour {
 		if (GameObject.Find(currentMap) != null) GameObject.Destroy(GameObject.Find(currentMap));
 		float time = Time.realtimeSinceStartup;
 		currentMap = mapname;
-		mapBuilder.SetMapInfo(mapinfo[currentMap]);
+		mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
 		mapBuilder.BuildMap(wad, mapname);
 		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
 		CreatePlayer();
