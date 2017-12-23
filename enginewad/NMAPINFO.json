@@ -3,161 +3,193 @@
 		{ 
 			"lump" : "MAP01", 
 			"music":"D_RUNNIN", 
+			"sky"  : "SKY1",
 			"name" : "entryway"
 		},
 		{ 
 			"lump" : "MAP02", 
 			"music":"D_STALKS", 
+			"sky"  : "SKY1",
 			"name" : "underhalls"
 		},
 		{ 
 			"lump" : "MAP03", 
 			"music":"D_COUNTD", 
+			"sky"  : "SKY1",
 			"name" : "the gantlet"
 		},
 		{ 
 			"lump" : "MAP04", 
 			"music":"D_BETWEE", 
+			"sky"  : "SKY1",
 			"name" : "the focus"
 		},
 		{ 
 			"lump" : "MAP05", 
 			"music":"D_DOOM", 
+			"sky"  : "SKY1", 
 			"name" : "the waste tunnels"
 		},
 		{ 
 			"lump" : "MAP06", 
 			"music":"D_THE_DA", 
+			"sky"  : "SKY1",
 			"name" : "the crusher"
 		},
 		{ 
 			"lump" : "MAP07", 
 			"music":"D_SHAWN", 
+			"sky"  : "SKY1",
 			"name" : "dead simple"
 		},
 		{ 
 			"lump" : "MAP08", 
 			"music":"D_DDTBLU", 
+			"sky"  : "SKY1",
 			"name" : "tricks and traps"
 		},
 		{ 
 			"lump" : "MAP09", 
 			"music":"D_IN_CIT", 
+			"sky"  : "SKY1",
 			"name" : "the pit"
 		},
 		{ 
 			"lump" : "MAP10", 
 			"music":"D_DEAD", 
+			"sky"  : "SKY1",
 			"name" : "refueling base"
 		},
 		{ 
 			"lump" : "MAP11", 
 			"music":"D_STLKS2", 
+			"sky"  : "SKY1",
 			"name" : "'o' of destruction!"
 		},
 		{ 
 			"lump" : "MAP12", 
 			"music":"D_THEDA2", 
+			"sky"  : "SKY2",
 			"name" : "the factory"
 		},
 		{ 
 			"lump" : "MAP13", 
 			"music":"D_DOOM2", 
+			"sky"  : "SKY2",
 			"name" : "downtown"
 		},
 		{ 
 			"lump" : "MAP14", 
 			"music":"D_DDTBL2", 
+			"sky"  : "SKY2",
 			"name" : "the inmost dens"
 		},
 		{ 
 			"lump" : "MAP15", 
 			"music":"D_RUNNI2", 
+			"sky"  : "SKY2",
 			"name" : "industrial zone"
 		},
 		{ 
 			"lump" : "MAP16", 
 			"music":"D_DEAD2", 
+			"sky"  : "SKY2",
 			"name" : "suburbs"
 		},
 		{ 
 			"lump" : "MAP17", 
 			"music":"D_STLKS3", 
+			"sky"  : "SKY2",
 			"name" : "tenements"
 		},
 		{ 
 			"lump" : "MAP18", 
 			"music":"D_ROMERO", 
+			"sky"  : "SKY2",
 			"name" : "the courtyard"
 		},
 		{ 
 			"lump" : "MAP19", 
 			"music":"D_SHAWN2", 
+			"sky"  : "SKY2",
 			"name" : "the citadel"
 		},
 		{ 
 			"lump" : "MAP20", 
 			"music":"D_MESSAG", 
+			"sky"  : "SKY2",
 			"name" : "gotcha!"
 		},
 		{ 
 			"lump" : "MAP21", 
 			"music":"D_COUNT2", 
+			"sky"  : "SKY3",
 			"name" : "nirvana"
 		},
 		{ 
 			"lump" : "MAP22", 
 			"music":"D_DDTBL3", 
+			"sky"  : "SKY3",
 			"name" : "the catacombs"
 		},
 		{ 
 			"lump" : "MAP23", 
 			"music":"D_AMPIE", 
+			"sky"  : "SKY3",
 			"name" : "barrels o' fun"
 		},
 		{ 
 			"lump" : "MAP24", 
 			"music":"D_THEDA3", 
+			"sky"  : "SKY3",
 			"name" : "the chasm"
 		},
 		{ 
 			"lump" : "MAP25", 
 			"music":"D_ADRIAN", 
+			"sky"  : "SKY3",
 			"name" : "bloodfalls"
 		},
 		{ 
 			"lump" : "MAP26", 
 			"music":"D_MESSG2", 
+			"sky"  : "SKY3",
 			"name" : "the abandoned mines"
 		},
 		{ 
 			"lump" : "MAP27", 
 			"music":"D_ROMER2", 
+			"sky"  : "SKY3",
 			"name" : "monster condo"
 		},
 		{ 
 			"lump" : "MAP28", 
 			"music":"D_TENSE", 
+			"sky"  : "SKY3",
 			"name" : "the spirit world"
 		},
 		{ 
 			"lump" : "MAP29", 
 			"music":"D_SHAWN3", 
+			"sky"  : "SKY3",
 			"name" : "the living end"
 		},
 		{ 
 			"lump" : "MAP30", 
 			"music":"D_OPENIN", 
+			"sky"  : "SKY3",
 			"name" : "icon of sin"
 		},
 		{ 
 			"lump" : "MAP31", 
 			"music":"D_EVIL", 
+			"sky"  : "SKY3",
 			"name" : "wolfenstein"
 		},
 		{ 
 			"lump" : "MAP32", 
 			"music":"D_ULTIMA", 
+			"sky"  : "SKY3",
 			"name" : "grosse"
 		}
 	]

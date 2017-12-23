@@ -7,6 +7,7 @@ public class MapInfo {
 	public string lump;
 	public string name;
 	public string music;
+	public string sky;
 }
 
 
