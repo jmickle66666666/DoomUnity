@@ -29,6 +29,8 @@ public class MapBuilder {
 	private Material doomMaterial;
 	public static Material skyMaterial;
 
+	private string skyName;
+
 	public  int GetIndexOfThing(int thingType) {
 		for (int i = 0; i < map.things.Count; i++) {
 			if (map.things[i].type == thingType) {
@@ -36,6 +38,11 @@ public class MapBuilder {
 			}
 		}
 		return -1;
+	}
+
+	public void SetMapInfo(MapInfo mapInfo)
+	{
+		skyName = mapInfo.sky;
 	}
 
 	public void BuildMap(WadFile wad, string mapname) {
@@ -50,7 +57,7 @@ public class MapBuilder {
 
 		skyMaterial = new Material(Shader.Find("Doom/Sky"));
 		skyMaterial.SetTexture("_Palette", paletteLookup);
-		skyMaterial.SetTexture("_RenderMap", GetTexture("SKY1"));
+		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
 
 
 		map = new MapData(wad, mapname);
@@ -325,7 +332,7 @@ public class MapBuilder {
 			uvOffset.x /= tex.width;
 			uvOffset.y /= tex.height;
 		} else {
-			tex = GetTexture("SKY1");
+			tex = GetTexture(skyName);
 		}
 
 		float length = Vector3.Distance(v1, new Vector3(v2.x,v1.y,v2.z));
