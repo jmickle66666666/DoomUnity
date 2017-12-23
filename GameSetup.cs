@@ -88,7 +88,7 @@ public class GameSetup : MonoBehaviour {
 		engineWad = new WadFile("nasty.wad");
 
 		if (midiEnabled) {
-			if (args.soundfont != "" && File.Exists(args.soundfont)) {
+			if (File.Exists(args.soundfont)) {
 				midiPlayer = gameObject.AddComponent<MidiPlayer>();
 				midiPlayer.LoadBank(new PatchBank(File.OpenRead(args.soundfont), "sf2"));
 			} else {
