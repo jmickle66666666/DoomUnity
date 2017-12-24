@@ -81,20 +81,18 @@ public class MapBuilder {
 			BuildSector(i);	
 		}
 
+		// List of all things that haven't been placed in a sector
+		if (unclaimedThings.Count > 0) {
+			for (int i = 0; i < unclaimedThings.Count; i++) {
+				Debug.LogWarning("Unclaimed Thing: "+unclaimedThings[i]);
+			}
+		}
+
 		// BuildLine(335);
 
 		// BuildSector(24);
 
 		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
-
-		GameObject player = new GameObject("Player");
-		int playerIndex = 0;
-		for (int i = 0; i < map.things.Count; i++) {
-			if (map.things[i].type == 1) {
-				playerIndex = i;
-				break;
-			}
-		}
 	}
 
 	public void BuildMap(string wadpath, string mapname) {
@@ -121,6 +119,7 @@ public class MapBuilder {
 				if (polygons[i].ThingInside(map.things[unclaimedThings[t]])) {
 					thingSectors.Add(unclaimedThings[t], map.sectors[index]);
 					unclaimedThings.RemoveAt(t);
+					t-=1;
 				}
 			}
 		}
