@@ -16,7 +16,7 @@ public class IwadInfo {
 	public string[] filenames;
 	public string mapnameFormat;
 	public string titleMusic;
-	public string skyName;
+	public string mapInfo;
 }
 
 [System.Serializable]
@@ -100,6 +100,8 @@ public class GameSetup : MonoBehaviour {
 				}
 			}
 		}
+		
+		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
 
 		cheatCodes = new List<string>() {
 			"idclev",
@@ -108,10 +110,7 @@ public class GameSetup : MonoBehaviour {
 		};
 
 		SetupTitleCamera();
-		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText("NMAPINFO"));
 
-		
-		IwadData iwadData = JsonUtility.FromJson<IwadData>(engineWad.GetLumpAsText("IWADS"));
 		
 
 		if (args.iwad == "") { // Run IWAD selection tool
@@ -163,6 +162,7 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void SetupWad(IwadInfo info) {
+		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo));
 		wad = new WadFile(info.filenames[0]);
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;

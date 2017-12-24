@@ -4,7 +4,8 @@
 			"name": "Doom II: Hell on Earth",
 			"filenames": ["DOOM2.WAD"],
 			"mapnameFormat": "MAP",
-			"titleMusic":"D_DM2TTL"
+			"titleMusic":"D_DM2TTL",
+			"mapInfo":"DOOMMAPS"
 		},
 		{ 
 			"name": "Doom",
@@ -16,19 +17,22 @@
 			"name": "Chex Quest",
 			"filenames": ["chex.wad"],
 			"mapnameFormat": "EM",
-			"titleMusic":"D_INTRO"
+			"titleMusic":"D_INTRO",
+			"mapInfo":"DOOMMAPS"
 		},
 		{ 
 			"name": "TNT: Evilution",
 			"filenames": ["TNT.WAD"],
 			"mapnameFormat": "MAP",
-			"titleMusic":"D_DM2TTL"
+			"titleMusic":"D_DM2TTL",
+			"mapInfo":"DOOMMAPS"
 		},
 		{ 
 			"name": "The Plutonia Experiment",
 			"filenames": ["PLUTONIA.WAD"],
 			"mapnameFormat": "MAP",
-			"titleMusic":"D_DM2TTL"
+			"titleMusic":"D_DM2TTL",
+			"mapInfo":"DOOMMAPS"
 		},
 		{ 
 			"name": "FreeDoom: Phase 1",
@@ -40,7 +44,8 @@
 			"name": "FreeDoom: Phase 2",
 			"filenames": ["freedoom2.wad"],
 			"mapnameFormat": "MAP",
-			"titleMusic":"D_DM2TTL"
+			"titleMusic":"D_DM2TTL",
+			"mapInfo":"DOOMMAPS"
 		}
 	]
 }
