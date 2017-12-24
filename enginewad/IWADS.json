@@ -32,7 +32,7 @@
 			"filenames": ["PLUTONIA.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS"
+			"mapInfo":"PLUTMAPS"
 		},
 		{ 
 			"name": "FreeDoom: Phase 1",

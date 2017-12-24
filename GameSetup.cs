@@ -162,7 +162,7 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void SetupWad(IwadInfo info) {
-		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo));
+		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo), engineWad);
 		wad = new WadFile(info.filenames[0]);
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;

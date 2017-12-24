@@ -1,0 +1,9 @@
+{
+	"baseMapinfo" : "DOOMMAPS",
+	"mapinfo" : [
+		{ 
+			"lump" : "MAP01",
+			"name" : "congo"
+		}
+	]
+}
