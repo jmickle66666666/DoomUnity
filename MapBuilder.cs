@@ -42,7 +42,8 @@ public class MapBuilder {
 
 	public void SetMapInfo(MapInfo mapInfo)
 	{
-		skyName = mapInfo.sky;
+		if(mapInfo != null) skyName = mapInfo.sky;
+		else skyName = "SKY1";
 	}
 
 	public void BuildMap(WadFile wad, string mapname) {
