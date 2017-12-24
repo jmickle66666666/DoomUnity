@@ -57,9 +57,48 @@ public class SectorTriangulation {
 			holes = new List<List<Vector2>>();
 		}
 
+		public void OrderHoles() {
+			// Sort the holes so the outermost holes are placed first.
+			// We sort by the value of the rightmost vertex
+			List<List<Vector2>> orderedHoles = new List<List<Vector2>>();
+
+			List<float> holeValue = new List<float>();
+			for (int i = 0; i < holes.Count; i++) {
+				holeValue.Add(holes[i][RightmostVertex(holes[i])].x);
+			}
+
+			while (holes.Count > 1) {
+				int highIndex = 0;
+				for (int i = 1; i < holes.Count; i++) {
+					if (holeValue[i] > holeValue[highIndex]) highIndex = i;
+				}
+				orderedHoles.Add(holes[highIndex]);
+				holes.RemoveAt(highIndex);
+				holeValue.RemoveAt(highIndex);
+			}
+
+			// Add the final one
+			orderedHoles.Add(holes[0]);
+
+			holes = orderedHoles;
+		}
+
+		public int RightmostVertex(List<Vector2> polygon) {
+			int output = 0;
+			for (int i = 1; i < polygon.Count; i++) {
+				if (polygon[i].x > polygon[output].x) {
+					output = i;
+				}
+			}
+			return output;
+		}
+
 		public List<Vector2> Cut() {
 			// If there are no holes then it doesn't need cutting.
 			if (holes.Count == 0) return shell;
+
+			// Order the holes before cutting
+			OrderHoles();
 
 			int safe = 100;
 			while (holes.Count > 0 && safe >= 0) { // be careful!!!
@@ -68,12 +107,7 @@ public class SectorTriangulation {
 				List<Vector2> hole = holes[0];
 
 				// Step 1: Find maximum x-value point in hole
-				int rIndex = 0;
-				for (int j = 1; j < hole.Count; j++) {
-					if (hole[j].x > hole[rIndex].x) {
-						rIndex = j;
-					}
-				}
+				int rIndex = RightmostVertex(hole);
 
 				Vector2 hPoint = hole[rIndex];
 				Vector2 hxPoint = new Vector2(hPoint.x + 10000f, hPoint.y);
@@ -258,7 +292,7 @@ public class SectorTriangulation {
 		}
 
 		foreach (KeyValuePair<int, int> entry in vertexLines) {
-			if (vertexLines[entry.Key] != 2) {
+			if (vertexLines[entry.Key] < 2) {
 				Debug.LogError("Unclosed sector: "+sector);
 				break;
 			}
