@@ -8,6 +8,10 @@ wadfilespath = "enginewad/"
 wad = omg.WAD()
 files = [f for f in listdir(wadfilespath) if isfile(join(wadfilespath, f))]
 for f in files:
+
+	if len(f[:f.find('.')]) == 0:
+		continue
+
 	ext = f.find('.meta')
 	if ext != -1:
 		continue
