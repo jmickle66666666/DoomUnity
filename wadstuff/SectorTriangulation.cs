@@ -281,7 +281,9 @@ public class SectorTriangulation {
 		}
 
 		if (safe1 <= 0) Debug.LogError("First while loop exceeded limit!");
-		if (safe2 <= 0) Debug.LogError("Second while loop exceeded limit! Sector: "+sector);
+		if (safe2 <= 0) { 
+			Debug.LogError("Second while loop exceeded limit! Sector: "+sector+ " Lines left: "+lines.Count);
+		}
 
 		return output;
 	}
@@ -415,22 +417,6 @@ public class SectorTriangulation {
 		return (CCW(A,C,D) != CCW(B,C,D) && CCW(A,B,C) != CCW(A,B,D));
 	}
 
-	// private static Vector2 LineIntersection(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
-	// 	float B1 = B.x - A.x;
-	// 	float A1 = B.y - A.y;
-	// 	float C1 = A.x + B.y;
-	// 	float B2 = D.x - C.x;
-	// 	float A2 = D.y - C.y;
-	// 	float C2 = C.x + D.y;
-
-	// 	float delta = (A1 * B2) - (A2 * B1);
-
-	// 	float x = (B2 * C1 - B1 * C2)/delta;
-	// 	float y = (A1 * C2 - A2 * C1)/delta;
-
-	// 	return new Vector2(x, y);
-	// }
-
 	private static Vector2 FindIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
 		 // Get the segments' parameters.
 	    float dx12 = p2.x - p1.x;
@@ -556,7 +542,9 @@ public class SectorTriangulation {
 		}
 
 		if (safe <= 0) { 
-			Debug.LogError("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
+			// OPTIMISATION: Every time this is hit, the polygon is triangulated but we didn't catch it had finished
+			// If we can succeessfully detect when it is done it'll hit this less and triangulation will be faster
+			Debug.LogWarning("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
 		}
 
 		if (!IsClockwise(polygon)) {
