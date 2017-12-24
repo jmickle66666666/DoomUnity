@@ -208,9 +208,10 @@ public class SectorTriangulation {
 
 		// Ear clip
 		List<SectorPolygon> output = new List<SectorPolygon>();
+
 		for (i = 0; i < cutPolygons.Count; i++) {
 			SectorPolygon sp = EarClip(cutPolygons[i]);
-			if (sp != null) output.Add(EarClip(cutPolygons[i]));
+			if (sp != null) output.Add(sp);
 		}
 
 		// for (i = 0; i < cutPolygons.Count; i++) {
@@ -555,7 +556,7 @@ public class SectorTriangulation {
 		}
 
 		if (safe <= 0) { 
-			Debug.LogWarning("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
+			Debug.LogError("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
 		}
 
 		if (!IsClockwise(polygon)) {
