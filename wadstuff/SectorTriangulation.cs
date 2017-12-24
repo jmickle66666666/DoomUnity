@@ -229,6 +229,10 @@ public class SectorTriangulation {
 
 		//Debug.Log("Polygons: " + polygons.Count);
 
+		// Remove points on straight lines
+		for (i = 0; i < polygons.Count; i++) {
+			polygons[i] = CleanLines(polygons[i]);
+		}
 		// Determine islands
 		if (polygons.Count == 0) return null;
 		List<SectorIsland> islands = BuildIslands(polygons);
@@ -263,6 +267,20 @@ public class SectorTriangulation {
 		}
 
 		return output;
+	}
+
+	private List<Vector2> CleanLines(List<Vector2> polygon) {
+		int before = polygon.Count;
+		for (int i = 0; i < polygon.Count; i++) {
+			Vector2 p1 = polygon[i];
+			Vector2 p2 = polygon[(i+1) % polygon.Count];
+			Vector2 p3 = polygon[(i+2) % polygon.Count];
+			if (Mathf.Abs(LineAngle(p1, p2) - LineAngle(p2, p3)) < 0.1f) {
+				polygon.RemoveAt((i+1) % polygon.Count);
+				i -= 1;
+			}
+		}
+		return polygon;
 	}
 
 	private List<List<Vector2>> TraceLines(int sector) {
@@ -500,6 +518,10 @@ public class SectorTriangulation {
 		return ((C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x));
 	}
 
+	private static float LineAngle(Vector2 A, Vector2 B) {
+		return Mathf.Atan2(B.y-A.y, B.x-A.x);
+	}
+
 	private SectorPolygon EarClip(List<Vector2> polygon) {
 
 		SectorPolygon output = new SectorPolygon();
@@ -524,10 +546,7 @@ public class SectorTriangulation {
 			return output;
 		}
 
-		// Make it clockwise because consistent direction is necessary 
-
-		
-
+		// Now we earclip
 		List<int> clippedIndexes = new List<int>();
 
 		int polygonCount = polygon.Count;
