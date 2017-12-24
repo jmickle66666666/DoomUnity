@@ -81,6 +81,8 @@ public class MapBuilder {
 			BuildSector(i);	
 		}
 
+		// BuildLine(335);
+
 		// BuildSector(24);
 
 		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
@@ -227,7 +229,7 @@ public class MapBuilder {
 			BuildQuad(new Vector3(x1, z1, y1), new Vector3(x2,z2,y2), frontSide.mid, frontOffset, frontBrightness);
 		} else {
 			// Lower texture
-			int midBottom;
+			float midBottom;
 			Vector2 offset = new Vector2();
 			if (frontSector.floorHeight < backSector.floorHeight) {
 				// Front Side
@@ -260,7 +262,7 @@ public class MapBuilder {
 			}
 
 			// Upper texture
-			int midTop;
+			float midTop;
 			if (frontSector.ceilingHeight < backSector.ceilingHeight) {
 				// Back Side
 				offset.Set(backOffset.x, backOffset.y);
@@ -289,8 +291,34 @@ public class MapBuilder {
 			}
 
 			// Mid textures
-			BuildQuad(new Vector3(x1, midBottom, y1), new Vector3(x2,midTop,y2), frontSide.mid, frontOffset, frontBrightness);
-			BuildQuad(new Vector3(x2, midBottom, y2), new Vector3(x1,midTop,y1), backSide.mid, backOffset, backBrightness);
+			float midDiff = midTop - midBottom;
+			if (frontSide.mid != "-") {
+				offset.Set(frontOffset.x, frontOffset.y);
+				float fmidTop;
+				float fmidBottom;
+				if (line.lowerUnpegged) {
+					fmidTop = (midBottom + GetInfo(frontSide.mid).height) + frontOffset.y;
+					fmidBottom = Mathf.Max(midBottom, midBottom + offset.y);
+				} else {
+					fmidTop = Mathf.Min(midTop, offset.y + midTop);
+					fmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(frontSide.mid).height);
+				}
+
+				BuildQuad(new Vector3(x1, fmidBottom, y1), new Vector3(x2,fmidTop,y2), frontSide.mid, offset, frontBrightness);
+			}
+			if (backSide.mid != "-") {
+				offset.Set(backOffset.x, backOffset.y);
+				float bmidTop;
+				float bmidBottom;
+				if (line.lowerUnpegged) {
+					bmidTop = (midBottom + GetInfo(backSide.mid).height) + backOffset.y;
+					bmidBottom = Mathf.Max(midBottom, midBottom + offset.y);
+				} else {
+					bmidTop = Mathf.Min(midTop, offset.y + midTop);
+					bmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(backSide.mid).height);
+				}
+				BuildQuad(new Vector3(x2, bmidBottom, y2), new Vector3(x1,bmidTop,y1), backSide.mid, offset, backBrightness);
+			}
 		}
 
 		GetTextures(index);
@@ -299,7 +327,6 @@ public class MapBuilder {
 	private  Dictionary<string, Material> materialCache;
 
 	 void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool sky = false) {
-
 	 	// This is where we discard parts of a line that have no height or texture
 
 	 	if (v1.y == v2.y) {
