@@ -241,6 +241,29 @@ public class SectorTriangulation {
 		int safe1 = 1000;
 		int safe2 = 1;
 
+		// First check all vertexes reference two linedefs! This is to find unclosed sectors
+		Dictionary<int, int> vertexLines = new Dictionary<int, int>();
+		for (int v = 0; v < lines.Count; v++) {
+			if (!vertexLines.ContainsKey(lines[v].start)) {
+				vertexLines.Add(lines[v].start, 1);
+			} else {
+				vertexLines[lines[v].start] += 1;
+			}
+
+			if (!vertexLines.ContainsKey(lines[v].end)) {
+				vertexLines.Add(lines[v].end, 1);
+			} else {
+				vertexLines[lines[v].end] += 1;
+			}
+		}
+
+		foreach (KeyValuePair<int, int> entry in vertexLines) {
+			if (vertexLines[entry.Key] != 2) {
+				Debug.LogError("Unclosed sector: "+sector);
+				break;
+			}
+		}
+
 		while (lines.Count > 0 && safe1 > 0) { // be careful
 			safe1--;
 
