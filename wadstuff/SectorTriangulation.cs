@@ -227,8 +227,6 @@ public class SectorTriangulation {
 		// Trace sector lines 
 		List<List<Vector2>> polygons = TraceLines(sector);
 
-		//Debug.Log("Polygons: " + polygons.Count);
-
 		if (polygons == null) return null;
 
 		// Remove points on straight lines
@@ -253,14 +251,6 @@ public class SectorTriangulation {
 			SectorPolygon sp = EarClip(cutPolygons[i]);
 			if (sp != null) output.Add(sp);
 		}
-
-		// for (i = 0; i < cutPolygons.Count; i++) {
-		// 	int conv = IsConvex(cutPolygons[i]);
-		// 	if (conv != 0) {
-		// 		if (conv == -1) cutPolygons[i].Reverse();
-		// 		output.AddRange(cutPolygons[i]);
-		// 	}
-		// }
 		
 		// Output
 
@@ -277,12 +267,17 @@ public class SectorTriangulation {
 			Vector2 p1 = polygon[i];
 			Vector2 p2 = polygon[(i+1) % polygon.Count];
 			Vector2 p3 = polygon[(i+2) % polygon.Count];
-			if (Mathf.Abs(LineAngle(p1, p2) - LineAngle(p2, p3)) < 0.1f) {
+			if (PointOnLine(p1, p2, p3)) {
 				polygon.RemoveAt((i+1) % polygon.Count);
 				i -= 1;
 			}
 		}
 		return polygon;
+	}
+
+	private static bool PointOnLine(Vector2 A, Vector2 B, Vector2 C) {
+		// Check if point B is in line with points A and C
+		return Mathf.Abs(LineAngle(A, B) - LineAngle(B, C)) < 0.1f;
 	}
 
 	private List<List<Vector2>> TraceLines(int sector) {
@@ -405,13 +400,13 @@ public class SectorTriangulation {
 
 		List<SectorIsland> output = new List<SectorIsland>();
 
-		// // If there's only one polygon, then it must be a shell.
-		// if (polygons.Count == 1) {
-		// 	SectorIsland ssi = new SectorIsland();
-		// 	ssi.shell = polygons[0];
-		// 	output.Add(ssi);
-		// 	return output;
-		// }
+		// If there's only one polygon, then it must be a shell.
+		if (polygons.Count == 1) {
+			SectorIsland ssi = new SectorIsland();
+			ssi.shell = polygons[0];
+			output.Add(ssi);
+			return output;
+		}
 
 		
 		SectorIsland si = new SectorIsland();
@@ -490,6 +485,9 @@ public class SectorTriangulation {
 		Vector2 B = list[b % list.Count];
 		Vector2 C = list[c % list.Count];
 		Vector2 D = list[d % list.Count];
+
+		if (PointOnLine(A, C, B)) return true;
+		if (PointOnLine(A, D, B)) return true;
 		//Debug.Log(A + " " + B + " " + C + " " + D);
 		return (CCW(A,C,D) != CCW(B,C,D) && CCW(A,B,C) != CCW(A,B,D));
 	}
@@ -588,13 +586,26 @@ public class SectorTriangulation {
 				for (int j = 0; j < polygonCount; j++) {
 					int j1 = (j+1) % polygonCount;
 					if (!Vector2.Equals(polygon[i1], polygon[j]) &&
-						!Vector2.Equals(polygon[i3], polygon[j]) &&
+						!Vector2.Equals(polygon[i3], polygon[j])) 
+					{
+						if (LinesIntersect(polygon, i1, i3, j, j1) &&
 						!Vector2.Equals(polygon[i1], polygon[j1]) &&
-						!Vector2.Equals(polygon[i3], polygon[j1]) &&
-						LinesIntersect(polygon, i1, i3, j, j1)) {
+						!Vector2.Equals(polygon[i3], polygon[j1])) {
+							intersects = true;
+							break;
+						}
 
-						intersects = true;
-						break;
+						List<Vector2> testPoly = new List<Vector2>() {
+							polygon[i1],
+							polygon[i2],
+							polygon[i3]
+						};
+
+						if (!Vector2.Equals(polygon[i2], polygon[j]) &&
+							PointInPolygon(polygon[j], testPoly)) {
+							intersects = true;
+							break;
+						}
 					}
 				}
 			}
