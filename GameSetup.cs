@@ -230,8 +230,12 @@ public class GameSetup : MonoBehaviour {
 
 		if (args.runTests) {
 			Debug.Log("Running tests...");
+
+			// Keep a separate map builder to avoid issues building maps afterwards
+			MapBuilder testMapBuilder = new MapBuilder();
+
 			foreach (KeyValuePair<string, MapInfo> entry in mapinfo) {
-				int errors = mapBuilder.TestMap(wad, entry.Key);
+				int errors = testMapBuilder.TestMap(wad, entry.Key);
 				if (errors > 0) {
 					Debug.Log("Failed sectors in "+entry.Key+": "+errors);
 				}

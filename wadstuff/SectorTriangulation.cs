@@ -229,6 +229,8 @@ public class SectorTriangulation {
 
 		//Debug.Log("Polygons: " + polygons.Count);
 
+		if (polygons == null) return null;
+
 		// Remove points on straight lines
 		for (i = 0; i < polygons.Count; i++) {
 			polygons[i] = CleanLines(polygons[i]);
@@ -312,7 +314,7 @@ public class SectorTriangulation {
 		foreach (KeyValuePair<int, int> entry in vertexLines) {
 			if (vertexLines[entry.Key] < 2) {
 				Debug.LogError("Unclosed sector: "+sector);
-				break;
+				return null;
 			}
 		}
 

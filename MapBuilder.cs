@@ -107,7 +107,7 @@ public class MapBuilder {
 			try {
 				polygons = st.Triangulate(i);
 			} catch  {
-				Debug.Log("Exception found in "+mapname+" sector "+i);
+				//Debug.Log("Exception found in "+mapname+" sector "+i);
 			}
 			if (polygons == null) failedSectors += 1;
 		}
@@ -128,6 +128,7 @@ public class MapBuilder {
 	}
 
 	 void BuildSector(int index) {
+	 	st = new SectorTriangulation(map);
 		List<SectorPolygon> polygons = st.Triangulate(index);
 
 		if (polygons == null) return;
