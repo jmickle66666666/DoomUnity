@@ -129,7 +129,6 @@ public class SectorTriangulation {
 
 							dist = Vector2.Distance(shell[j],hPoint);
 							if (dist < minDist) {
-								//Debug.Log(dist + " newmin: " + minDist);
 								minDist = dist;
 								closestLine = j;
 								closePoint = shell[j];
@@ -141,7 +140,6 @@ public class SectorTriangulation {
 							dist = Vector2.Distance(inter, hPoint);
 							
 							if (dist < minDist) {
-								//Debug.Log(dist + " " + minDist);
 								minDist = dist;
 								closestLine = j;
 								closePoint = inter;
@@ -152,7 +150,6 @@ public class SectorTriangulation {
 
 				if (closestLine == -1) {
 					Debug.LogError("SectorIsland.Cut(): Couldn't intersect with shell?");
-					//Debug.Log(hPoint);
 					return null;
 				}
 				if (!shell[closestLine].Equals(closePoint) && (shell[(closestLine + 1) % shell.Count].x > shell[closestLine].x)) {
@@ -167,23 +164,11 @@ public class SectorTriangulation {
 				return null;
 			}
 
-			// Not Implemented
 			return shell;
 		}
 
 		private void TryCut(int closestLine, int holePointIndex) {
 			Vector2 shellPoint = shell[closestLine];
-
-			// Step 3: check if that new line intersects any holes
-			bool intersectsHoles = false;
-			for (int j = 0; j < holes.Count; j++) {
-				for (int k = 0; k < holes[j].Count; k++) {
-					int k2 = (k+1)%holes[j].Count;
-					if (LinesIntersect(holes[0][holePointIndex], shellPoint, holes[j][k], holes[j][k2])) {
-						intersectsHoles = true;
-					}
-				}
-			}
 
 			// Check if cut intersects any other shell lines
 			for (int j = 0; j < shell.Count; j++) {
@@ -193,24 +178,14 @@ public class SectorTriangulation {
 					if (LinesIntersect(shell[j], shell[j2], holes[0][holePointIndex], shellPoint)) {
 						TryCut((shell[j].x>shell[j2].x)?j:j2, holePointIndex);
 						return;
-						//intersectsHoles = true;
 					}
 				}
 			}
 
-			// if (intersectsHoles == false) {
-				MakeCut(closestLine, holePointIndex);
-			// } else {
-				// can't do it for now
-				// Debug.LogWarning("Line we used intersected holes");
-				// return;
-			// }
+			MakeCut(closestLine, holePointIndex);
 		}
 
 		private void MakeCut(int shellPointIndex, int holePointIndex) {
-
-			 // Debug.Log("Make cut "+holes[0][holePointIndex]+" "+shell[shellPointIndex]);
-
 			if (IsClockwise(holes[0]) == IsClockwise(shell)) {
 				holes[0].Reverse();
 				holePointIndex = holes[0].Count - (holePointIndex + 1);
@@ -292,7 +267,7 @@ public class SectorTriangulation {
 
 	private static bool PointOnLine(Vector2 A, Vector2 B, Vector2 C) {
 		// Check if point B is in line with points A and C
-		return Mathf.Abs(LineAngle(A, B) - LineAngle(B, C)) < 0.1f;
+		return Mathf.Abs(LineAngle(A, B) - LineAngle(B, C)) < 0.05f;
 	}
 
 	private List<List<Vector2>> TraceLines(int sector) {
@@ -331,7 +306,7 @@ public class SectorTriangulation {
 
 		if (foundUnclosedSector > 0) {
 			Debug.LogError("Unclosed sector: "+sector);
-			Debug.Log("Lonely vertexes: "+foundUnclosedSector);
+			//Debug.Log("Lonely vertexes: "+foundUnclosedSector);
 			return null;
 		}
 
@@ -346,22 +321,47 @@ public class SectorTriangulation {
 			trace.Add(line.start);
 			int next = line.end;
 			
+			
 			safe2 = 1000;
 			while ( trace[0] != next && safe2 > 0) { // be careful!!!!
 				safe2--;
+
+				// New approach: find all connected lines and pick the most acute angle
+				List<int> connectedLines = new List<int>(); // Just use the line index
+				List<bool> connectedLineFront = new List<bool>();
 				for (i = 0; i < lines.Count; i++) {
 					if (lines[i].start == next) {
-						trace.Add(next);
-						next = lines[i].end;
-						lines.RemoveAt(i);
-						break;
+						connectedLines.Add(i);
+						connectedLineFront.Add(true);
+					} else if (lines[i].end == next) {
+						connectedLines.Add(i); 
+						connectedLineFront.Add(false);
 					}
-					if (lines[i].end == next) {
-						trace.Add(next);
-						next = lines[i].start;
-						lines.RemoveAt(i);
-						break;
+				}
+
+				if (connectedLines.Count == 1) {
+					trace.Add(next);
+					next = connectedLineFront[0]?lines[connectedLines[0]].end:lines[connectedLines[0]].start;
+					lines.RemoveAt(Mathf.Abs(connectedLines[0]));
+				} else {
+					Vector2 v1 = VertexToVector2(trace[trace.Count-1]);
+					Vector2 v2 = VertexToVector2(next);
+					int pointIndex = connectedLineFront[0]?lines[connectedLines[0]].end:lines[connectedLines[0]].start;
+					Vector2 v3 = VertexToVector2(pointIndex);
+					float minAngle = Mathf.Abs(LineAngle(v1, v2) - LineAngle(v3, v2));
+					int minIndex = 0;
+					for (i = 1; i < connectedLines.Count; i++) {
+						pointIndex = connectedLineFront[i]?lines[connectedLines[i]].end:lines[connectedLines[i]].start;
+						v3 = VertexToVector2(pointIndex);
+						float newAngle = Mathf.Abs(LineAngle(v1, v2) - LineAngle(v3, v2));
+						if (newAngle < minAngle) {
+							minIndex = i;
+							minAngle = newAngle;
+						}
 					}
+					trace.Add(next);
+					next = connectedLineFront[minIndex]?lines[connectedLines[minIndex]].end:lines[connectedLines[minIndex]].start;
+					lines.RemoveAt(Mathf.Abs(connectedLines[minIndex]));
 				}
 			}
 
@@ -422,6 +422,12 @@ public class SectorTriangulation {
 
 		List<SectorIsland> output = new List<SectorIsland>();
 
+		for (int i = 0; i < polygons.Count; i++) {
+			if (!IsClockwise(polygons[i])) {
+				polygons[i].Reverse();
+			}
+		}
+
 		// If there's only one polygon, then it must be a shell.
 		if (polygons.Count == 1) {
 			SectorIsland ssi = new SectorIsland();
@@ -429,7 +435,6 @@ public class SectorTriangulation {
 			output.Add(ssi);
 			return output;
 		}
-
 		
 		SectorIsland si = new SectorIsland();
 		si.shell = polygons[0];
@@ -441,19 +446,16 @@ public class SectorTriangulation {
 			safe --;
 			bool done = false;
 
-			// Debug.Log(output.Count);
-			// Debug.Log(polygons[0].Count);
-
 			for (int i = 0; i < output.Count; i++) {
 
 				if (PointInPolygon(polygons[0][0], 
-					output[i].shell)) {
+					output[i].shell, true)) {
 					output[i].holes.Add(polygons[0]);
 					polygons.RemoveAt(0);
 					done = true;
 				} else {
 					if (output[i].holes.Count == 0) {
-						if (PointInPolygon(output[i].shell[0], polygons[0])) {
+						if (PointInPolygon(output[i].shell[0], polygons[0], true)) {
 							output[i].holes.Add(output[i].shell);
 							output[i].shell = polygons[0];
 							polygons.RemoveAt(0);
@@ -463,7 +465,6 @@ public class SectorTriangulation {
 				}
 
 				if (polygons.Count == 0) {
-					//Debug.Log(output[i].shell.Count);
 					break;
 				}
 			}
@@ -485,11 +486,19 @@ public class SectorTriangulation {
 		return output;
 	}
 
-	public static bool PointInPolygon(Vector2 point, List<Vector2> polygon) {
+	public static bool PointInPolygon(Vector2 point, List<Vector2> polygon, bool ingoreConnection = false) {
 		int crosses = 0;
+
+		if (ingoreConnection) {
+			for (int i = 0; i < polygon.Count; i++) {
+				if (point.Equals(polygon[i])) return false;
+			}
+		}
+
 		Vector2 leftPoint = new Vector2(point.x - 10000f, point.y);
 		for (int i = 0; i < polygon.Count; i++) {
 			int i2 = (i + 1) % polygon.Count;
+
 			if (LinesIntersect(leftPoint, point, polygon[i], polygon[i2])) {
 				crosses += 1;
 			}
@@ -499,6 +508,7 @@ public class SectorTriangulation {
 	}
 
 	private static bool LinesIntersect(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
+
 		return (CCW(A,C,D) != CCW(B,C,D)) && (CCW(A,B,C) != CCW(A,B,D));
 	}
 
@@ -510,7 +520,6 @@ public class SectorTriangulation {
 
 		if (PointOnLine(A, C, B)) return true;
 		if (PointOnLine(A, D, B)) return true;
-		//Debug.Log(A + " " + B + " " + C + " " + D);
 		return (CCW(A,C,D) != CCW(B,C,D) && CCW(A,B,C) != CCW(A,B,D));
 	}
 
@@ -631,8 +640,6 @@ public class SectorTriangulation {
 				}
 			}
 
-			//Debug.Log(intersects);
-
 			if (intersects == false && straightLine == false) {
 				Vector2 midpoint = new Vector2((polygon[i3].x + polygon[i1].x)/2f, (polygon[i3].y + polygon[i1].y)/2f);
 
@@ -652,11 +659,7 @@ public class SectorTriangulation {
 			}
 		}
 
-		if (safe <= 0) { 
-			// OPTIMISATION: Every time this is hit, the polygon is triangulated but we didn't catch it had finished
-			// If we can succeessfully detect when it is done it'll hit this less and triangulation will be faster
-			Debug.LogWarning("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
-		}
+
 
 		if (!IsClockwise(polygon)) {
 			output.triangles.Reverse();
@@ -664,7 +667,12 @@ public class SectorTriangulation {
 
 		output.points = polygon;
 
-		// System.IO.File.WriteAllText("outputtriangles.json",JsonUtility.ToJson(output, true));
+		if (safe <= 0) { 
+			// OPTIMISATION: Every time this is hit, the polygon is triangulated but we didn't catch it had finished
+			// If we can succeessfully detect when it is done it'll hit this less and triangulation will be faster
+			// Edit: i think we don't hit this any more
+			Debug.LogWarning("EarClip: while loop broke safety net. Clipped Indexes :" + clippedIndexes.Count + " polygonCount: " + polygonCount);
+		}
 
 		return output;
 	}
@@ -676,10 +684,10 @@ public class SectorTriangulation {
 			count += polygon[i].x * polygon[i2].y - polygon[i2].x * polygon[i].y;
 		}
 
-		return (count < 0);
+		return (count <= 0);
 	}
 
-	private bool IsClockwise(Vector2 A, Vector2 B, Vector2 C) {
+	private static bool IsClockwise(Vector2 A, Vector2 B, Vector2 C) {
 		float count = 0;
 		count += (B.x - A.x) * (B.y - A.y);
 		count += (C.x - B.x) * (C.y - B.y);
