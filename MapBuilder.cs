@@ -31,6 +31,8 @@ public class MapBuilder {
 
 	private string skyName;
 
+	private SectorTriangulation st;
+
 	public  int GetIndexOfThing(int thingType) {
 		for (int i = map.things.Count - 1; i >= 0; i--) {
 			if (map.things[i].type == thingType) {
@@ -60,6 +62,7 @@ public class MapBuilder {
 		skyMaterial.SetTexture("_Palette", paletteLookup);
 		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
 
+		st = new SectorTriangulation(map);
 
 		map = new MapData(wad, mapname);
 		levelObject = new GameObject(mapname);
@@ -81,6 +84,10 @@ public class MapBuilder {
 			BuildSector(i);	
 		}
 
+		// BuildLine(335);
+
+		// BuildSector(0);
+
 		// List of all things that haven't been placed in a sector
 		if (unclaimedThings.Count > 0) {
 			for (int i = 0; i < unclaimedThings.Count; i++) {
@@ -88,11 +95,23 @@ public class MapBuilder {
 			}
 		}
 
-		// BuildLine(335);
-
-		// BuildSector(24);
-
 		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
+	}
+
+	public int TestMap(WadFile wad, string mapname) {
+		map = new MapData(wad, mapname);
+		st = new SectorTriangulation(map);
+		int failedSectors = 0;
+		for (int i = 0; i < map.sectors.Count; i++) {
+			List<SectorPolygon> polygons = null;
+			try {
+				polygons = st.Triangulate(i);
+			} catch  {
+				Debug.Log("Exception found in "+mapname+" sector "+i);
+			}
+			if (polygons == null) failedSectors += 1;
+		}
+		return failedSectors;
 	}
 
 	public void BuildMap(string wadpath, string mapname) {
@@ -109,7 +128,6 @@ public class MapBuilder {
 	}
 
 	 void BuildSector(int index) {
-		SectorTriangulation st = new SectorTriangulation(map);
 		List<SectorPolygon> polygons = st.Triangulate(index);
 
 		if (polygons == null) return;

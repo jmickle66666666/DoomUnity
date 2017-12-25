@@ -29,12 +29,14 @@ public class CommandlineArguments {
 	public string iwad;
 	public string warp;
 	public string soundfont;
+	public bool runTests;
 
 	public CommandlineArguments() {
 		pwads = new List<string>();
 		iwad = "";
 		warp = "";
 		soundfont = "";
+		runTests = false;
 	}
 }
 
@@ -111,8 +113,6 @@ public class GameSetup : MonoBehaviour {
 
 		SetupTitleCamera();
 
-		
-
 		if (args.iwad == "") { // Run IWAD selection tool
 
 			foundIwads = new List<IwadInfo>();
@@ -143,8 +143,6 @@ public class GameSetup : MonoBehaviour {
 				}
 			}
 		}
-
-
 		
 	}
 
@@ -220,11 +218,25 @@ public class GameSetup : MonoBehaviour {
 			if (arguments[i] == "-soundfont") {
 				args.soundfont = arguments[i+1];
 			}
+
+			if (arguments[i] == "-test") {
+				args.runTests = true;
+			}
 		}
 	}
 
 	void StartGame(IwadInfo info) {
 		mapBuilder = new MapBuilder();
+
+		if (args.runTests) {
+			Debug.Log("Running tests...");
+			foreach (KeyValuePair<string, MapInfo> entry in mapinfo) {
+				int errors = mapBuilder.TestMap(wad, entry.Key);
+				if (errors > 0) {
+					Debug.Log("Failed sectors in "+entry.Key+": "+errors);
+				}
+			}
+		}
 
 		if (args.warp == "") {
 			title.Build(wad);
