@@ -38,7 +38,7 @@ SubShader {
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.depth = length(WorldSpaceViewDir(v.vertex));
+                o.depth = o.vertex.z;
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 return o;
             }
