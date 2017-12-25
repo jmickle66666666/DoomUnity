@@ -119,7 +119,7 @@ public class SectorTriangulation {
 				// point to M on this ray.
 				float minDist = 100000f;
 				float dist;
-				Vector2 closePoint;
+				Vector2 closePoint = new Vector2();
 				for (int j = 0; j < shell.Count; j++) {
 					int j2 = (j + 1) % shell.Count;
 
@@ -155,35 +155,11 @@ public class SectorTriangulation {
 					//Debug.Log(hPoint);
 					return null;
 				}
-
-				Vector2 shellPoint = shell[closestLine];
-				Vector2 shellPoint2 = shell[(closestLine+1)%shell.Count];
-
-				// Step 3: check if that new line intersects any holes
-				bool topIntersectsHoles = false;
-				bool botIntersectsHoles = false;
-				for (int j = 0; j < holes.Count; j++) {
-					for (int k = 0; k < holes[j].Count; k++) {
-						int k2 = (k+1)%holes[j].Count;
-						if (LinesIntersect(hPoint, shellPoint, holes[j][k], holes[j][k2])) {
-							topIntersectsHoles = true;
-						} 
-						if (LinesIntersect(hPoint, shellPoint2, holes[j][k], holes[j][k2])) {
-							botIntersectsHoles = true;
-						} 
-					}
+				if (!shell[closestLine].Equals(closePoint) && (shell[(closestLine + 1) % shell.Count].x > shell[closestLine].x)) {
+					closestLine = (closestLine + 1) % shell.Count;
 				}
-
-				if (topIntersectsHoles == false) {
-					MakeCut(0, closestLine, rIndex);
-				} else if (botIntersectsHoles == false) {
-					MakeCut(0, (closestLine+1) % shell.Count, rIndex);
-				} else {
-					// can't do it for now
-					Debug.LogWarning("Line we used intersected holes");
-					//Debug.Log(hPoint + " " + shellPoint);
-					return null;
-				}
+				TryCut(closestLine, rIndex);
+				
 			}
 
 			if (safe <= 0) {
@@ -195,19 +171,58 @@ public class SectorTriangulation {
 			return shell;
 		}
 
-		private void MakeCut(int holeIndex, int shellPointIndex, int holePointIndex) {
-			if (IsClockwise(holes[holeIndex]) == IsClockwise(shell)) {
-				holes[holeIndex].Reverse();
-				holePointIndex = holes[holeIndex].Count - (holePointIndex + 1);
+		private void TryCut(int closestLine, int holePointIndex) {
+			Vector2 shellPoint = shell[closestLine];
+
+			// Step 3: check if that new line intersects any holes
+			bool intersectsHoles = false;
+			for (int j = 0; j < holes.Count; j++) {
+				for (int k = 0; k < holes[j].Count; k++) {
+					int k2 = (k+1)%holes[j].Count;
+					if (LinesIntersect(holes[0][holePointIndex], shellPoint, holes[j][k], holes[j][k2])) {
+						intersectsHoles = true;
+					}
+				}
+			}
+
+			// Check if cut intersects any other shell lines
+			for (int j = 0; j < shell.Count; j++) {
+				int j2 = (j + 1)%shell.Count;
+
+				if (!shell[j].Equals(shell[closestLine]) && !shell[j2].Equals(closestLine)) {
+					if (LinesIntersect(shell[j], shell[j2], holes[0][holePointIndex], shellPoint)) {
+						TryCut((shell[j].x>shell[j2].x)?j:j2, holePointIndex);
+						return;
+						//intersectsHoles = true;
+					}
+				}
+			}
+
+			// if (intersectsHoles == false) {
+				MakeCut(closestLine, holePointIndex);
+			// } else {
+				// can't do it for now
+				// Debug.LogWarning("Line we used intersected holes");
+				// return;
+			// }
+		}
+
+		private void MakeCut(int shellPointIndex, int holePointIndex) {
+
+			 // Debug.Log("Make cut "+holes[0][holePointIndex]+" "+shell[shellPointIndex]);
+
+			if (IsClockwise(holes[0]) == IsClockwise(shell)) {
+				holes[0].Reverse();
+				holePointIndex = holes[0].Count - (holePointIndex + 1);
 			}
 
 			Vector2 sp = new Vector2(shell[shellPointIndex].x, shell[shellPointIndex].y);
-			for (int i = 0; i < holes[holeIndex].Count; i++) {
-				shell.Insert(shellPointIndex + i, holes[holeIndex][(i+holePointIndex) % holes[holeIndex].Count]);
+			for (int i = 0; i < holes[0].Count; i++) {
+				shell.Insert(shellPointIndex + i, holes[0][(i+holePointIndex) % holes[0].Count]);
 			}
-			shell.Insert(shellPointIndex + holes[holeIndex].Count, holes[holeIndex][holePointIndex]);
+			shell.Insert(shellPointIndex + holes[0].Count, holes[0][holePointIndex]);
 			shell.Insert(shellPointIndex, sp);
-			holes.RemoveAt(holeIndex);
+			holes.RemoveAt(0);
 		}
 
 	}
@@ -306,11 +321,18 @@ public class SectorTriangulation {
 			}
 		}
 
+		int foundUnclosedSector = 0;
+
 		foreach (KeyValuePair<int, int> entry in vertexLines) {
 			if (vertexLines[entry.Key] < 2) {
-				Debug.LogError("Unclosed sector: "+sector);
-				return null;
+				foundUnclosedSector += 1;
 			}
+		}
+
+		if (foundUnclosedSector > 0) {
+			Debug.LogError("Unclosed sector: "+sector);
+			Debug.Log("Lonely vertexes: "+foundUnclosedSector);
+			return null;
 		}
 
 		while (lines.Count > 0 && safe1 > 0) { // be careful
@@ -552,9 +574,8 @@ public class SectorTriangulation {
 		int polygonCount = polygon.Count;
 		int i = 0;
 		int i1, i2, i3;
-		int safe = 500;
+		int safe = 5000;
 		while (clippedIndexes.Count < polygonCount - 2 && safe >= 0) { // be careful!!!
-			safe -= 1;
 
 			i1 = i % polygonCount;
 
@@ -627,6 +648,7 @@ public class SectorTriangulation {
 
 			if (clipped == false) {
 				i += 1;
+				safe -= 1;
 			}
 		}
 
@@ -641,6 +663,9 @@ public class SectorTriangulation {
 		}
 
 		output.points = polygon;
+
+		// System.IO.File.WriteAllText("outputtriangles.json",JsonUtility.ToJson(output, true));
+
 		return output;
 	}
 
