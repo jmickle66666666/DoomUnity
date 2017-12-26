@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using WadTools;
 
 /*
 Used to build a mesh from a level, and apply the correct textures and offsets etc.

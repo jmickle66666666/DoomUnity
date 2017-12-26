@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WadTools;
 
 // This is attached to a quad, placed in front of a camera on a new layer.
 // It just shows the TITLEPIC graphic on the quad, used for main menu backgrounds before a level is loaded.

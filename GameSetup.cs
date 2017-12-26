@@ -6,6 +6,7 @@ using System.IO;
 using UnityMidi;
 using AudioSynthesis.Midi;
 using AudioSynthesis.Bank;
+using WadTools;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

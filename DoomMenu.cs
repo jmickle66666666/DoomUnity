@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using WadTools;
 
 /*
 This class builds the menu UI, and is controlled externally from GameSetup.cs
