@@ -313,7 +313,7 @@ public class DoomGraphic {
 		return output;
 	}
 
-	public static Texture2D BuildPatch(string name, WadFile wad, bool ignoreCache = false) {
+	public static Texture2D BuildPatch(string name, WadFile wad, bool ignoreCache = false, bool trueColor = false) {
 
 		if (!wad.Contains(name.ToUpper())) {
 			return null;
@@ -326,8 +326,8 @@ public class DoomGraphic {
 				return patchCache[name];
 			} 
 		}
-
 		Texture2D output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToRenderMap();
+		if (trueColor) output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToTexture2D(new Palette(wad.GetLump("PLAYPAL")));
 		
 		if (!ignoreCache) {
 			patchCache.Add(name, output);
@@ -337,8 +337,8 @@ public class DoomGraphic {
 
 	}
 
-	public static Texture2D BuildPatch(int index, PatchTable pnames, WadFile wad) {
-		return BuildPatch(pnames.patches[index], wad);
+	public static Texture2D BuildPatch(int index, PatchTable pnames, WadFile wad, bool trueColor = false) {
+		return BuildPatch(pnames.patches[index], wad, false, trueColor);
 	}
 
 	public static Texture2D BuildPatch(int index, WadFile wad) {
@@ -346,12 +346,12 @@ public class DoomGraphic {
 		return BuildPatch(pnames.patches[index], wad);
 	}
 
-	public static Texture2D BuildTexture(string name, WadFile wad) {
+	public static Texture2D BuildTexture(string name, WadFile wad, bool trueColor = false) {
 		TextureTable textures = new TextureTable(wad.GetLump("TEXTURE1"));
-		return BuildTexture(name, wad, textures);
+		return BuildTexture(name, wad, textures, trueColor);
 	}
 
-	public static Texture2D BuildTexture(string name, WadFile wad, TextureTable textures) {
+	public static Texture2D BuildTexture(string name, WadFile wad, TextureTable textures, bool trueColor = false) {
 		if (textureCache == null) textureCache = new Dictionary<string, Texture2D>();
 
 		if (textureCache.ContainsKey(name)) {
@@ -366,7 +366,7 @@ public class DoomGraphic {
 		Texture2D output = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
 		for (int i = 0; i < texture.patches.Count; i++) {
 			DoomPatch p = texture.patches[i];
-			Texture2D patch2d = DoomGraphic.BuildPatch(p.patchIndex, pnames, wad);
+			Texture2D patch2d = DoomGraphic.BuildPatch(p.patchIndex, pnames, wad, trueColor);
 
 			if (patch2d == null) return null;
 
