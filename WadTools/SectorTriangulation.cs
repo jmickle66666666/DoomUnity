@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TriangleNet.Geometry;
+using TriangleNet;
 
 /*
 This handles triangulating a sector from a map.
@@ -243,7 +245,8 @@ namespace WadTools {
 			List<SectorPolygon> output = new List<SectorPolygon>();
 
 			for (i = 0; i < cutPolygons.Count; i++) {
-				SectorPolygon sp = EarClip(cutPolygons[i]);
+				//SectorPolygon sp = EarClip(cutPolygons[i]);
+				SectorPolygon sp = LibTriangulation(cutPolygons[i]);
 				if (sp != null) output.Add(sp);
 			}
 			
@@ -252,6 +255,61 @@ namespace WadTools {
 			if (benchmark) {
 				Debug.Log("Triangulation time: "+(Time.realtimeSinceStartup - time));
 			}
+
+			return output;
+		}
+
+		private SectorPolygon LibTriangulation(List<Vector2> polygon) {
+
+			// Convert Vector2s to TriangleNet.Geometry.Vertex
+			// List<TriangleNet.Data.Vertex> triVerts = new List<TriangleNet.Data.Vertex>();
+
+			// for (int i = 0; i < polygon.Count; i++) {
+			// 	triVerts.Add(new TriangleNet.Data.Vertex(polygon[i].x,polygon[i].y));
+			// }
+
+			// Build TriangleNet.Geometry.Polygon
+
+
+			// Create TriangleNet.Geometry.Mesh from polygon
+			// Convert to SectorPolygon
+
+
+			InputGeometry ingeo = new InputGeometry();
+
+			for (int i = 0; i < polygon.Count; i++) {
+				ingeo.AddPoint(polygon[i].x,polygon[i].y);
+			}
+
+
+			Behavior behavior = new Behavior(true);
+			behavior.NoBisect = 2;
+			behavior.Convex = false;
+			behavior.ConformingDelaunay = true;
+			behavior.NoHoles = false;
+			behavior.Poly = true;
+			//behavior.Algorithm = TriangulationAlgorithm.Incremental;
+
+			TriangleNet.Mesh mesh = new TriangleNet.Mesh(behavior);
+			mesh.Triangulate(ingeo);
+			//mesh.Smooth();
+
+			//mesh.Delaunay();
+
+			SectorPolygon output = new SectorPolygon();
+			var tris = mesh.Triangles;
+			foreach (var tri in tris) {
+				output.triangles.Add(tri.P0);
+				output.triangles.Add(tri.P1);
+				output.triangles.Add(tri.P2);
+			}
+			var points = mesh.Vertices;
+			foreach (var p in points) {
+				output.points.Add(new Vector2((float)p.x, (float)p.y));
+			}
+
+			output.triangles.Reverse();
+			// output.points.Reverse();
 
 			return output;
 		}
