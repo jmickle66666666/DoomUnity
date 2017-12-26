@@ -10,10 +10,8 @@ Properties {
 }
 
 SubShader {
-    Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Opaque"}
+    Tags {"Queue"="Geometry" "IgnoreProjector"="True" "RenderType"="Opaque"}
     LOD 200
-
-    Blend SrcAlpha OneMinusSrcAlpha 
 
     Pass {  
         CGPROGRAM
@@ -25,7 +23,6 @@ SubShader {
             struct v2f {
                 float4 vertex : SV_POSITION;
                 float2 texcoord : TEXCOORD0;
-                float depth : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -38,21 +35,19 @@ SubShader {
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.depth = o.vertex.z;
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float depth = saturate(1.0 - (i.depth) * 0.1);
+                float depth = saturate(i.vertex.z);
                 float li = (_Brightness * 2.0) - (224.0 / 256.0);
                 li = saturate(li);
                 float maxlight = (_Brightness * 2.0) - (40.0 / 256.0);
                 maxlight = saturate(maxlight);
                 float dscale = depth * 0.4;
                 float odepth = saturate(li + dscale) + 0.01;
-
 
 
                 float indexCol = tex2D(_MainTex, i.texcoord).r;
