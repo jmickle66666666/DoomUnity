@@ -84,6 +84,26 @@ namespace WadTools {
 				holes = orderedHoles;
 			}
 
+			// Convert to polygon for poly2tri lib
+			public Polygon ToPolygon() {
+				//OrderHoles();
+				if (!IsClockwise(shell)) shell.Reverse();
+				Polygon output = new Polygon();
+				output.outside = v2to3(shell);
+				for (int i = 0; i < holes.Count; i++) {
+					output.holes.Add(v2to3(holes[i]));
+				}
+				return output;
+			}
+
+			private List<Vector3> v2to3(List<Vector2> input) {
+				List<Vector3> output = new List<Vector3>();
+				for (int i = 0; i < input.Count; i++) {
+					output.Add(new Vector3(input[i].x, 0f, input[i].y));
+				}
+				return output;
+			}
+
 			public int RightmostVertex(List<Vector2> polygon) {
 				int output = 0;
 				for (int i = 1; i < polygon.Count; i++) {
@@ -211,7 +231,7 @@ namespace WadTools {
 			this.map = map;
 		}
 
-		public List<SectorPolygon> Triangulate(int sector, bool benchmark = false) {
+		public List<Polygon> Triangulate(int sector, bool benchmark = false) {
 
 			float time = 0f;
 			if (benchmark) {
@@ -232,28 +252,12 @@ namespace WadTools {
 			if (polygons.Count == 0) return null;
 			List<SectorIsland> islands = BuildIslands(polygons);
 
-			// Cut islands
-			List<List<Vector2>> cutPolygons = new List<List<Vector2>>();
+			List<Polygon> poly2tris = new List<Polygon>();
 			for (i = 0; i < islands.Count; i++) {
-				List<Vector2> cut = islands[i].Cut();
-				if (cut != null) cutPolygons.Add(cut);	
+				poly2tris.Add(islands[i].ToPolygon());
 			}
-
-			// Ear clip
-			List<SectorPolygon> output = new List<SectorPolygon>();
-
-			for (i = 0; i < cutPolygons.Count; i++) {
-				SectorPolygon sp = EarClip(cutPolygons[i]);
-				if (sp != null) output.Add(sp);
-			}
-			
-			// Output
-
-			if (benchmark) {
-				Debug.Log("Triangulation time: "+(Time.realtimeSinceStartup - time));
-			}
-
-			return output;
+						
+			return poly2tris;
 		}
 
 		private List<Vector2> CleanLines(List<Vector2> polygon) {

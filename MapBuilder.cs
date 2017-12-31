@@ -103,15 +103,15 @@ public class MapBuilder {
 		map = new MapData(wad, mapname);
 		st = new SectorTriangulation(map);
 		int failedSectors = 0;
-		for (int i = 0; i < map.sectors.Count; i++) {
-			List<SectorPolygon> polygons = null;
-			try {
-				polygons = st.Triangulate(i);
-			} catch  {
-				//Debug.Log("Exception found in "+mapname+" sector "+i);
-			}
-			if (polygons == null) failedSectors += 1;
-		}
+		// for (int i = 0; i < map.sectors.Count; i++) {
+		// 	List<SectorPolygon> polygons = null;
+		// 	try {
+		// 		polygons = st.Triangulate(i);
+		// 	} catch  {
+		// 		//Debug.Log("Exception found in "+mapname+" sector "+i);
+		// 	}
+		// 	if (polygons == null) failedSectors += 1;
+		// }
 		return failedSectors;
 	}
 
@@ -130,19 +130,19 @@ public class MapBuilder {
 
 	 void BuildSector(int index) {
 	 	st = new SectorTriangulation(map);
-		List<SectorPolygon> polygons = st.Triangulate(index);
+		List<Polygon> polygons = st.Triangulate(index);
 
 		if (polygons == null) return;
 
-		for (int i = 0; i < polygons.Count; i++) {
-			for (int t = 0; t < unclaimedThings.Count; t++) {
-				if (polygons[i].ThingInside(map.things[unclaimedThings[t]])) {
-					thingSectors.Add(unclaimedThings[t], map.sectors[index]);
-					unclaimedThings.RemoveAt(t);
-					t-=1;
-				}
-			}
-		}
+		// for (int i = 0; i < polygons.Count; i++) {
+		// 	for (int t = 0; t < unclaimedThings.Count; t++) {
+		// 		if (polygons[i].ThingInside(map.things[unclaimedThings[t]])) {
+		// 			thingSectors.Add(unclaimedThings[t], map.sectors[index]);
+		// 			unclaimedThings.RemoveAt(t);
+		// 			t-=1;
+		// 		}
+		// 	}
+		// }
 
 		int floorHeight = map.sectors[index].floorHeight;
 		int ceilingHeight = map.sectors[index].ceilingHeight;
@@ -152,18 +152,26 @@ public class MapBuilder {
 
 		for (int i = 0; i < polygons.Count; i++) {
 
-			Mesh mesh = new Mesh();
-			Vector3[] vertices = polygons[i].PointsToVector3(floorHeight).ToArray();
-			int[] tris = polygons[i].triangles.ToArray();
-			Vector2[] uvs = polygons[i].points.ToArray();
+			Mesh mesh = Poly2Mesh.CreateMesh(polygons[i]);
+			Vector3[] vertices = mesh.vertices;
+			// int[] tris = polygons[i].triangles.ToArray();
+			Vector2[] uvs = mesh.uv;
 
 			for (int j = 0; j < uvs.Length; j++) {
-				uvs[j] /= 64f;
+				uvs[j] = new Vector2(vertices[j].x / 64f, vertices[j].z / 64f);
+			}
+
+			for (int j = 0; j < vertices.Length; j++) {
+				vertices[j].y = floorHeight;
 			}
 
 			mesh.vertices = vertices;
-			mesh.triangles = tris;
+			// mesh.triangles = tris;
 			mesh.uv = uvs;
+
+
+			mesh.RecalculateNormals();
+			mesh.RecalculateBounds();
 
 			GameObject newObj = new GameObject();
 			Material mat = doomMaterial;
@@ -180,27 +188,27 @@ public class MapBuilder {
 			newObj.AddComponent<MeshFilter>().mesh = mesh;
 			newObj.transform.parent = levelObject.transform;
 
-			mesh = new Mesh();
-			Array.Reverse(tris);
-			for (int j = 0; j < vertices.Length; j++) {
-				vertices[j].y = ceilingHeight;
-			}
-			mesh.vertices = vertices;
-			mesh.triangles = tris;
-			mesh.uv = uvs;
+			// mesh = new Mesh();
+			// Array.Reverse(tris);
+			// for (int j = 0; j < vertices.Length; j++) {
+			// 	vertices[j].y = ceilingHeight;
+			// }
+			// mesh.vertices = vertices;
+			// mesh.triangles = tris;
+			// mesh.uv = uvs;
 
-			newObj = new GameObject();
-			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
-			mr = newObj.AddComponent<MeshRenderer>();
-			if (map.sectors[index].ceilingTexture != "F_SKY1") {
-				mr.material = doomMaterial;
-				mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].ceilingTexture));
-				mr.material.SetFloat("_Brightness", brightness);
-			} else {
-				mr.material = skyMaterial;
-			}
-			newObj.AddComponent<MeshFilter>().mesh = mesh;
-			newObj.transform.parent = levelObject.transform;
+			// newObj = new GameObject();
+			// newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+			// mr = newObj.AddComponent<MeshRenderer>();
+			// if (map.sectors[index].ceilingTexture != "F_SKY1") {
+			// 	mr.material = doomMaterial;
+			// 	mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].ceilingTexture));
+			// 	mr.material.SetFloat("_Brightness", brightness);
+			// } else {
+			// 	mr.material = skyMaterial;
+			// }
+			// newObj.AddComponent<MeshFilter>().mesh = mesh;
+			// newObj.transform.parent = levelObject.transform;
 
 		}
 
