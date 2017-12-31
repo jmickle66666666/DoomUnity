@@ -5,14 +5,12 @@ Shader "Doom/Sky" {
 Properties {
     _RenderMap ("Render Map", 2D) = "white" {}
     _Palette ("Palette", 2D) = "white" {}
-    _CameraAngle ("Camera Angle", float) = 1.0
+    _CameraAngle ("Camera Angle", float) = 0.0
 }
 
 SubShader {
-    Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Opaque"}
+    Tags {"Queue"="Geometry" "IgnoreProjector"="True" "RenderType"="Opaque"}
     LOD 200
-
-    Blend SrcAlpha OneMinusSrcAlpha 
 
     Pass {  
         CGPROGRAM
@@ -40,9 +38,9 @@ SubShader {
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 texcoord = i.vertex / _ScreenParams.xy;
+                float2 texcoord = -i.vertex / _ScreenParams.zw;
                 texcoord.x += (_CameraAngle * (3.0/360));
-                texcoord.y = -texcoord.y * (_RenderMap_TexelSize.z / _RenderMap_TexelSize.w) * 0.5;
+                texcoord.y = texcoord.y * (_RenderMap_TexelSize.z / _RenderMap_TexelSize.w) * 0.5;
                 float indexCol = tex2D(_RenderMap, texcoord).r;
                 float4 col = tex2D(_Palette, float2(indexCol + (.5/256.0), 0.0));
                 return col;
