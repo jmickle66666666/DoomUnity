@@ -101,7 +101,7 @@ public class DoomMenu {
 	private void BuildCursor(GameObject parent) {
 		cursorAnim1 = DoomGraphic.BuildSprite("M_SKULL1", GameSetup.wad);
 		cursorAnim2 = DoomGraphic.BuildSprite("M_SKULL2", GameSetup.wad);
-		cursorImage = AddPatch(65, 83, "M_SKULL1", parent);
+		cursorImage = AddPatch(64, 72, "M_SKULL1", parent);
 	}
 
 	private Image AddPatch(int x, int y, string patchName, GameObject parent = null) {
@@ -143,14 +143,14 @@ public class DoomMenu {
 		audioSource.PlayOneShot(soundCursor);
 		currentItem -= 1;
 		if (currentItem < 0) currentItem = itemCount - 1;
-		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (83 +(currentItem * 16)) );
+		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (67 +(currentItem * 16)) );
 	}
 
 	public void Down() {
 		audioSource.PlayOneShot(soundCursor);
 		currentItem += 1;
 		if (currentItem == itemCount) currentItem = 0;
-		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (83 +(currentItem * 16)) );
+		cursorImage.rectTransform.anchoredPosition = new Vector2(64,  - (67 +(currentItem * 16)) );
 	}
 
 	public void Update(float timer) {
