@@ -18,6 +18,7 @@ public class IwadInfo {
 	public string mapnameFormat;
 	public string titleMusic;
 	public string mapInfo;
+	public string multigen;
 }
 
 [System.Serializable]
@@ -175,6 +176,10 @@ public class GameSetup : MonoBehaviour {
 
 		for (int i = 0; i < args.pwads.Count; i++) {
 			wad.Merge(args.pwads[i]);
+		}
+
+		if (info.multigen != null) {
+			MultigenParser multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
 		}
 
 		StartGame(info);

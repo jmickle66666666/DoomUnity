@@ -5,7 +5,8 @@
 			"filenames": ["DOOM2.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS"
+			"mapInfo":"DOOMMAPS",
+			"multigen":"D2SGEN"
 		},
 		{ 
 			"name": "Doom",
@@ -25,14 +26,16 @@
 			"filenames": ["TNT.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS"
+			"mapInfo":"DOOMMAPS",
+			"multigen":"D2SGEN"
 		},
 		{ 
 			"name": "The Plutonia Experiment",
 			"filenames": ["PLUTONIA.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"PLUTMAPS"
+			"mapInfo":"PLUTMAPS",
+			"multigen":"D2SGEN"
 		},
 		{ 
 			"name": "FreeDoom: Phase 1",
@@ -45,7 +48,8 @@
 			"filenames": ["freedoom2.wad"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS"
+			"mapInfo":"DOOMMAPS",
+			"multigen":"D2SGEN"
 		}
 	]
 }
