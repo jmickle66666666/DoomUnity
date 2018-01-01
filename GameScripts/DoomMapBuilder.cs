@@ -27,6 +27,7 @@ public class DoomMapBuilder {
 	private Texture2D colormapLookup;
 	private Material doomMaterial;
 	public static Material skyMaterial;
+	private Material spriteMaterial;
 
 	private string skyName = "SKY1";
 
@@ -95,6 +96,39 @@ public class DoomMapBuilder {
 		}
 
 		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
+	}
+
+	public void BuildTestSprites(MultigenParser multigen) {
+
+		spriteMaterial = new Material(Shader.Find("Doom/Texture"));
+		spriteMaterial.SetTexture("_Palette", paletteLookup);
+		spriteMaterial.SetTexture("_Colormap", colormapLookup);
+
+		for (int i = 0; i < map.things.Count; i++) {
+			MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
+			if (mobj != null) {
+				GameObject newObj = new GameObject(mobj.name);
+				newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
+				newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
+				newObj.transform.parent = levelObject.transform;
+
+				newObj.AddComponent<BillboardSprite>();
+
+				string spriteName = multigen.states[mobj.data["spawnstate"]].spriteName + multigen.states[mobj.data["spawnstate"]].spriteFrame;
+				Sprite mobjSprite = null;
+				if (wad.Contains(spriteName + "0")) {
+					mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "0")).ToSprite();
+				} else if (wad.Contains(spriteName + "1")) {
+					mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "1")).ToSprite();
+				}
+
+				if (mobjSprite != null) {
+					SpriteRenderer mobjSr = newObj.AddComponent<SpriteRenderer>();
+					mobjSr.sprite = mobjSprite;
+					mobjSr.material = spriteMaterial;
+				}
+			}
+		}
 	}
 
 	public int TestMap(WadFile wad, string mapname) {

@@ -15,11 +15,13 @@ public class MultigenState {
 public class MultigenObject {
 	public Dictionary<string, string> data;
 	public static Dictionary<string, string> defaultData;
+	public string name;
 
-	public MultigenObject() {
+	public MultigenObject(string name) {
 		if (defaultData != null) {
 			data = new Dictionary<string, string>(defaultData);
 		}
+		this.name = name;
 	}
 }
 
@@ -54,6 +56,15 @@ public class MultigenParser {
 		"raisestate"
 	};
 
+	public MultigenObject GetObjectByDoomedNum(int doomednum) {
+		foreach (KeyValuePair<string, MultigenObject> entry in objects) {
+			if (entry.Value.data["doomednum"] == doomednum.ToString()) {
+				return entry.Value;
+			}
+		}
+		return null;
+	}
+
 	public MultigenParser(string data) {
 		objects = new Dictionary<string, MultigenObject>();
 		states = new Dictionary<string, MultigenState>();
@@ -75,13 +86,13 @@ public class MultigenParser {
 				i++;
 				if (tokens[i] == "+") {
 					currentObject = NewUniqueName();
-					objects.Add(currentObject, new MultigenObject());
+					objects.Add(currentObject, new MultigenObject(currentObject));
 				} else if (tokens[i] == "DEFAULT") {
 					currentObject = "DEFAULT";
 					MultigenObject.defaultData = new Dictionary<string, string>();
 				} else {
 					currentObject = tokens[i];
-					objects.Add(currentObject, new MultigenObject());
+					objects.Add(currentObject, new MultigenObject(currentObject));
 				}
 
 			} else if (IsFieldName(tokens[i])) {

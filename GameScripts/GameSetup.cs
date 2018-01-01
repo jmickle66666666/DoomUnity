@@ -79,6 +79,7 @@ public class GameSetup : MonoBehaviour {
 
 	private bool iwadSelector = false;
 	private List<IwadInfo> foundIwads;
+	private MultigenParser multigen;
 
 	private MidiPlayer midiPlayer;
 	private Dictionary<string,MapInfo> mapinfo;
@@ -183,7 +184,7 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		if (info.multigen != null) {
-			MultigenParser multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
+			multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
 		}
 
 		StartGame(info);
@@ -306,6 +307,9 @@ public class GameSetup : MonoBehaviour {
 		CreatePlayer();
 		if (midiEnabled) {
 			PlayMidi(mapinfo[currentMap].music);
+		}
+		if (multigen != null) {
+			mapBuilder.BuildTestSprites(multigen);
 		}
 	}
 
