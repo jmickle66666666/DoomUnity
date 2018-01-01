@@ -31,6 +31,7 @@ public class CommandlineArguments {
 	public string warp;
 	public string soundfont;
 	public bool runTests;
+	public bool midi;
 
 	public CommandlineArguments() {
 		pwads = new List<string>();
