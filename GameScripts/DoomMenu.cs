@@ -91,11 +91,11 @@ public class DoomMenu {
 
 	private void BuildMenu(GameObject parent) {
 		AddPatch(94, 2, "M_DOOM", parent);
-		AddPatch(97, 72 + 16, "M_NGAME", parent);
-		AddPatch(97, 72 + 32, "M_OPTION", parent);
-		AddPatch(97, 72 + 48, "M_LOADG", parent);
-		AddPatch(97, 72 + 64, "M_SAVEG", parent);
-		AddPatch(97, 72 + 80, "M_QUITG", parent);
+		AddPatch(97, 72 + 0, "M_NGAME", parent);
+		AddPatch(97, 72 + 16, "M_OPTION", parent);
+		AddPatch(97, 72 + 32, "M_LOADG", parent);
+		AddPatch(97, 72 + 48, "M_SAVEG", parent);
+		AddPatch(97, 72 + 64, "M_QUITG", parent);
 	}
 
 	private void BuildCursor(GameObject parent) {
