@@ -8,7 +8,7 @@ namespace WadTools {
 		private byte[] data;
 		private string name;
 
-		private int formatNumber;
+		// private int formatNumber;
 		private int sampleRate;
 		private int sampleCount;
 		private byte[] sampleData;
@@ -17,7 +17,7 @@ namespace WadTools {
 			data = lumpData;
 			name = lumpName;
 
-			formatNumber = (int) BitConverter.ToInt16(data, 0);
+			// formatNumber = (int) BitConverter.ToInt16(data, 0);
 			sampleRate = (int) BitConverter.ToInt16(data, 2);
 			sampleCount = (int) BitConverter.ToInt32(data, 4) - 32;
 

@@ -20,8 +20,6 @@ public class DoomMapBuilder {
 	public  float SCALE = 1f/64f;
 	public  float PLAYER_HEIGHT = 56f;
 
-	private bool statusbarShown = true;
-
 	public  Dictionary<int, Sector> thingSectors;
 	private  List<int> unclaimedThings;
 
@@ -166,7 +164,6 @@ public class DoomMapBuilder {
 			mesh.uv = uvs;
 
 			GameObject newObj = new GameObject();
-			Material mat = doomMaterial;
 			MeshRenderer mr = newObj.AddComponent<MeshRenderer>();
 
 			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
@@ -233,7 +230,6 @@ public class DoomMapBuilder {
 
 		float frontBrightness = map.sectors[frontSide.sector].lightLevel /256f;
 		float backBrightness = 1f;
-		Color btint = new Color(1f,1f,1f,1f);
 		if (backSide != null) {
 			backBrightness = map.sectors[backSide.sector].lightLevel /256f;
 		}
@@ -310,7 +306,6 @@ public class DoomMapBuilder {
 			}
 
 			// Mid textures
-			float midDiff = midTop - midBottom;
 			if (frontSide.mid != "-") {
 				offset.Set(frontOffset.x, frontOffset.y);
 				float fmidTop;

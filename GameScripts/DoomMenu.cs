@@ -58,35 +58,35 @@ public class DoomMenu {
 		BuildMenu(mainMenu);
 		BuildCursor(mainMenu);
 
-		mainMenu.active = false;
+		mainMenu.SetActive(false);
 
 		InitSounds();
 	}
 
 	// Sounds
 	private AudioClip soundActivate;
-	private AudioClip soundBackup;
-	private AudioClip soundPrompt;
+	// private AudioClip soundBackup;
+	// private AudioClip soundPrompt;
 	private AudioClip soundCursor;
-	private AudioClip soundChange;
-	private AudioClip soundInvalid;
+	// private AudioClip soundChange;
+	// private AudioClip soundInvalid;
 	private AudioClip soundDismiss;
 	private AudioClip soundChoose;
-	private AudioClip soundClear;
+	// private AudioClip soundClear;
 
 	private void InitSounds() {
 		audioSource = gameObject.AddComponent<AudioSource>();
 		audioSource.spatialBlend = 0.0f;
 
 		soundActivate = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Activate").ToAudioClip();
-		soundBackup = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Backup").ToAudioClip();
-		soundPrompt = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Prompt").ToAudioClip();
+		// soundBackup = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Backup").ToAudioClip();
+		// soundPrompt = new DoomSound(wad.GetLump("DSSWTCHN"), "Menu/Prompt").ToAudioClip();
 		soundCursor = new DoomSound(wad.GetLump("DSPSTOP"), "Menu/Cursor").ToAudioClip();
-		soundChange = new DoomSound(wad.GetLump("DSSTNMOV"), "Menu/Change").ToAudioClip();
-		soundInvalid = new DoomSound(wad.GetLump("DSOOF"), "Menu/Invalid").ToAudioClip();
+		// soundChange = new DoomSound(wad.GetLump("DSSTNMOV"), "Menu/Change").ToAudioClip();
+		// soundInvalid = new DoomSound(wad.GetLump("DSOOF"), "Menu/Invalid").ToAudioClip();
 		soundDismiss = new DoomSound(wad.GetLump("DSSWTCHX"), "Menu/Dismiss").ToAudioClip();
 		soundChoose = new DoomSound(wad.GetLump("DSPISTOL"), "Menu/Choose").ToAudioClip();
-		soundClear = new DoomSound(wad.GetLump("DSSWTCHX"), "Menu/Clear").ToAudioClip();
+		// soundClear = new DoomSound(wad.GetLump("DSSWTCHX"), "Menu/Clear").ToAudioClip();
 	}
 
 	private void BuildMenu(GameObject parent) {
@@ -136,7 +136,7 @@ public class DoomMenu {
 	}
 
 	public void Toggle() {
-		mainMenu.active = !mainMenu.active;
+		mainMenu.SetActive(!mainMenu.activeSelf);
 	}
 
 	public void Up() {

@@ -51,7 +51,6 @@ namespace WadTools {
 		private static int NUM_CHANNELS = 16;
 		private static int MUS_PERCUSSION_CHAN = 15;
 		private static int MIDI_PERCUSSION_CHAN = 9;
-		private static int MIDI_TRACKLENGTH_OFS = 18;
 
 		// Cached velocities
 		private byte[] channelVelocities = new byte[16] {
@@ -73,7 +72,6 @@ namespace WadTools {
 		private int[] channel_map = new int[NUM_CHANNELS];
 
 		// Wrapper to simulate Slade's memchunk.write()
-		int position = 0;
 		byte[] output = new byte[0];
 		private void WriteData(byte[] data) {
 			byte[] newData = new byte[output.Length + data.Length];
