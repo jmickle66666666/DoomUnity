@@ -28,7 +28,7 @@ public class DoomMapBuilder {
 	private Material doomMaterial;
 	public static Material skyMaterial;
 
-	private string skyName;
+	private string skyName = "SKY1";
 
 	private SectorTriangulation st;
 

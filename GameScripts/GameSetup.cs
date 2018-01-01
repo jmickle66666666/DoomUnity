@@ -168,7 +168,11 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void SetupWad(IwadInfo info) {
-		mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo), engineWad);
+		
+		if (info.mapInfo != null) {
+			mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo), engineWad);
+		}
+
 		wad = new WadFile(info.filenames[0]);
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
@@ -294,11 +298,15 @@ public class GameSetup : MonoBehaviour {
 		if (GameObject.Find(currentMap) != null) GameObject.Destroy(GameObject.Find(currentMap));
 		float time = Time.realtimeSinceStartup;
 		currentMap = mapname;
-		mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
+		if (mapinfo != null) {
+			mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
+		}
 		mapBuilder.BuildMap(wad, mapname);
 		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
 		CreatePlayer();
-		PlayMidi(mapinfo[currentMap].music);
+		if (midiEnabled) {
+			PlayMidi(mapinfo[currentMap].music);
+		}
 	}
 
 	void CreatePlayer() {
