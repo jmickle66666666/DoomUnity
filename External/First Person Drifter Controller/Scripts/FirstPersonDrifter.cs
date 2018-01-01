@@ -1,5 +1,6 @@
 ﻿// original by Eric Haines (Eric5h5)
 // adapted by @torahhorse
+// modified by @jmickle_
 // http://wiki.unity3d.com/index.php/FPSWalkerEnhanced
 
 using UnityEngine;
@@ -64,8 +65,23 @@ public class FirstPersonDrifter: MonoBehaviour
         slideLimit = controller.slopeLimit - .1f;
         jumpTimer = antiBunnyHopFactor;
     }
+
+    void NoClipUpdate() {
+        transform.Translate(Input.GetAxis("Horizontal") * walkSpeed * Time.deltaTime, 0f, Input.GetAxis("Vertical") * walkSpeed * Time.deltaTime);
+        if (Input.GetKey(KeyCode.C)) { // Swim down? Crouch?
+            transform.Translate(0f, -walkSpeed * Time.deltaTime, 0f);
+        }
+        if (Input.GetKey(KeyCode.Space)) { // Jump, fly upwards
+            transform.Translate(0f, walkSpeed * Time.deltaTime, 0f);
+        }
+    }
  
     void FixedUpdate() {
+        if (noClip) {
+            NoClipUpdate();
+            return;
+        }
+
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed

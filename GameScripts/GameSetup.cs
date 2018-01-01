@@ -60,6 +60,7 @@ public class GameSetup : MonoBehaviour {
 
 	public GameObject playerPrefab;
 	private GameObject player;
+	private FirstPersonDrifter fpd;
 	private string currentMap = "";
 	private DoomMapBuilder mapBuilder;
 	public static WadFile wad;
@@ -108,6 +109,7 @@ public class GameSetup : MonoBehaviour {
 
 		cheatCodes = new List<string>() {
 			"idclev",
+			"idclip",
 			"kill",
 			"test"
 		};
@@ -302,6 +304,7 @@ public class GameSetup : MonoBehaviour {
 								 			    (mapBuilder.thingSectors[playerIndex].floorHeight + mapBuilder.PLAYER_HEIGHT) * mapBuilder.SCALE, 
 								 			    playerThing.y * mapBuilder.SCALE);
 		player.transform.localEulerAngles = new Vector3(0f, 90f - playerThing.angle, 0f);
+		fpd = player.GetComponent<FirstPersonDrifter>();
 	}
 	
 	private List<string> cheatCodes;
@@ -381,7 +384,7 @@ public class GameSetup : MonoBehaviour {
 	void SetPlayerActive(bool active) {
 		if (player != null) {
 			player.GetComponent<MouseLook>().enabled = active;
-			player.GetComponent<FirstPersonDrifter>().enabled = active;
+			fpd.enabled = active;
 		}	
 	}
 
@@ -440,6 +443,11 @@ public class GameSetup : MonoBehaviour {
 
 		if (currentCheat == "test") {
 			Debug.Log(currentCheat);
+			currentCheat = "";
+		}
+
+		if (currentCheat == "idclip") {
+			fpd.noClip = !fpd.noClip;
 			currentCheat = "";
 		}
 	}
