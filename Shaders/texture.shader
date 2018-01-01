@@ -41,7 +41,7 @@ SubShader {
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float depth = saturate(i.vertex.z);
+                float depth = (1.0 - saturate(i.vertex.z)) * 32.0;
                 float li = (_Brightness * 2.0) - (224.0 / 256.0);
                 li = saturate(li);
                 float maxlight = (_Brightness * 2.0) - (40.0 / 256.0);

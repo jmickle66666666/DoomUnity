@@ -15,7 +15,6 @@ public class CameraDepth : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		cam = GetComponent<Camera>();
-		cam.depthTextureMode = DepthTextureMode.Depth;
 	}
 
 	void Update() {
