@@ -38,6 +38,7 @@ public class CommandlineArguments {
 		warp = "";
 		soundfont = "";
 		runTests = false;
+		midi = false;
 	}
 }
 
@@ -88,6 +89,7 @@ public class GameSetup : MonoBehaviour {
 	void Start () {
 
 		ParseArguments();
+		midiEnabled = args.midi;
 
 		engineWad = new WadFile("nasty.wad");
 
@@ -225,6 +227,10 @@ public class GameSetup : MonoBehaviour {
 
 			if (arguments[i] == "-test") {
 				args.runTests = true;
+			}
+
+			if (arguments[i] == "-midi") {
+				args.midi = true;
 			}
 		}
 	}
