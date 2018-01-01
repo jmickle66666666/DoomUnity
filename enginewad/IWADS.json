@@ -5,7 +5,7 @@
 			"filenames": ["DOOM2.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS",
+			"mapInfo":"D2MAPS",
 			"multigen":"D2SGEN"
 		},
 		{ 
@@ -19,14 +19,14 @@
 			"filenames": ["chex.wad"],
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
-			"mapInfo":"DOOMMAPS"
+			"mapInfo":"D2MAPS"
 		},
 		{ 
 			"name": "TNT: Evilution",
 			"filenames": ["TNT.WAD"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS",
+			"mapInfo":"D2MAPS",
 			"multigen":"D2SGEN"
 		},
 		{ 
@@ -48,7 +48,7 @@
 			"filenames": ["freedoom2.wad"],
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
-			"mapInfo":"DOOMMAPS",
+			"mapInfo":"D2MAPS",
 			"multigen":"D2SGEN"
 		}
 	]
