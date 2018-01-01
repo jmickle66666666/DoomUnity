@@ -9,7 +9,7 @@ using WadTools;
 Used to build a mesh from a level, and apply the correct textures and offsets etc.
 */
 
-public class MapBuilder {
+public class DoomMapBuilder {
 
 	public List<string> textures;
 	public MapData map;

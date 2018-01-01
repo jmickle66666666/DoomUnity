@@ -61,7 +61,7 @@ public class GameSetup : MonoBehaviour {
 	public GameObject playerPrefab;
 	private GameObject player;
 	private string currentMap = "";
-	private MapBuilder mapBuilder;
+	private DoomMapBuilder mapBuilder;
 	public static WadFile wad;
 	private DoomMenu menu;
 	private bool menuActive;
@@ -230,13 +230,13 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void StartGame(IwadInfo info) {
-		mapBuilder = new MapBuilder();
+		mapBuilder = new DoomMapBuilder();
 
 		if (args.runTests) {
 			Debug.Log("Running tests...");
 
 			// Keep a separate map builder to avoid issues building maps afterwards
-			MapBuilder testMapBuilder = new MapBuilder();
+			DoomMapBuilder testMapBuilder = new DoomMapBuilder();
 
 			foreach (KeyValuePair<string, MapInfo> entry in mapinfo) {
 				int errors = testMapBuilder.TestMap(wad, entry.Key);
