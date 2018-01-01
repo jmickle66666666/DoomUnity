@@ -157,8 +157,6 @@ public class GameSetup : MonoBehaviour {
 		GameObject titleQuad = new GameObject("TitleQuad");
 		titleQuad.layer = 8;
 		titleQuad.transform.parent = titleCameraObject.transform;
-		titleQuad.transform.localPosition = new Vector3(0f, 0f, 1f);
-		titleQuad.transform.localScale = new Vector3(3.2f, -2f, 1f);
 		title = titleQuad.AddComponent<TitleSetup>();
 		title.Build(engineWad);
 	}

@@ -40,6 +40,12 @@ public class TitleSetup : MonoBehaviour {
 		mesh.uv = uvs;
 		mf.mesh = mesh;
 		mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
+
+		transform.localPosition = new Vector3(0f, 0f, 1f);
+
+		transform.localScale = new Vector3(3.2f, -2f, 1f);
+		float ratio = (float) Screen.width / (float) Screen.height;
+		transform.localScale = new Vector3(ratio * 2f, -2f);
 	}
 
 	public void Build(WadFile wad) {
