@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable 0414
+#pragma warning disable 0219
+
+using System;
 using AudioSynthesis.Synthesis;
 using AudioSynthesis.Sf2;
 using AudioSynthesis.Bank.Descriptors;

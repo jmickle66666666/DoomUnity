@@ -43,7 +43,6 @@ namespace AudioSynthesis.Sf2
             using (BinaryReader reader = new BinaryReader(stream))
             {
                 string id = new string(IOHelper.Read8BitChars(reader, 4));
-                int size = reader.ReadInt32();
                 if (!id.ToLower().Equals("riff"))
                     throw new Exception("Invalid soundfont. Could not find RIFF header.");
                 id = new string(IOHelper.Read8BitChars(reader, 4));

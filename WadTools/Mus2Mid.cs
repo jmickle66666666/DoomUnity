@@ -258,8 +258,6 @@ namespace WadTools {
 			byte controllernumber;
 			byte controllervalue;
 
-			byte[] tracksizebuffer = new byte[4];
-
 			int hitscoreend = 0;
 
 			byte working;

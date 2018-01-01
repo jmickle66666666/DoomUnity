@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#pragma warning disable 0414
+
+using System.IO;
 using AudioSynthesis.Util;
 
 namespace AudioSynthesis.Sf2

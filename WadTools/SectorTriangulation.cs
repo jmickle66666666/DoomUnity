@@ -542,10 +542,6 @@ namespace WadTools {
 		        ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
 		            / denominator;
 
-		    float t2 =
-		        ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12)
-		            / -denominator;
-
 		    // Find the point of intersection.
 		    return new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
 		}
