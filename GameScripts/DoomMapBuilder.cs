@@ -81,7 +81,7 @@ public class DoomMapBuilder {
 
 		for (int i = 0; i < map.sectors.Count; i++) {
 			//Debug.Log(i);
-			BuildSector(i);	
+			BuildSector(i);
 		}
 
 		// BuildLine(335);
@@ -240,8 +240,8 @@ public class DoomMapBuilder {
 
 	 void BuildLine(int index) {
 		Linedef line = map.linedefs[index];
-		Sidedef frontSide = map.sidedefs[line.front];
-		Sidedef backSide = line.back!=-1?map.sidedefs[line.back]:null;
+		Sidedef frontSide = map.sidedefs[(int) line.front];
+		Sidedef backSide = line.back!=0xFFFF?map.sidedefs[line.back]:null;
 		Sector frontSector = map.sectors[frontSide.sector];
 		Sector backSector = backSide!=null?map.sectors[backSide.sector]:null;
 
@@ -468,7 +468,7 @@ public class DoomMapBuilder {
 		if (!textures.Contains(front.mid)) textures.Add(front.mid);
 		if (!textures.Contains(front.upper)) textures.Add(front.upper);
 
-		if (line.back != -1) {
+		if (line.back != 0xFFFF) {
 			Sidedef back = map.sidedefs[line.back];
 			if (!textures.Contains(back.lower)) textures.Add(back.lower);
 			if (!textures.Contains(back.mid)) textures.Add(back.mid);

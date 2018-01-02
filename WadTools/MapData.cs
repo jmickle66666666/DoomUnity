@@ -109,13 +109,13 @@ namespace WadTools {
 
 			for (int i = 0; i < data.Length; i+=size) {
 				Linedef nl = new Linedef() {
-					start = BitConverter.ToInt16(data, i),
-					end = BitConverter.ToInt16(data, i + 2),
-					flags = BitConverter.ToInt16(data, i + 4),
-					special = BitConverter.ToInt16(data, i + 6),
-					tag = BitConverter.ToInt16(data, i + 8),
-					front = BitConverter.ToInt16(data, i + 10),
-					back = BitConverter.ToInt16(data, i + 12)
+					start = (int) BitConverter.ToUInt16(data, i),
+					end = (int) BitConverter.ToUInt16(data, i + 2),
+					flags = (int) BitConverter.ToUInt16(data, i + 4),
+					special = (int) BitConverter.ToUInt16(data, i + 6),
+					tag = (int) BitConverter.ToUInt16(data, i + 8),
+					front = (int) BitConverter.ToUInt16(data, i + 10),
+					back = (int) BitConverter.ToUInt16(data, i + 12)
 				};
 				linedefs.Add(nl);
 			}
