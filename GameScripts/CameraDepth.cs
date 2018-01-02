@@ -29,8 +29,8 @@ public class CameraDepth : MonoBehaviour {
 				cam.orthographic = false;
 				automap = false;
 			} else {
-				transform.localEulerAngles = new Vector3(90f, 0f, 0f);
-				transform.localPosition = new Vector3(0f, 100f, 0f);
+				transform.localEulerAngles = new Vector3(45f, 0f, 0f);
+				transform.localPosition = new Vector3(0f, 20f, -20f);
 				cam.orthographic = true;
 				cam.orthographicSize = 15;
 				automap = true;
