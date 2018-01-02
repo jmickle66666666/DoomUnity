@@ -191,9 +191,11 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		float wscale = (float)Screen.width / 320.0f;
+		float hscale = (float)Screen.height / 200.0f;
 		if (iwadSelector) {
 
-			if (GUI.Button(new Rect(260, 110, 40, 20), "Quit")) {
+			if (GUI.Button(new Rect(260 * wscale, 110 * hscale, 40 * wscale, 20 * hscale), "Quit")) {
 				#if UNITY_EDITOR
 					EditorApplication.isPlaying = false;
 				#endif
@@ -201,7 +203,7 @@ public class GameSetup : MonoBehaviour {
 			}
 
 			for (int i = 0; i < foundIwads.Count; i++) {
-				if (GUI.Button(new Rect(10, 10 + (i * 25), 200, 20), foundIwads[i].name)) {
+				if (GUI.Button(new Rect(10 * wscale, (10 * hscale) + (i * 25), 200 * wscale, 20), foundIwads[i].name)) {
 					SetupWad(foundIwads[i]);
 				}
 			}
