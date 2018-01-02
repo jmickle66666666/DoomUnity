@@ -295,7 +295,7 @@ public class DoomMapBuilder {
 
 			if (line.lowerUnpegged) frontOffset.y += GetInfo(frontSide.mid).height - (z2-z1);
 			// Just Midtex
-			BuildQuad(new Vector3(x1, z1, y1), new Vector3(x2,z2,y2), frontSide.mid, frontOffset, frontBrightness);
+			BuildQuad(new Vector3(x1, z1, y1), new Vector3(x2,z2,y2), frontSide.mid, frontOffset, frontBrightness, true);
 		} else {
 			// Lower texture
 			float midBottom;
@@ -312,7 +312,7 @@ public class DoomMapBuilder {
 						float diff = Mathf.Max(frontSector.ceilingHeight, backSector.ceilingHeight) - backSector.floorHeight;
 						offset.y -= GetInfo(frontSide.lower).height - diff;
 					}
-					BuildQuad(new Vector3(x1,frontSector.floorHeight, y1), new Vector3(x2, backSector.floorHeight, y2), frontSide.lower, offset, frontBrightness,lowerSky);
+					BuildQuad(new Vector3(x1,frontSector.floorHeight, y1), new Vector3(x2, backSector.floorHeight, y2), frontSide.lower, offset, frontBrightness, true, lowerSky);
 				}
 				midBottom = backSector.floorHeight;
 			} else {
@@ -325,7 +325,7 @@ public class DoomMapBuilder {
 						float diff = Mathf.Max(frontSector.ceilingHeight, backSector.ceilingHeight) - frontSector.floorHeight;
 						offset.y -= GetInfo(backSide.lower).height - diff;
 					}
-					BuildQuad(new Vector3(x2, backSector.floorHeight, y2), new Vector3(x1, frontSector.floorHeight, y1), backSide.lower, offset, backBrightness,lowerSky);
+					BuildQuad(new Vector3(x2, backSector.floorHeight, y2), new Vector3(x1, frontSector.floorHeight, y1), backSide.lower, offset, backBrightness, true, lowerSky);
 				}
 				midBottom = frontSector.floorHeight;
 			}
@@ -342,7 +342,7 @@ public class DoomMapBuilder {
 						offset.y += GetInfo(backSide.upper).height - (backSector.ceilingHeight-frontSector.ceilingHeight);
 					}
 
-					BuildQuad(new Vector3(x2, frontSector.ceilingHeight, y2), new Vector3(x1, backSector.ceilingHeight, y1), backSide.upper, offset, backBrightness,upperSky);
+					BuildQuad(new Vector3(x2, frontSector.ceilingHeight, y2), new Vector3(x1, backSector.ceilingHeight, y1), backSide.upper, offset, backBrightness, true, upperSky);
 				}
 				midTop = frontSector.ceilingHeight;
 			} else {
@@ -354,7 +354,7 @@ public class DoomMapBuilder {
 					if (!line.upperUnpegged && !upperSky) {
 						offset.y += GetInfo(frontSide.upper).height - (frontSector.ceilingHeight-backSector.ceilingHeight);
 					}
-					BuildQuad(new Vector3(x1, backSector.ceilingHeight, y1), new Vector3(x2, frontSector.ceilingHeight, y2), frontSide.upper, offset, frontBrightness,upperSky);
+					BuildQuad(new Vector3(x1, backSector.ceilingHeight, y1), new Vector3(x2, frontSector.ceilingHeight, y2), frontSide.upper, offset, frontBrightness, true, upperSky);
 				}
 				midTop = backSector.ceilingHeight;
 			}
@@ -372,7 +372,7 @@ public class DoomMapBuilder {
 					fmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(frontSide.mid).height);
 				}
 
-				BuildQuad(new Vector3(x1, fmidBottom, y1), new Vector3(x2,fmidTop,y2), frontSide.mid, offset, frontBrightness);
+				BuildQuad(new Vector3(x1, fmidBottom, y1), new Vector3(x2,fmidTop,y2), frontSide.mid, offset, frontBrightness, line.impassable);
 			}
 			if (backSide.mid != "-") {
 				offset.Set(backOffset.x, backOffset.y);
@@ -385,7 +385,7 @@ public class DoomMapBuilder {
 					bmidTop = Mathf.Min(midTop, offset.y + midTop);
 					bmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(backSide.mid).height);
 				}
-				BuildQuad(new Vector3(x2, bmidBottom, y2), new Vector3(x1,bmidTop,y1), backSide.mid, offset, backBrightness);
+				BuildQuad(new Vector3(x2, bmidBottom, y2), new Vector3(x1,bmidTop,y1), backSide.mid, offset, backBrightness, line.impassable);
 			}
 		}
 
@@ -394,7 +394,7 @@ public class DoomMapBuilder {
 
 	private  Dictionary<string, Material> materialCache;
 
-	void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool sky = false) {
+	void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool impassable, bool sky = false) {
 	 	// This is where we discard parts of a line that have no height or texture
 
 	 	if (v1.y == v2.y) {
@@ -446,7 +446,11 @@ public class DoomMapBuilder {
 		mesh.uv = uvs;
 		GameObject newObj = new GameObject();
 		MeshRenderer mr = newObj.AddComponent<MeshRenderer>();
-		newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+
+		if (impassable) {
+			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+		}
+		
 		if (sky) {
 			mr.material = skyMaterial;
 		} else {
@@ -458,7 +462,7 @@ public class DoomMapBuilder {
 		newObj.transform.SetParent(levelObject.transform, false);
 	}
 
-	private  Dictionary<string, Texture2D> flatCache;
+	private Dictionary<string, Texture2D> flatCache;
 
 	 Texture2D GetFlat(string name) {
 		name = name.ToUpper();
