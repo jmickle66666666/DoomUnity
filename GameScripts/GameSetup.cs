@@ -278,7 +278,7 @@ public class GameSetup : MonoBehaviour {
 			menuActive = false;
 			BuildMap(args.warp);
 		}
-		menu = new DoomMenu(wad);
+		SetupMenu();
 	}
 
 	void PlayMidi(string name) {
@@ -305,6 +305,10 @@ public class GameSetup : MonoBehaviour {
 	float time;
 
 	void BuildMap(string mapname) {
+		if (menuActive) {
+			menu.Show(false, true);
+			menuActive = false;
+		}
 		if (GameObject.Find(currentMap) != null) GameObject.Destroy(GameObject.Find(currentMap));
 		time = Time.realtimeSinceStartup;
 		currentMap = mapname;
@@ -379,6 +383,12 @@ public class GameSetup : MonoBehaviour {
 		return "";
 	}
 
+	void SetupMenu() {
+		menu = new DoomMenu(wad);
+		menu.onQuit = MenuQuit;
+		menu.onPlay = MenuPlay;
+	}
+
 	void MenuUpdate() {
 
 		if (Input.GetKeyDown(KeyCode.Escape)) {
@@ -400,22 +410,20 @@ public class GameSetup : MonoBehaviour {
 			}
 
 			if (Input.GetKeyDown(KeyCode.Return)) {
-				int item = menu.Accept();
-				if (item == 0) {
-					menu.Show(false, true);
-					menuActive = false;
-					BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));
-				}
-
-				if (item == 4) {
-					#if UNITY_EDITOR
-						EditorApplication.isPlaying = false;
-					#endif
-					Application.Quit();
-				}
+				menu.Accept();
 			}
 		}
+	}
 
+	void MenuPlay() {
+		BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));
+	}
+
+	void MenuQuit() {
+		#if UNITY_EDITOR
+			EditorApplication.isPlaying = false;
+		#endif
+		Application.Quit();
 	}
 
 	void SetPlayerActive(bool active) {

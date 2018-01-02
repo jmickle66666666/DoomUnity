@@ -12,6 +12,12 @@ Currently hardwired to Doom 2's main menu, needs a lot of expansion.
 
 public class DoomMenu {
 
+	// Delegates
+	public delegate void OnQuit();
+	public OnQuit onQuit;
+	public delegate void OnPlay();
+	public OnPlay onPlay;
+
 	private Canvas menuCanvas;
 	private GameObject gameObject;
 	private WadFile wad;
@@ -29,6 +35,7 @@ public class DoomMenu {
 	private float flashTimeMax = 0.228f;
 
 	private GameObject mainMenu;
+	private DoomText textGen;
 
 	public bool background = true;
 
@@ -36,6 +43,7 @@ public class DoomMenu {
 
 	public DoomMenu (WadFile inwad) {
 		wad = inwad;
+		textGen = new DoomText(wad);
 		gameObject = new GameObject("Menu");
 		menuCanvas = gameObject.AddComponent<Canvas>();
 		menuCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -125,14 +133,28 @@ public class DoomMenu {
 		return img;
 	}
 
+	private void AddText(int x, int y, string text, GameObject parent) {
+		GameObject newText = new GameObject(text);
+		RawImage img = newText.AddComponent<RawImage>();
+		img.material = menuMaterial;
+		img.texture = textGen.Write(text);
+		img.SetNativeSize();
+		img.rectTransform.anchorMin = new Vector2(0f, 1f);
+		img.rectTransform.anchorMax = new Vector2(0f, 1f);
+		img.rectTransform.anchoredPosition = new Vector2(x, -y);
+		img.uvRect = new Rect(0,0,1f,-1f);
+		newText.transform.SetParent(parent.transform, false);
+	}
+
 	public void Show(bool show, bool silent = false) {
 		if (!silent) audioSource.PlayOneShot(show?soundActivate:soundDismiss);
 		mainMenu.SetActive(show);
 	}
 
-	public int Accept() {
+	public void Accept() {
 		audioSource.PlayOneShot(soundChoose);
-		return currentItem;
+		if (currentItem == 0) onPlay();
+		if (currentItem == 4) onQuit();
 	}
 
 	public void Toggle() {
