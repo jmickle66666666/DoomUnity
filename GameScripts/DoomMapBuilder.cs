@@ -92,6 +92,8 @@ public class DoomMapBuilder {
 
 		cr.dmb = this;
 		cr.map = map;
+		linesDone = false;
+		sectorsDone = false;
 		cr.StartCoroutine(cr.BuildLines());
 		cr.StartCoroutine(cr.BuildSectors());
 
