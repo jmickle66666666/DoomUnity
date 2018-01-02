@@ -1,0 +1,221 @@
+{
+	"mapinfo": [
+		{
+			"lump": "E1M1",
+			"music": "D_E1M1",
+			"sky": "SKY1",
+			"name": "E1M1: Hangar"
+		},
+		{
+			"lump": "E1M2",
+			"music": "D_E1M2",
+			"sky": "SKY1",
+			"name": "E1M2: Nuclear Plant"
+		},
+		{
+			"lump": "E1M3",
+			"music": "D_E1M3",
+			"sky": "SKY1",
+			"name": "E1M3: Toxin Refinery"
+		},
+		{
+			"lump": "E1M4",
+			"music": "D_E1M4",
+			"sky": "SKY1",
+			"name": "E1M4: Command Control"
+		},
+		{
+			"lump": "E1M5",
+			"music": "D_E1M5",
+			"sky": "SKY1",
+			"name": "E1M5: Phobos Lab"
+		},
+		{
+			"lump": "E1M6",
+			"music": "D_E1M6",
+			"sky": "SKY1",
+			"name": "E1M6: Central Processing"
+		},
+		{
+			"lump": "E1M7",
+			"music": "D_E1M7",
+			"sky": "SKY1",
+			"name": "E1M7: Computer Station"
+		},
+		{
+			"lump": "E1M8",
+			"music": "D_E1M8",
+			"sky": "SKY1",
+			"name": "E1M8: Phobos Anomaly"
+		},
+		{
+			"lump": "E1M9",
+			"music": "D_E1M9",
+			"sky": "SKY1",
+			"name": "E1M9: Military Base"
+		},
+		{
+			"lump": "E2M1",
+			"music": "D_E2M1",
+			"sky": "SKY2",
+			"name": "E2M1: Deimos Anomaly"
+		},
+		{
+			"lump": "E2M2",
+			"music": "D_E2M2",
+			"sky": "SKY2",
+			"name": "E2M2: Containment Area"
+		},
+		{
+			"lump": "E2M3",
+			"music": "D_E2M3",
+			"sky": "SKY2",
+			"name": "E2M3: Refinery"
+		},
+		{
+			"lump": "E2M4",
+			"music": "D_E2M4",
+			"sky": "SKY2",
+			"name": "E2M4: Deimos Lab"
+		},
+		{
+			"lump": "E2M5",
+			"music": "D_E2M5",
+			"sky": "SKY2",
+			"name": "E2M5: Command Center"
+		},
+		{
+			"lump": "E2M6",
+			"music": "D_E2M6",
+			"sky": "SKY2",
+			"name": "E2M6: Halls of the Damned"
+		},
+		{
+			"lump": "E2M7",
+			"music": "D_E2M7",
+			"sky": "SKY2",
+			"name": "E2M7: Spawning Vats"
+		},
+		{
+			"lump": "E2M8",
+			"music": "D_E2M8",
+			"sky": "SKY2",
+			"name": "E2M8: Tower of Babel"
+		},
+		{
+			"lump": "E2M9",
+			"music": "D_E2M9",
+			"sky": "SKY2",
+			"name": "E2M9: Fortress of Mystery"
+		},
+		{
+			"lump": "E3M1",
+			"music": "D_E3M1",
+			"sky": "SKY3",
+			"name": "E3M1: Hell Keep"
+		},
+		{
+			"lump": "E3M2",
+			"music": "D_E3M2",
+			"sky": "SKY3",
+			"name": "E3M2: Slough of Despair"
+		},
+		{
+			"lump": "E3M3",
+			"music": "D_E3M3",
+			"sky": "SKY3",
+			"name": "E3M3: Pandemonium"
+		},
+		{
+			"lump": "E3M4",
+			"music": "D_E3M4",
+			"sky": "SKY3",
+			"name": "E3M4: House of Pain"
+		},
+		{
+			"lump": "E3M5",
+			"music": "D_E3M5",
+			"sky": "SKY3",
+			"name": "E3M5: Unholy Cathedral"
+		},
+		{
+			"lump": "E3M6",
+			"music": "D_E3M6",
+			"sky": "SKY3",
+			"name": "E3M6: Mt. Erebus"
+		},
+		{
+			"lump": "E3M7",
+			"music": "D_E3M7",
+			"sky": "SKY3",
+			"name": "E3M7: Limbo"
+		},
+		{
+			"lump": "E3M8",
+			"music": "D_E3M8",
+			"sky": "SKY3",
+			"name": "E3M8: Dis"
+		},
+		{
+			"lump": "E3M9",
+			"music": "D_E3M9",
+			"sky": "SKY3",
+			"name": "E3M9: Warrens"
+		},
+		{
+			"lump": "E4M1",
+			"music": "D_E3M4",
+			"sky": "SKY4",
+			"name": "E4M1: Hell Beneath"
+		},
+		{
+			"lump": "E4M2",
+			"music": "D_E3M2",
+			"sky": "SKY4",
+			"name": "E4M2: Perfect Hatred"
+		},
+		{
+			"lump": "E4M3",
+			"music": "D_E3M3",
+			"sky": "SKY4",
+			"name": "E4M3: Sever The Wicked"
+		},
+		{
+			"lump": "E4M4",
+			"music": "D_E1M5",
+			"sky": "SKY4",
+			"name": "E4M4: Unruly Evil"
+		},
+		{
+			"lump": "E4M5",
+			"music": "D_E2M7",
+			"sky": "SKY4",
+			"name": "E4M5: They Will Repent"
+		},
+		{
+			"lump": "E4M6",
+			"music": "D_E2M4",
+			"sky": "SKY4",
+			"name": "E4M6: Against Thee Wickedly"
+		},
+		{
+			"lump": "E4M7",
+			"music": "D_E2M6",
+			"sky": "SKY4",
+			"name": "E4M7: And Hell Followed"
+		},
+		{
+			"lump": "E4M8",
+			"music": "D_E2M5",
+			"sky": "SKY4",
+			"name": "E4M8: Unto The Cruel"
+		},
+		{
+			"lump": "E4M9",
+			"music": "D_E1M9",
+			"sky": "SKY4",
+			"name": "E4M9: Fear"
+		}
+
+	]
+}

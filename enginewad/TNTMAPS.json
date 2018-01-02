@@ -4,193 +4,193 @@
 			"lump": "MAP01",
 			"music": "D_RUNNIN",
 			"sky": "SKY1",
-			"name": "level 1: congo"
+			"name": "level 1: system control"
 		},
 		{
 			"lump": "MAP02",
 			"music": "D_STALKS",
 			"sky": "SKY1",
-			"name": "level 2: well of souls"
+			"name": "level 2: human bbq"
 		},
 		{
 			"lump": "MAP03",
 			"music": "D_COUNTD",
 			"sky": "SKY1",
-			"name": "level 3: aztec"
+			"name": "level 3: power control"
 		},
 		{
 			"lump": "MAP04",
 			"music": "D_BETWEE",
 			"sky": "SKY1",
-			"name": "level 4: caged"
+			"name": "level 4: wormhole"
 		},
 		{
 			"lump": "MAP05",
 			"music": "D_DOOM",
 			"sky": "SKY1",
-			"name": "level 5: ghost town"
+			"name": "level 5: hanger"
 		},
 		{
 			"lump": "MAP06",
 			"music": "D_THE_DA",
 			"sky": "SKY1",
-			"name": "level 6: baron's lair"
+			"name": "level 6: open season"
 		},
 		{
 			"lump": "MAP07",
 			"music": "D_SHAWN",
 			"sky": "SKY1",
-			"name": "level 7: caughtyard"
+			"name": "level 7: prison"
 		},
 		{
 			"lump": "MAP08",
 			"music": "D_DDTBLU",
 			"sky": "SKY1",
-			"name": "level 8: realm"
+			"name": "level 8: metal"
 		},
 		{
 			"lump": "MAP09",
 			"music": "D_IN_CIT",
 			"sky": "SKY1",
-			"name": "level 9: abattoire"
+			"name": "level 9: stronghold"
 		},
 		{
 			"lump": "MAP10",
 			"music": "D_DEAD",
 			"sky": "SKY1",
-			"name": "level 10: onslaught"
+			"name": "level 10: redemption"
 		},
 		{
 			"lump": "MAP11",
 			"music": "D_STLKS2",
 			"sky": "SKY1",
-			"name": "level 11: hunted"
+			"name": "level 11: storage facility"
 		},
 		{
 			"lump": "MAP12",
 			"music": "D_THEDA2",
 			"sky": "SKY2",
-			"name": "level 12: speed"
+			"name": "level 12: crater"
 		},
 		{
 			"lump": "MAP13",
 			"music": "D_DOOM2",
 			"sky": "SKY2",
-			"name": "level 13: the crypt"
+			"name": "level 13: nukage processing"
 		},
 		{
 			"lump": "MAP14",
 			"music": "D_DDTBL2",
 			"sky": "SKY2",
-			"name": "level 14: genesis"
+			"name": "level 14: steel works"
 		},
 		{
 			"lump": "MAP15",
 			"music": "D_RUNNI2",
 			"sky": "SKY2",
-			"name": "level 15: the twilight"
+			"name": "level 15: dead zone"
 		},
 		{
 			"lump": "MAP16",
 			"music": "D_DEAD2",
 			"sky": "SKY2",
-			"name": "level 16: the omen"
+			"name": "level 16: deepest reaches"
 		},
 		{
 			"lump": "MAP17",
 			"music": "D_STLKS3",
 			"sky": "SKY2",
-			"name": "level 17: compound"
+			"name": "level 17: processing area"
 		},
 		{
 			"lump": "MAP18",
 			"music": "D_ROMERO",
 			"sky": "SKY2",
-			"name": "level 18: neurosphere"
+			"name": "level 18: mill"
 		},
 		{
 			"lump": "MAP19",
 			"music": "D_SHAWN2",
 			"sky": "SKY2",
-			"name": "level 19: nme"
+			"name": "level 19: shipping/respawning"
 		},
 		{
 			"lump": "MAP20",
 			"music": "D_MESSAG",
 			"sky": "SKY2",
-			"name": "level 20: the death domain"
+			"name": "level 20: central processing"
 		},
 		{
 			"lump": "MAP21",
 			"music": "D_COUNT2",
 			"sky": "SKY3",
-			"name": "level 21: slayer"
+			"name": "level 21: administration center"
 		},
 		{
 			"lump": "MAP22",
 			"music": "D_DDTBL3",
 			"sky": "SKY3",
-			"name": "level 22: impossible mission"
+			"name": "level 22: habitat"
 		},
 		{
 			"lump": "MAP23",
 			"music": "D_AMPIE",
 			"sky": "SKY3",
-			"name": "level 23: tombstone"
+			"name": "level 23: lunar mining project"
 		},
 		{
 			"lump": "MAP24",
 			"music": "D_THEDA3",
 			"sky": "SKY3",
-			"name": "level 24: the final frontier"
+			"name": "level 24: quarry"
 		},
 		{
 			"lump": "MAP25",
 			"music": "D_ADRIAN",
 			"sky": "SKY3",
-			"name": "level 25: the temple of darkness"
+			"name": "level 25: baron's den"
 		},
 		{
 			"lump": "MAP26",
 			"music": "D_MESSG2",
 			"sky": "SKY3",
-			"name": "level 26: bunker"
+			"name": "level 26: ballistyx"
 		},
 		{
 			"lump": "MAP27",
 			"music": "D_ROMER2",
 			"sky": "SKY3",
-			"name": "level 27: anti-christ"
+			"name": "level 27: mount pain"
 		},
 		{
 			"lump": "MAP28",
 			"music": "D_TENSE",
 			"sky": "SKY3",
-			"name": "level 28: the sewers"
+			"name": "level 28: heck"
 		},
 		{
 			"lump": "MAP29",
 			"music": "D_SHAWN3",
 			"sky": "SKY3",
-			"name": "level 29: odyssey of noises"
+			"name": "level 29: river styx"
 		},
 		{
 			"lump": "MAP30",
 			"music": "D_OPENIN",
 			"sky": "SKY3",
-			"name": "level 30: the gateway of hell"
+			"name": "level 30: last call"
 		},
 		{
 			"lump": "MAP31",
 			"music": "D_EVIL",
 			"sky": "SKY3",
-			"name": "level 31: cyberden"
+			"name": "level 31: pharaoh"
 		},
 		{
 			"lump": "MAP32",
 			"music": "D_ULTIMA",
 			"sky": "SKY3",
-			"name": "level 32: go 2 it"
+			"name": "level 32: caribbean"
 		}
 	]
 }

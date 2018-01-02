@@ -12,14 +12,15 @@
 			"name": "Doom",
 			"filenames": ["DOOM.WAD"],
 			"mapnameFormat": "EM",
-			"titleMusic":"D_INTRO"
+			"titleMusic":"D_INTRO",
+			"mapInfo":"D1MAPS"
 		},
 		{ 
 			"name": "Chex Quest",
 			"filenames": ["chex.wad"],
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
-			"mapInfo":"D2MAPS"
+			"mapInfo":"D1MAPS"
 		},
 		{ 
 			"name": "TNT: Evilution",
@@ -27,7 +28,8 @@
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
 			"mapInfo":"D2MAPS",
-			"multigen":"D2SGEN"
+			"multigen":"D2SGEN",
+			"mapInfo":"TNTMAPS"
 		},
 		{ 
 			"name": "The Plutonia Experiment",
@@ -41,7 +43,8 @@
 			"name": "FreeDoom: Phase 1",
 			"filenames": ["freedoom1.wad"],
 			"mapnameFormat": "EM",
-			"titleMusic":"D_INTRO"
+			"titleMusic":"D_INTRO",
+			"mapInfo":"D1MAPS"
 		},
 		{ 
 			"name": "FreeDoom: Phase 2",
