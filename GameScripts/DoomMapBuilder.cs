@@ -36,6 +36,15 @@ public class DoomMapBuilder {
 
 	public bool linesDone = false;
 	public bool sectorsDone = false;
+	int lastBuiltLine = -1;
+	int lastBuiltSector = -1;
+
+	public float amountLoaded {
+		get {
+			if (map == null) return 0.0f;
+			return (((float) lastBuiltLine / (float) map.linedefs.Count) + ((float) lastBuiltSector / (float) map.sectors.Count)) * 0.5f;
+		}
+	}
 
 	private SectorTriangulation st;
 
@@ -243,7 +252,7 @@ public class DoomMapBuilder {
 			newObj.transform.SetParent(levelObject.transform, false);
 
 		}
-
+		lastBuiltSector = index;
 		
 	}
 
@@ -378,12 +387,12 @@ public class DoomMapBuilder {
 			}
 		}
 
-		GetTextures(index);
+		lastBuiltLine = index;
 	}
 
 	private  Dictionary<string, Material> materialCache;
 
-	 void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool sky = false) {
+	void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool sky = false) {
 	 	// This is where we discard parts of a line that have no height or texture
 
 	 	if (v1.y == v2.y) {
@@ -467,7 +476,7 @@ public class DoomMapBuilder {
 		return DoomGraphic.BuildTexture(name, wad, textureTable);
 	}
 
-	 void GetTextures(int lineIndex) {
+	void GetTextures(int lineIndex) {
 		Linedef line = map.linedefs[lineIndex];
 		Sidedef front = map.sidedefs[line.front];
 
@@ -487,6 +496,8 @@ public class DoomMapBuilder {
 
 }
 
+// Unity coroutines can only be run from a MonoBehaviour, so we have a "dummy" class for that.
+
 public class CoroutineRunner : MonoBehaviour {
 	void Start() {
 
@@ -498,10 +509,15 @@ public class CoroutineRunner : MonoBehaviour {
 	public IEnumerator BuildLines() {
 		float time = Time.realtimeSinceStartup;
 		for (int i = 0; i < map.linedefs.Count; i++) {
+
 			dmb.BuildLine(i);
-			if (Time.realtimeSinceStartup - time > 0.03f) {
-				time = Time.realtimeSinceStartup;
-				yield return null;
+
+			// Limiting when it yields to speed up processing.
+			if (i % 50 == 0) {
+				if (Time.realtimeSinceStartup - time > 0.03f) {
+					time = Time.realtimeSinceStartup;
+					yield return null;
+				}
 			}
 		}
 		dmb.DoneBuildingLines();
@@ -510,10 +526,14 @@ public class CoroutineRunner : MonoBehaviour {
 	public IEnumerator BuildSectors() {
 		float time = Time.realtimeSinceStartup;
 		for (int i = 0; i < map.sectors.Count; i++) {
+
 			dmb.BuildSector(i);
-			if (Time.realtimeSinceStartup - time > 0.03f) {
-				time = Time.realtimeSinceStartup;
-				yield return null;
+
+			if (i % 50 == 0) {
+				if (Time.realtimeSinceStartup - time > 0.03f) {
+					time = Time.realtimeSinceStartup;
+					yield return null;
+				}
 			}
 		}
 		dmb.DoneBuildingSectors();

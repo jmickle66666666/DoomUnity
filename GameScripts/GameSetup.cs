@@ -85,6 +85,7 @@ public class GameSetup : MonoBehaviour {
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
 	[SerializeField] private string editorArgs;
+	private bool buildingMap = false;
 
 	private CommandlineArguments args;
 
@@ -208,6 +209,10 @@ public class GameSetup : MonoBehaviour {
 				}
 			}
 		}
+
+		if (buildingMap) {
+			GUI.Box(new Rect(0f, 198f * hscale, mapBuilder.amountLoaded * Screen.width, 200f*hscale), "");
+		}
 	}
 
 	void ParseArguments() {
@@ -297,19 +302,22 @@ public class GameSetup : MonoBehaviour {
 		}
 	}
 
+	float time;
+
 	void BuildMap(string mapname) {
 		if (GameObject.Find(currentMap) != null) GameObject.Destroy(GameObject.Find(currentMap));
-		float time = Time.realtimeSinceStartup;
+		time = Time.realtimeSinceStartup;
 		currentMap = mapname;
 		if (mapinfo != null) {
 			mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
 		}
 		mapBuilder.doneBuilding = FinishMap;
 		mapBuilder.BuildMap(wad, mapname);
-		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
+		buildingMap = true;
 	}
 
 	void FinishMap() {
+		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
 		title.DisableCamera();
 		CreatePlayer();
 		if (midiEnabled) {
@@ -318,6 +326,7 @@ public class GameSetup : MonoBehaviour {
 		if (multigen != null) {
 			mapBuilder.BuildTestSprites(multigen);
 		}
+		buildingMap = false;
 	}
 
 	void CreatePlayer() {
@@ -418,7 +427,6 @@ public class GameSetup : MonoBehaviour {
 
 	void CheatUpdate() {
 		// Cheats here
-
 		foreach(char c in Input.inputString) {
 			if (cheatLevelChange != true) {
 				bool found = false;
