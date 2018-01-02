@@ -19,6 +19,7 @@ public class DoomText {
 	}
 
 	public Texture2D Write(string text) {
+		text = text.ToUpper();
 		int textLength = text.Length;
 		Texture2D[] chars = new Texture2D[textLength];
 		int[] spacing = new int[textLength];
@@ -38,7 +39,6 @@ public class DoomText {
 		for (int i = 0; i < textLength; i++) {
 			if (chars[i] != null) {
 				output.SetPixels32(spacing[i], 0, chars[i].width, chars[i].height, chars[i].GetPixels32());
-				Debug.Log("123123");
 			}
 		}
 		output.Apply();
@@ -49,7 +49,6 @@ public class DoomText {
 
 	private Texture2D GetChar(char c) {
 		string lumpName = lumpIdent + (int)char.ToUpper(c);
-		Debug.Log(lumpName);
 		if (wad.Contains(lumpName)) {
 			return new DoomGraphic(wad.GetLump(lumpName)).ToRenderMap();
 		}
