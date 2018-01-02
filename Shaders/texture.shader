@@ -46,7 +46,7 @@ SubShader {
                 li = saturate(li);
                 float maxlight = (_Brightness * 2.0) - (40.0 / 256.0);
                 maxlight = saturate(maxlight);
-                float dscale = depth * 0.4;
+                float dscale = depth * 0.4 * (1.0 - unity_OrthoParams.w);
                 float odepth = saturate(li + dscale) + 0.01;
 
 
