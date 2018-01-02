@@ -155,6 +155,12 @@ public class GameSetup : MonoBehaviour {
 		
 	}
 
+	void SetupHUD() {
+		HUD.wad = wad;
+		GameObject HUDObject = new GameObject("HUD");
+		HUDObject.AddComponent<HUD>();
+	}
+
 	void SetupTitleCamera() {
 		GameObject titleCameraObject = new GameObject("TitleCamera");
 		titleCameraObject.layer = 8;
@@ -279,6 +285,7 @@ public class GameSetup : MonoBehaviour {
 			BuildMap(args.warp);
 		}
 		SetupMenu();
+		SetupHUD();
 	}
 
 	void PlayMidi(string name) {
@@ -466,6 +473,7 @@ public class GameSetup : MonoBehaviour {
 					currentCheat = "";
 					cheatLevelChange = false;
 					if (mapBuilder.wad.Contains(GetMapName(levelChange))) {
+						HUD.Message("Warping to map: "+levelChange);
 						BuildMap(GetMapName(levelChange));
 					} else {
 						Debug.Log("Couldn't find map "+GetMapName(levelChange));
@@ -486,11 +494,13 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		if (currentCheat == "test") {
+			HUD.Message("Test cheat");
 			Debug.Log(currentCheat);
 			currentCheat = "";
 		}
 
 		if (currentCheat == "idclip") {
+			HUD.Message("no clip mode "+(fpd.noClip?"off":"on"));
 			fpd.noClip = !fpd.noClip;
 			currentCheat = "";
 		}
