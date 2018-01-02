@@ -18,10 +18,23 @@ Drop the "DoomUnity" folder into your project and try some stuff out!
 `MapData map = new MapData(wad, "MAP01");`
 `Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);`
 
-To run the engine stuff, you'll need to generate `nasty.wad` and put that and (at least one) IWAD in the root folder of your project (just below Assets).
+# Can I play doom in this yet?
+
+Kinda? you can run around levels!
+
+To get the engine running in Unity, just pop a gameobject in an empty scene and add the `GameSetup` component, and attach the `VanillaPlayer` prefab to the player prefab option.
+You can enter and commandline arguments here, too. 
+
+You will need a Doom IWAD! Currently supports Doom 1, Doom 2, Final Doom, Freedoom and Chex Quest.
+
+To run extra PWADs, add `-file path_to_wads` to the commandline parameters. 
 
 For Midi, you must have a soundfont file in the root directory, and merge in a wad with MIDI files.
 The IWADS use MUS files and those are not supported yet.
+
+# Building the engine wad
+
+To run the engine stuff, you'll need to generate `nasty.wad` and put that in the root folder of your project (just below Assets).
 
 To build the engine wad: you need to have python 3, omgifol, and pillow
 
@@ -30,9 +43,3 @@ To build the engine wad: you need to have python 3, omgifol, and pillow
 
 you will want to change the path to the root directory of the project or build.
 then just run `python3 build_wad.py` to generate the engine wad.
-
-And various other stuff. It's probably still gonna be a bit messy while I'm developing it!
-
-# when?
-
-Whenever I get to it, and am inspired to do so.

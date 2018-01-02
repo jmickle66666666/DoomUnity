@@ -360,8 +360,8 @@ public class GameSetup : MonoBehaviour {
 	
 	private List<string> cheatCodes;
 	private bool cheatLevelChange = false;
-	public string levelChangeId = "";
-	public string currentCheat = "";
+	private string levelChangeId = "";
+	private string currentCheat = "";
 
 	// Update is called once per frame
 	void Update () {
