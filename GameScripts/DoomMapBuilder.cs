@@ -11,6 +11,9 @@ Used to build a mesh from a level, and apply the correct textures and offsets et
 
 public class DoomMapBuilder {
 
+	public delegate void DoneBuilding();
+	public DoneBuilding doneBuilding;
+
 	public List<string> textures;
 	public MapData map;
 	public  WadFile wad;
@@ -30,6 +33,9 @@ public class DoomMapBuilder {
 	private Material spriteMaterial;
 
 	private string skyName = "SKY1";
+
+	public bool linesDone = false;
+	public bool sectorsDone = false;
 
 	private SectorTriangulation st;
 
@@ -67,35 +73,38 @@ public class DoomMapBuilder {
 		map = new MapData(wad, mapname);
 		levelObject = new GameObject(mapname);
 
+		CoroutineRunner cr = levelObject.AddComponent<CoroutineRunner>();
+
 		unclaimedThings = new List<int>();
 		for (int i = 0; i < map.things.Count; i++) {
 			unclaimedThings.Add(i);
 		}
 		thingSectors = new Dictionary<int, Sector>();
 
-		for (int i = 0; i < map.linedefs.Count; i++) {
-			//Debug.Log(i);
-			BuildLine(i);
-		}
+		cr.dmb = this;
+		cr.map = map;
+		cr.StartCoroutine(cr.BuildLines());
+		cr.StartCoroutine(cr.BuildSectors());
 
+		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
+	}
 
-		for (int i = 0; i < map.sectors.Count; i++) {
-			//Debug.Log(i);
-			BuildSector(i);
-		}
-
-		// BuildLine(335);
-
-		// BuildSector(0);
-
+	public void DoneBuildingSectors() {
+		sectorsDone = true;
 		// List of all things that haven't been placed in a sector
 		if (unclaimedThings.Count > 0) {
 			for (int i = 0; i < unclaimedThings.Count; i++) {
 				Debug.LogWarning("Unclaimed Thing: "+unclaimedThings[i]);
 			}
 		}
+		if (linesDone) doneBuilding();
+	}
 
-		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
+	public void DoneBuildingLines () {
+		linesDone = true;
+		if (sectorsDone) {
+			doneBuilding();
+		}
 	}
 
 	public void BuildTestSprites(MultigenParser multigen) {
@@ -156,11 +165,11 @@ public class DoomMapBuilder {
 		BuildMap(wad, mapname);
 	}
 
-	 DoomTexture GetInfo(string name) {
+	DoomTexture GetInfo(string name) {
 		return textureTable.Get(name.ToUpper());
 	}
 
-	 void BuildSector(int index) {
+	public void BuildSector(int index) {
 	 	st = new SectorTriangulation(map);
 		List<SectorPolygon> polygons = st.Triangulate(index);
 
@@ -209,7 +218,7 @@ public class DoomMapBuilder {
 				mr.material = skyMaterial;
 			}
 			newObj.AddComponent<MeshFilter>().mesh = mesh;
-			newObj.transform.parent = levelObject.transform;
+			newObj.transform.SetParent(levelObject.transform, false);
 
 			mesh = new Mesh();
 			Array.Reverse(tris);
@@ -231,14 +240,14 @@ public class DoomMapBuilder {
 				mr.material = skyMaterial;
 			}
 			newObj.AddComponent<MeshFilter>().mesh = mesh;
-			newObj.transform.parent = levelObject.transform;
+			newObj.transform.SetParent(levelObject.transform, false);
 
 		}
 
 		
 	}
 
-	 void BuildLine(int index) {
+	public void BuildLine(int index) {
 		Linedef line = map.linedefs[index];
 		Sidedef frontSide = map.sidedefs[(int) line.front];
 		Sidedef backSide = line.back!=0xFFFF?map.sidedefs[line.back]:null;
@@ -435,7 +444,7 @@ public class DoomMapBuilder {
 			mr.material.SetFloat("_Brightness", light);
 		}
 		newObj.AddComponent<MeshFilter>().mesh = mesh;
-		newObj.transform.parent = levelObject.transform;
+		newObj.transform.SetParent(levelObject.transform, false);
 	}
 
 	private  Dictionary<string, Texture2D> flatCache;
@@ -476,4 +485,37 @@ public class DoomMapBuilder {
 		}
 	}
 
+}
+
+public class CoroutineRunner : MonoBehaviour {
+	void Start() {
+
+	}
+
+	public MapData map;
+	public DoomMapBuilder dmb;
+
+	public IEnumerator BuildLines() {
+		float time = Time.realtimeSinceStartup;
+		for (int i = 0; i < map.linedefs.Count; i++) {
+			dmb.BuildLine(i);
+			if (Time.realtimeSinceStartup - time > 0.03f) {
+				time = Time.realtimeSinceStartup;
+				yield return null;
+			}
+		}
+		dmb.DoneBuildingLines();
+	}
+
+	public IEnumerator BuildSectors() {
+		float time = Time.realtimeSinceStartup;
+		for (int i = 0; i < map.sectors.Count; i++) {
+			dmb.BuildSector(i);
+			if (Time.realtimeSinceStartup - time > 0.03f) {
+				time = Time.realtimeSinceStartup;
+				yield return null;
+			}
+		}
+		dmb.DoneBuildingSectors();
+	}
 }

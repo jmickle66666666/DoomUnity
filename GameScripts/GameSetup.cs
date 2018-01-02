@@ -304,8 +304,13 @@ public class GameSetup : MonoBehaviour {
 		if (mapinfo != null) {
 			mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
 		}
+		mapBuilder.doneBuilding = FinishMap;
 		mapBuilder.BuildMap(wad, mapname);
 		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
+	}
+
+	void FinishMap() {
+		title.DisableCamera();
 		CreatePlayer();
 		if (midiEnabled) {
 			PlayMidi(mapinfo[currentMap].music);
@@ -340,10 +345,8 @@ public class GameSetup : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
 		MenuUpdate();
 		CheatUpdate();
-
 	}
 
 	string GetMapName(int index) {
@@ -390,7 +393,6 @@ public class GameSetup : MonoBehaviour {
 			if (Input.GetKeyDown(KeyCode.Return)) {
 				int item = menu.Accept();
 				if (item == 0) {
-					title.DisableCamera();
 					menu.Show(false, true);
 					menuActive = false;
 					BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));
