@@ -520,7 +520,7 @@ public class CoroutineRunner : MonoBehaviour {
 
 			// Limiting when it yields to speed up processing.
 			if (i % 50 == 0) {
-				if (Time.realtimeSinceStartup - time > 0.03f) {
+				if (Time.realtimeSinceStartup - time > 0.06f) {
 					time = Time.realtimeSinceStartup;
 					yield return null;
 				}
@@ -536,7 +536,7 @@ public class CoroutineRunner : MonoBehaviour {
 			dmb.BuildSector(i);
 
 			if (i % 50 == 0) {
-				if (Time.realtimeSinceStartup - time > 0.03f) {
+				if (Time.realtimeSinceStartup - time > 0.06f) {
 					time = Time.realtimeSinceStartup;
 					yield return null;
 				}
