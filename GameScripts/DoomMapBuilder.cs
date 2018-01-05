@@ -64,6 +64,7 @@ public class DoomMapBuilder {
 	}
 
 	public void BuildMap(WadFile wad, string mapname) {
+
 		this.wad = wad;
 		textureTable = new TextureTable(wad.GetLump("TEXTURE1"));
 		if (wad.Contains("TEXTURE2")) textureTable.Add(wad.GetLump("TEXTURE2"));
@@ -78,8 +79,8 @@ public class DoomMapBuilder {
 		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
 
 		st = new SectorTriangulation(map);
-
 		map = new MapData(wad, mapname);
+
 		levelObject = new GameObject(mapname);
 
 		CoroutineRunner cr = levelObject.AddComponent<CoroutineRunner>();
@@ -89,11 +90,11 @@ public class DoomMapBuilder {
 			unclaimedThings.Add(i);
 		}
 		thingSectors = new Dictionary<int, Sector>();
-
 		cr.dmb = this;
 		cr.map = map;
 		linesDone = false;
 		sectorsDone = false;
+
 		cr.StartCoroutine(cr.BuildLines());
 		cr.StartCoroutine(cr.BuildSectors());
 
@@ -509,18 +510,21 @@ public class CoroutineRunner : MonoBehaviour {
 
 	}
 
+	private bool backgroundLoading = false;
 	public MapData map;
 	public DoomMapBuilder dmb;
 
 	public IEnumerator BuildLines() {
+		yield return null;  // one frame so the game can do an update before any loading happens/
+							// this is mainly so the HUD message "switching to mapxx" happens
 		float time = Time.realtimeSinceStartup;
 		for (int i = 0; i < map.linedefs.Count; i++) {
 
 			dmb.BuildLine(i);
 
 			// Limiting when it yields to speed up processing.
-			if (i % 50 == 0) {
-				if (Time.realtimeSinceStartup - time > 0.06f) {
+			if (i % 10 == 0 && backgroundLoading) {
+				if (Time.realtimeSinceStartup - time > 0.03f) {
 					time = Time.realtimeSinceStartup;
 					yield return null;
 				}
@@ -530,13 +534,14 @@ public class CoroutineRunner : MonoBehaviour {
 	}
 
 	public IEnumerator BuildSectors() {
+		yield return null;
 		float time = Time.realtimeSinceStartup;
 		for (int i = 0; i < map.sectors.Count; i++) {
 
 			dmb.BuildSector(i);
 
-			if (i % 50 == 0) {
-				if (Time.realtimeSinceStartup - time > 0.06f) {
+			if (i % 10 == 0 && backgroundLoading) {
+				if (Time.realtimeSinceStartup - time > 0.03f) {
 					time = Time.realtimeSinceStartup;
 					yield return null;
 				}
