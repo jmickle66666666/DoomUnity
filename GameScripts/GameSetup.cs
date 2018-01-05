@@ -316,7 +316,7 @@ public class GameSetup : MonoBehaviour {
 			menu.Show(false, true);
 			menuActive = false;
 		}
-		if (GameObject.Find(currentMap) != null) GameObject.Destroy(GameObject.Find(currentMap));
+		if (GameObject.Find(currentMap) != null) GameObject.Find(currentMap).name = "CLEAR";
 		time = Time.realtimeSinceStartup;
 		currentMap = mapname;
 		if (mapinfo != null) {
@@ -338,6 +338,7 @@ public class GameSetup : MonoBehaviour {
 			mapBuilder.BuildTestSprites(multigen);
 		}
 		buildingMap = false;
+		GameObject.Destroy(GameObject.Find("CLEAR"));
 	}
 
 	void CreatePlayer() {
