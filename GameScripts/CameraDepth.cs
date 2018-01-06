@@ -28,12 +28,14 @@ public class CameraDepth : MonoBehaviour {
 				transform.localPosition = new Vector3(0f, 0.5f, 0f);
 				cam.orthographic = false;
 				automap = false;
+				HUD.HideMapName();
 			} else {
 				transform.localEulerAngles = new Vector3(45f, 0f, 0f);
 				transform.localPosition = new Vector3(0f, 20f, -20f);
 				cam.orthographic = true;
 				cam.orthographicSize = 15;
 				automap = true;
+				HUD.ShowMapName();
 			}
 		}
 	}

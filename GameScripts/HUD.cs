@@ -35,6 +35,10 @@ public class HUD : MonoBehaviour {
 	string consoleInput;
 	SpriteRenderer consoleInputSR;
 
+	GameObject mapNameObj;
+	SpriteRenderer mapNameSR;
+	string mapname;
+
 	// Use this for initialization
 	void Start () {
 		messages = new List<HUDMessage>();
@@ -46,8 +50,9 @@ public class HUD : MonoBehaviour {
 		SetupMaterials();
 		audioSource = gameObject.AddComponent<AudioSource>();
 		audioSource.spatialBlend = 0.0f;
+		try {
 		soundMessage = new DoomSound(wad.GetLump("DSRADIO"), "HUD/Message").ToAudioClip();
-
+		} catch {}
 		SpriteRenderer sr = consoleObject.AddComponent<SpriteRenderer>();
 		sr.material = messageMaterial;
 		sr.sprite = Sprite.Create(new DoomGraphic(wad.GetLump("TITLEPIC")).ToRenderMap(), new Rect(0f, 0f, 320, -200), new Vector2(0.5f, -0.45f));
@@ -62,6 +67,15 @@ public class HUD : MonoBehaviour {
 		consoleInputObject.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f, -0.1f);
 		consoleInputObject.transform.localScale = new Vector3(1f, -1f, 1f);
 		consoleInputObject.layer = 9;
+
+		mapNameObj = new GameObject("Map name");
+		mapNameSR = mapNameObj.AddComponent<SpriteRenderer>();
+		mapNameSR.material = messageMaterial;
+		mapNameObj.transform.parent = transform;
+		mapNameObj.layer = 9;
+		mapNameObj.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), -((float)Screen.width/(float)Screen.height) + 0.5f, 0.1f);
+		mapNameObj.transform.localScale = new Vector3(1f, -1f, 1f);
+		HideMapName();
 	}
 
 	void SetupCamera() {
@@ -92,6 +106,16 @@ public class HUD : MonoBehaviour {
 				} else if (Input.GetKeyDown(KeyCode.Backspace)) {
 					consoleInput = consoleInput.Substring(0, consoleInput.Length-1);
 					SetInputSprite();
+				} else if (Input.GetKeyDown(KeyCode.Tab)) {
+					List<string> ac = Settings.Autocomplete(consoleInput);
+					if (ac.Count == 1) {
+						consoleInput = ac[0];
+					} else {
+						for (int i = 0; i < ac.Count; i++) {
+							ConsoleLog(ac[i]);
+						}
+					}
+					
 				} else {
 					consoleInput += Input.inputString;
 					if (Input.inputString != "") {
@@ -194,7 +218,7 @@ public class HUD : MonoBehaviour {
 		hs.sprite = Sprite.Create(messageTexture, new Rect(0f, 0f, messageTexture.width, -messageTexture.height), new Vector2(0f, 1f));
 		main.messages.Add(hudMessage);
 		main.UpdateMessageList();
-		main.audioSource.PlayOneShot(main.soundMessage);
+		if (main.soundMessage != null) main.audioSource.PlayOneShot(main.soundMessage);
 
 		// All hud messages go to the console too
 		ConsoleLog(messageTexture, message);
@@ -217,5 +241,23 @@ public class HUD : MonoBehaviour {
 		sr.material = messageMaterial;
 		sr.sprite = Sprite.Create(messageTexture, new Rect(0f, 0f, messageTexture.width, -messageTexture.height), new Vector2(0f, 1f));
 		main.UpdateConsoleMessages();
+	}
+
+	public void UpdateMapName() {
+		Texture2D messageTexture = doomText.Write(mapname);
+		mapNameSR.sprite = Sprite.Create(messageTexture, new Rect(0f, 0f, messageTexture.width, -messageTexture.height), new Vector2(0f, 1f));
+	}
+
+	public static void SetMapName(string mapname) {
+		main.mapname = mapname;
+		main.UpdateMapName();
+	}
+
+	public static void HideMapName() {
+		main.mapNameSR.enabled = false;
+	}
+
+	public static void ShowMapName() {
+		main.mapNameSR.enabled = true;
 	}
 }

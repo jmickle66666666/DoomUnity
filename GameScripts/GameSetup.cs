@@ -341,6 +341,7 @@ public class GameSetup : MonoBehaviour {
 		}
 		buildingMap = false;
 		GameObject.Destroy(GameObject.Find("CLEAR"));
+		HUD.SetMapName(mapinfo[currentMap].name);
 	}
 
 	void CreatePlayer() {

@@ -30,6 +30,9 @@ public class MouseLook : MonoBehaviour
 	
 	void Start ()
 	{			
+		sensitivityX = float.Parse(Settings.Get("mouse_sensitivityx", "10"));
+		sensitivityY = float.Parse(Settings.Get("mouse_sensitivityy", "9"));
+
 		if (GetComponent<Rigidbody>())
 		{
 			GetComponent<Rigidbody>().freezeRotation = true;
