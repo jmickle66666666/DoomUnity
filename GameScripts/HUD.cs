@@ -19,21 +19,38 @@ public class HUD : MonoBehaviour {
 	static HUD main;
 	static DoomText doomText;
 	public static WadFile wad;
-	static float messageLife = 3f;
+	static float messageLife = 0.1f;
 	List<HUDMessage> messages;
+	List<GameObject> consoleMessages;
 	static Material messageMaterial;
 	private AudioSource audioSource;
 	private AudioClip soundMessage;
+	GameObject consoleObject;
+	int maxConsoleMessages = 20;
+
+	Vector3 consoleOpenHeight = new Vector3(0f, -0.7f, 0f);
+	Vector3 consoleClosedHeight = new Vector3(0f, 0.1f, 0f);
+	public bool consoleOpen = false;
 
 	// Use this for initialization
 	void Start () {
 		messages = new List<HUDMessage>();
+		consoleMessages = new List<GameObject>();
+		consoleObject = new GameObject("console");
 		main = this;
 		gameObject.layer = 9;
 		SetupCamera();
+		SetupMaterials();
 		audioSource = gameObject.AddComponent<AudioSource>();
 		audioSource.spatialBlend = 0.0f;
 		soundMessage = new DoomSound(wad.GetLump("DSRADIO"), "HUD/Message").ToAudioClip();
+
+		SpriteRenderer sr = consoleObject.AddComponent<SpriteRenderer>();
+		sr.material = messageMaterial;
+		sr.sprite = Sprite.Create(new DoomGraphic(wad.GetLump("TITLEPIC")).ToRenderMap(), new Rect(0f, 0f, 320, -200), new Vector2(0.5f, -0.45f));
+		sr.flipY = true;
+		sr.material.SetFloat("_Brightness", 0.5f);
+		consoleObject.layer = 9;
 	}
 
 	void SetupCamera() {
@@ -51,6 +68,13 @@ public class HUD : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		UpdateMessages();
+
+		if (Input.GetKeyDown(KeyCode.BackQuote)) {
+			consoleOpen = !consoleOpen;
+		}
+
+		consoleObject.transform.position = Vector3.Lerp(consoleObject.transform.position, consoleOpen?consoleOpenHeight:consoleClosedHeight, Time.deltaTime * 10f);
+		
 	}
 
 	void UpdateMessages() {
@@ -70,13 +94,23 @@ public class HUD : MonoBehaviour {
 		}
 	}
 
-	public static void Message(string message) {
+	void UpdateConsoleMessages() {
+		for (int i = 0; i < consoleMessages.Count; i++) {
+			consoleMessages[i].transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f + (((messages.Count-1) + i) * 0.1f), -0.1f);
+		}
+	}
+
+	static void SetupMaterials() {
 		if (doomText == null) doomText = new DoomText(wad);
 		if (messageMaterial == null) {
 			messageMaterial = new Material(Shader.Find("Doom/Unlit Texture"));
 			messageMaterial.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
 			messageMaterial.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
 		}
+	}
+
+	public static void Message(string message) {
+		if (doomText == null) SetupMaterials();
 
 		Texture2D messageTexture = doomText.Write(message);
 		HUDMessage hudMessage = new HUDMessage();
@@ -91,5 +125,27 @@ public class HUD : MonoBehaviour {
 		main.messages.Add(hudMessage);
 		main.UpdateMessageList();
 		main.audioSource.PlayOneShot(main.soundMessage);
+
+		// All hud messages go to the console too
+		ConsoleLog(messageTexture, message);
+	}
+
+	public static void ConsoleLog(string message) {
+		if (doomText == null) SetupMaterials();
+
+		Texture2D messageTexture = doomText.Write(message);
+		ConsoleLog(messageTexture, message);
+	}
+
+	private static void ConsoleLog(Texture2D messageTexture, string message) {
+		GameObject messageObject = new GameObject(message);
+		messageObject.layer = 9;
+		messageObject.transform.localScale = new Vector3(1f, -1f, 1f);
+		messageObject.transform.parent = main.consoleObject.transform;
+		main.consoleMessages.Insert(0, messageObject);
+		SpriteRenderer sr = messageObject.AddComponent<SpriteRenderer>();
+		sr.material = messageMaterial;
+		sr.sprite = Sprite.Create(messageTexture, new Rect(0f, 0f, messageTexture.width, -messageTexture.height), new Vector2(0f, 1f));
+		main.UpdateConsoleMessages();
 	}
 }

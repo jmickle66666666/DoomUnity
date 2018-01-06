@@ -495,7 +495,7 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		if (currentCheat == "test") {
-			HUD.Message("Test cheat");
+			HUD.Message("Test");
 			Debug.Log(currentCheat);
 			currentCheat = "";
 		}
