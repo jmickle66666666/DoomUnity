@@ -515,6 +515,7 @@ public class CoroutineRunner : MonoBehaviour {
 	public DoomMapBuilder dmb;
 
 	public IEnumerator BuildLines() {
+		backgroundLoading = Settings.Get("m_backgroundload", "false") == "true";
 		yield return null;  // one frame so the game can do an update before any loading happens/
 							// this is mainly so the HUD message "switching to mapxx" happens
 		float time = Time.realtimeSinceStartup;
@@ -534,6 +535,7 @@ public class CoroutineRunner : MonoBehaviour {
 	}
 
 	public IEnumerator BuildSectors() {
+		backgroundLoading = Settings.Get("m_backgroundload", "false") == "true";
 		yield return null;
 		float time = Time.realtimeSinceStartup;
 		for (int i = 0; i < map.sectors.Count; i++) {

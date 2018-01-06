@@ -61,6 +61,7 @@ More stuff
 
 public class GameSetup : MonoBehaviour {
 
+	public static GameSetup main;
 	public GameObject playerPrefab;
 	private GameObject player;
 	private FirstPersonDrifter fpd;
@@ -91,7 +92,8 @@ public class GameSetup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		main = this;
+		Settings.Init();
 		ParseArguments();
 		midiEnabled = args.midi;
 
@@ -473,12 +475,7 @@ public class GameSetup : MonoBehaviour {
 
 					currentCheat = "";
 					cheatLevelChange = false;
-					if (mapBuilder.wad.Contains(GetMapName(levelChange))) {
-						HUD.Message("Warping to map: "+levelChange);
-						BuildMap(GetMapName(levelChange));
-					} else {
-						Debug.Log("Couldn't find map "+GetMapName(levelChange));
-					}
+					WarpMap(GetMapName(levelChange));
 				}
 			}
 		}
@@ -504,6 +501,16 @@ public class GameSetup : MonoBehaviour {
 			HUD.Message("no clip mode "+(fpd.noClip?"off":"on"));
 			fpd.noClip = !fpd.noClip;
 			currentCheat = "";
+		}
+	}
+
+	public void WarpMap(string mapname) {
+		mapname = mapname.ToUpper();
+		if (mapBuilder.wad.Contains(mapname)) {
+			HUD.Message("Warping to map: "+mapname);
+			BuildMap(mapname);
+		} else {
+			HUD.Message("Couldn't find map "+mapname);
 		}
 	}
 }

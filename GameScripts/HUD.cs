@@ -19,7 +19,7 @@ public class HUD : MonoBehaviour {
 	static HUD main;
 	static DoomText doomText;
 	public static WadFile wad;
-	static float messageLife = 0.1f;
+	static float messageLife = 3f;
 	List<HUDMessage> messages;
 	List<GameObject> consoleMessages;
 	static Material messageMaterial;
@@ -52,7 +52,7 @@ public class HUD : MonoBehaviour {
 		sr.material = messageMaterial;
 		sr.sprite = Sprite.Create(new DoomGraphic(wad.GetLump("TITLEPIC")).ToRenderMap(), new Rect(0f, 0f, 320, -200), new Vector2(0.5f, -0.45f));
 		sr.flipY = true;
-		sr.material.SetFloat("_Brightness", 0.5f);
+		sr.material.SetFloat("_Brightness", 0.3f);
 		consoleObject.layer = 9;
 
 		GameObject consoleInputObject = new GameObject("Console Input");
@@ -87,6 +87,7 @@ public class HUD : MonoBehaviour {
 				if (Input.GetKeyDown(KeyCode.Return)) {
 					// Do something with the input
 					ConsoleLog(consoleInput);
+					ParseConsoleCommand(consoleInput);
 					ClearConsoleInput();
 				} else if (Input.GetKeyDown(KeyCode.Backspace)) {
 					consoleInput = consoleInput.Substring(0, consoleInput.Length-1);
@@ -102,6 +103,38 @@ public class HUD : MonoBehaviour {
 
 		consoleObject.transform.position = Vector3.Lerp(consoleObject.transform.position, consoleOpen?consoleOpenHeight:consoleClosedHeight, Time.deltaTime * 10f);
 		
+	}
+
+	string[] commands = new string[] {
+		"map"
+	};
+
+	bool IsCommand(string command) {
+		for (int i = 0; i < commands.Length; i++) {
+			if (commands[i] == command) return true;
+		}
+		return false;
+	}
+
+	void ParseConsoleCommand(string command) {
+		string[] splitCommand = command.Split(' ');
+
+		if (IsCommand(splitCommand[0])) {
+			if (splitCommand[0] == "map") {
+				if (splitCommand.Length == 1) ConsoleLog("Usage: map [mapname]");
+				if (splitCommand.Length == 2) {
+					GameSetup.main.WarpMap(splitCommand[1]);
+					consoleOpen = false;
+				}
+			}
+		} else {
+
+			if (splitCommand.Length == 1) ConsoleLog(Settings.Get(command));
+			if (splitCommand.Length == 2) {
+				ConsoleLog(Settings.Set(splitCommand[0], splitCommand[1], false));
+			}
+
+		}
 	}
 
 	void UpdateMessages() {
