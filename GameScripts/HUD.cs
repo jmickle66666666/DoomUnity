@@ -32,6 +32,9 @@ public class HUD : MonoBehaviour {
 	Vector3 consoleClosedHeight = new Vector3(0f, 0.1f, 0f);
 	public bool consoleOpen = false;
 
+	string consoleInput;
+	SpriteRenderer consoleInputSR;
+
 	// Use this for initialization
 	void Start () {
 		messages = new List<HUDMessage>();
@@ -51,6 +54,14 @@ public class HUD : MonoBehaviour {
 		sr.flipY = true;
 		sr.material.SetFloat("_Brightness", 0.5f);
 		consoleObject.layer = 9;
+
+		GameObject consoleInputObject = new GameObject("Console Input");
+		consoleInputSR = consoleInputObject.AddComponent<SpriteRenderer>();
+		consoleInputSR.material = messageMaterial;
+		consoleInputObject.transform.parent = consoleObject.transform;
+		consoleInputObject.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f, -0.1f);
+		consoleInputObject.transform.localScale = new Vector3(1f, -1f, 1f);
+		consoleInputObject.layer = 9;
 	}
 
 	void SetupCamera() {
@@ -71,6 +82,22 @@ public class HUD : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.BackQuote)) {
 			consoleOpen = !consoleOpen;
+		} else {
+			if (consoleOpen) {
+				if (Input.GetKeyDown(KeyCode.Return)) {
+					// Do something with the input
+					ConsoleLog(consoleInput);
+					ClearConsoleInput();
+				} else if (Input.GetKeyDown(KeyCode.Backspace)) {
+					consoleInput = consoleInput.Substring(0, consoleInput.Length-1);
+					SetInputSprite();
+				} else {
+					consoleInput += Input.inputString;
+					if (Input.inputString != "") {
+						SetInputSprite();
+					}
+				}	
+			} 
 		}
 
 		consoleObject.transform.position = Vector3.Lerp(consoleObject.transform.position, consoleOpen?consoleOpenHeight:consoleClosedHeight, Time.deltaTime * 10f);
@@ -88,6 +115,16 @@ public class HUD : MonoBehaviour {
 		}
 	}
 
+	void SetInputSprite() {
+		Texture2D tex2d = doomText.Write(consoleInput);
+		consoleInputSR.sprite = Sprite.Create(tex2d, new Rect(0f, 0f, tex2d.width, -tex2d.height), new Vector2(0f, 1f));
+	}
+
+	void ClearConsoleInput() {
+		consoleInput = "";
+		SetInputSprite();
+	}
+
 	void UpdateMessageList() {
 		for (int i = 0; i < messages.Count; i++) {
 			messages[i].obj.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f - (((messages.Count-1) - i) * 0.1f), 0f);
@@ -96,7 +133,7 @@ public class HUD : MonoBehaviour {
 
 	void UpdateConsoleMessages() {
 		for (int i = 0; i < consoleMessages.Count; i++) {
-			consoleMessages[i].transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f + (((messages.Count-1) + i) * 0.1f), -0.1f);
+			consoleMessages[i].transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f + ((messages.Count + i + 1) * 0.1f), -0.1f);
 		}
 	}
 
