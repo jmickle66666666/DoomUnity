@@ -38,7 +38,7 @@ public class DoomText {
 
 		for (int i = 0; i < textLength; i++) {
 			if (chars[i] != null) {
-				output.SetPixels32(spacing[i], 0, chars[i].width, chars[i].height, chars[i].GetPixels32());
+				output.SetPixels32(spacing[i], 8 - chars[i].height, chars[i].width, chars[i].height, chars[i].GetPixels32());
 			}
 		}
 		output.Apply();
