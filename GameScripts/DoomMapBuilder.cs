@@ -135,18 +135,21 @@ public class DoomMapBuilder {
 
 				newObj.AddComponent<BillboardSprite>();
 
-				string spriteName = multigen.states[mobj.data["spawnstate"]].spriteName + multigen.states[mobj.data["spawnstate"]].spriteFrame;
-				Sprite mobjSprite = null;
-				if (wad.Contains(spriteName + "0")) {
-					mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "0")).ToSprite();
-				} else if (wad.Contains(spriteName + "1")) {
-					mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "1")).ToSprite();
-				}
+				if (mobj.data["spawnstate"] != "S_NULL" && !map.things[i].multiplayer) {
+					string spriteName = multigen.states[mobj.data["spawnstate"]].spriteName + multigen.states[mobj.data["spawnstate"]].spriteFrame;
+					Sprite mobjSprite = null;
+					if (wad.Contains(spriteName + "0")) {
+						mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "0")).ToSprite();
+					} else if (wad.Contains(spriteName + "1")) {
+						mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "1")).ToSprite();
+					}
 
-				if (mobjSprite != null) {
-					SpriteRenderer mobjSr = newObj.AddComponent<SpriteRenderer>();
-					mobjSr.sprite = mobjSprite;
-					mobjSr.material = spriteMaterial;
+					if (mobjSprite != null) {
+						SpriteRenderer mobjSr = newObj.AddComponent<SpriteRenderer>();
+						mobjSr.sprite = mobjSprite;
+						mobjSr.material = spriteMaterial;
+						mobjSr.material.SetFloat("_Brightness", thingSectors[i].lightLevel /256.0f); 
+					}
 				}
 			}
 		}
@@ -542,7 +545,7 @@ public class CoroutineRunner : MonoBehaviour {
 
 			dmb.BuildSector(i);
 
-			if (i % 10 == 0 && backgroundLoading) {
+			if (backgroundLoading) {
 				if (Time.realtimeSinceStartup - time > 0.03f) {
 					time = Time.realtimeSinceStartup;
 					yield return null;
