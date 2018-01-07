@@ -14,7 +14,7 @@ using UnityEditor;
 [System.Serializable]
 public class IwadInfo {
 	public string name;
-	public string[] filenames;
+	public string md5;
 	public string mapnameFormat;
 	public string titleMusic;
 	public string mapInfo;
@@ -80,6 +80,7 @@ public class GameSetup : MonoBehaviour {
 
 	private bool iwadSelector = false;
 	private List<IwadInfo> foundIwads;
+	private List<string> iwadPaths;
 	private MultigenParser multigen;
 
 	private MidiPlayer midiPlayer;
@@ -124,13 +125,22 @@ public class GameSetup : MonoBehaviour {
 
 		SetupTitleCamera();
 
+		string iwadDirectory = Settings.Get("iwads_path", "./");
+
 		if (args.iwad == "") { // Run IWAD selection tool
 
 			foundIwads = new List<IwadInfo>();
-			for (int i = 0; i < iwadData.iwads.Length; i++) {
-				for (int j = 0; j < iwadData.iwads[i].filenames.Length; j++) {
-					if (System.IO.File.Exists(iwadData.iwads[i].filenames[j])) {
-						foundIwads.Add(iwadData.iwads[i]);
+			iwadPaths = new List<string>();
+
+			var fileInfo = new DirectoryInfo(iwadDirectory).GetFiles();
+			foreach (var file in fileInfo) {
+				string fileMd5 = WadFile.GetMD5(file.FullName);
+				if (file.Extension.ToUpper() == ".WAD") {
+					for (int i = 0; i < iwadData.iwads.Length; i++) {
+						if (fileMd5 == iwadData.iwads[i].md5) {
+							foundIwads.Add(iwadData.iwads[i]);
+							iwadPaths.Add(file.FullName);
+						}
 					}
 				}
 			}
@@ -143,13 +153,13 @@ public class GameSetup : MonoBehaviour {
 			}
 
 			if (foundIwads.Count == 1) {
-				SetupWad(foundIwads[0]);
+				SetupWad(foundIwads[0], iwadPaths[0]);
 			}
 
 		} else {
 			for (int i = 0; i < iwadData.iwads.Length; i++) {
-				if (args.iwad == iwadData.iwads[i].filenames[0]) {
-					SetupWad(iwadData.iwads[i]);
+				if (WadFile.GetMD5(args.iwad) == iwadData.iwads[i].md5) {
+					SetupWad(iwadData.iwads[i], args.iwad);
 					break;
 				}
 			}
@@ -177,13 +187,13 @@ public class GameSetup : MonoBehaviour {
 		title.Build(engineWad);
 	}
 
-	void SetupWad(IwadInfo info) {
+	void SetupWad(IwadInfo info, string path) {
 		
 		if (info.mapInfo != null) {
 			mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo), engineWad);
 		}
 
-		wad = new WadFile(info.filenames[0]);
+		wad = new WadFile(path);
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
@@ -213,7 +223,7 @@ public class GameSetup : MonoBehaviour {
 
 			for (int i = 0; i < foundIwads.Count; i++) {
 				if (GUI.Button(new Rect(10 * wscale, (10 * hscale) + (i * 25), 200 * wscale, 20), foundIwads[i].name)) {
-					SetupWad(foundIwads[i]);
+					SetupWad(foundIwads[i], iwadPaths[i]);
 				}
 			}
 		}

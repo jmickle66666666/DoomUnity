@@ -186,6 +186,16 @@ namespace WadTools {
 			return sBuilder.ToString();
 		}
 
+		public static string GetMD5(string path) {
+			byte[] data = File.ReadAllBytes(path);
+			byte[] md5 = MD5.Create().ComputeHash(data);
+			StringBuilder sBuilder = new StringBuilder();
+			for (int i = 0; i < md5.Length; i++) {
+				sBuilder.Append(md5[i].ToString("x2"));
+			}
+			return sBuilder.ToString();
+		}
+
 	}
 
 }

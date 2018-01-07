@@ -2,7 +2,7 @@
 	"iwads" : [
 		{ 
 			"name": "Doom II: Hell on Earth",
-			"filenames": ["DOOM2.WAD"],
+			"md5": "25e1459ca71d321525f84628f45ca8cd",
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
 			"mapInfo":"D2MAPS",
@@ -10,21 +10,21 @@
 		},
 		{ 
 			"name": "Doom",
-			"filenames": ["DOOM.WAD"],
+			"md5": "0a996780709bb39da552276c78f452f7",
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
 			"mapInfo":"D1MAPS"
 		},
 		{ 
 			"name": "Chex Quest",
-			"filenames": ["chex.wad"],
+			"md5": "25485721882b050afa96a56e5758dd52",
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
 			"mapInfo":"D1MAPS"
 		},
 		{ 
 			"name": "TNT: Evilution",
-			"filenames": ["TNT.WAD"],
+			"md5": "4e158d9953c79ccf97bd0663244cc6b6",
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
 			"mapInfo":"D2MAPS",
@@ -33,7 +33,7 @@
 		},
 		{ 
 			"name": "The Plutonia Experiment",
-			"filenames": ["PLUTONIA.WAD"],
+			"md5": "75c8cf89566741fa9d22447604053bd7",
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
 			"mapInfo":"PLUTMAPS",
@@ -41,14 +41,15 @@
 		},
 		{ 
 			"name": "FreeDoom: Phase 1",
-			"filenames": ["freedoom1.wad"],
+			"md5": "6d00c49520be26f08a6bd001814a32ab",
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
-			"mapInfo":"D1MAPS"
+			"mapInfo":"D1MAPS",
+			"multigen":"D2SGEN"
 		},
 		{ 
 			"name": "FreeDoom: Phase 2",
-			"filenames": ["freedoom2.wad"],
+			"md5": "90832a872b5bb0aca4ca0b20419aad5d",
 			"mapnameFormat": "MAP",
 			"titleMusic":"D_DM2TTL",
 			"mapInfo":"D2MAPS",
