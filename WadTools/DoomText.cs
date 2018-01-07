@@ -47,10 +47,18 @@ public class DoomText {
 		return output;
 	}
 
+	private Dictionary<char, Texture2D> textCache;
+
 	private Texture2D GetChar(char c) {
+		if (textCache == null) textCache = new Dictionary<char, Texture2D>();
+
+		if (textCache.ContainsKey(c)) return textCache[c];
+
 		string lumpName = lumpIdent + (int)char.ToUpper(c);
 		if (wad.Contains(lumpName)) {
-			return new DoomGraphic(wad.GetLump(lumpName)).ToRenderMap();
+			Texture2D output = new DoomGraphic(wad.GetLump(lumpName)).ToRenderMap();
+			textCache.Add(c, output);
+			return output;
 		}
 		return null;
 	}
