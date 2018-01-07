@@ -292,7 +292,7 @@ namespace WadTools {
 
 		public Sprite ToSprite() {
 			Texture2D texture = ToRenderMap(true);
-			Sprite output = Sprite.Create(texture, new Rect(0,0,(float)width,(float)height), new Vector2((float)offsetX / (float)width, 1.0f - ((float)offsetY / (float)width)));
+			Sprite output = Sprite.Create(texture, new Rect(0,0,(float)width,(float)height), new Vector2((float)offsetX / (float)width, 1.0f - ((float)offsetY / (float)height)));
 			return output;
 		}
 
