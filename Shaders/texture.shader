@@ -21,7 +21,7 @@ SubShader {
             #include "UnityCG.cginc"
 
             struct v2f {
-                float4 vertex : POSITION;
+                float4 vertex : SV_POSITION;
                 float2 texcoord : TEXCOORD0;
             };
 
@@ -41,7 +41,11 @@ SubShader {
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float depth = (1.0 - saturate(i.vertex.z)) * 32.0;
+                float depth = 1.0 - saturate(i.vertex.z);
+                #if defined(UNITY_REVERSED_Z)
+                    depth = 1.0 - depth;
+                #endif
+                depth *= 32.0;
                 float li = (_Brightness * 2.0) - (224.0 / 256.0);
                 li = saturate(li);
                 float maxlight = (_Brightness * 2.0) - (40.0 / 256.0);
