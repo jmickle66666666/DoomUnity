@@ -370,6 +370,8 @@ public class GameSetup : MonoBehaviour {
 								 			    playerThing.y * mapBuilder.SCALE);
 		player.transform.localEulerAngles = new Vector3(0f, 90f - playerThing.angle, 0f);
 		fpd = player.GetComponent<FirstPersonDrifter>();
+
+		player.transform.Find("Main Camera").GetComponent<MouseLook>().enabled = (Settings.Get("MOUSE_VLOOK", "false") == "true");
 	}
 	
 	private List<string> cheatCodes;
