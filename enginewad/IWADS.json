@@ -20,7 +20,8 @@
 			"md5": "25485721882b050afa96a56e5758dd52",
 			"mapnameFormat": "EM",
 			"titleMusic":"D_INTRO",
-			"mapInfo":"D1MAPS"
+			"mapInfo":"D1MAPS",
+			"multigen":"D2SGEN"
 		},
 		{ 
 			"name": "TNT: Evilution",
