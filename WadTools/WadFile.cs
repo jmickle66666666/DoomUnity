@@ -177,6 +177,15 @@ namespace WadTools {
 			return FixString(new string(Encoding.ASCII.GetChars(data, offset, length)));
 		}
 
+		public string GetMD5() {
+			byte[] md5 = MD5.Create().ComputeHash(wadData);
+			StringBuilder sBuilder = new StringBuilder();
+			for (int i = 0; i < md5.Length; i++) {
+				sBuilder.Append(md5[i].ToString("x2"));
+			}
+			return sBuilder.ToString();
+		}
+
 	}
 
 }
