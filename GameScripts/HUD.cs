@@ -76,6 +76,13 @@ public class HUD : MonoBehaviour {
 		mapNameObj.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), -((float)Screen.width/(float)Screen.height) + 0.5f, 0.1f);
 		mapNameObj.transform.localScale = new Vector3(1f, -1f, 1f);
 		HideMapName();
+
+		GameObject statusBar = new GameObject("StatusBar");
+		statusBar.layer = 9;
+		statusBar.transform.parent = transform;
+		StatusBar sbar = statusBar.AddComponent<StatusBar>();
+		sbar.Build(wad);
+
 	}
 
 	void SetupCamera() {
