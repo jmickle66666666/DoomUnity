@@ -23,8 +23,8 @@ public class HUD : MonoBehaviour {
 	List<HUDMessage> messages;
 	List<GameObject> consoleMessages;
 	static Material messageMaterial;
-	private AudioSource audioSource;
-	private AudioClip soundMessage;
+	//private AudioSource audioSource;
+	//private AudioClip soundMessage;
 	GameObject consoleObject;
 	int maxConsoleMessages = 20;
 
@@ -48,11 +48,11 @@ public class HUD : MonoBehaviour {
 		gameObject.layer = 9;
 		SetupCamera();
 		SetupMaterials();
-		audioSource = gameObject.AddComponent<AudioSource>();
-		audioSource.spatialBlend = 0.0f;
-		try {
-		soundMessage = new DoomSound(wad.GetLump("DSRADIO"), "HUD/Message").ToAudioClip();
-		} catch {}
+		//audioSource = gameObject.AddComponent<AudioSource>();
+		//audioSource.spatialBlend = 0.0f;
+		// try {
+		// soundMessage = new DoomSound(wad.GetLump("DSRADIO"), "HUD/Message").ToAudioClip();
+		// } catch {}
 		SpriteRenderer sr = consoleObject.AddComponent<SpriteRenderer>();
 		sr.material = messageMaterial;
 		sr.sprite = Sprite.Create(new DoomGraphic(wad.GetLump("TITLEPIC")).ToRenderMap(), new Rect(0f, 0f, 320, -200), new Vector2(0.5f, -0.45f));
@@ -218,7 +218,7 @@ public class HUD : MonoBehaviour {
 		hs.sprite = Sprite.Create(messageTexture, new Rect(0f, 0f, messageTexture.width, -messageTexture.height), new Vector2(0f, 1f));
 		main.messages.Add(hudMessage);
 		main.UpdateMessageList();
-		if (main.soundMessage != null) main.audioSource.PlayOneShot(main.soundMessage);
+		//if (main.soundMessage != null) main.audioSource.PlayOneShot(main.soundMessage);
 
 		// All hud messages go to the console too
 		ConsoleLog(messageTexture, message);
