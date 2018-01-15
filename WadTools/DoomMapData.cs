@@ -44,15 +44,26 @@ namespace WadTools {
 			linedefs = new List<Linedef>();
 
 			for (int i = 0; i < data.Length; i+=size) {
+
 				Linedef nl = new Linedef() {
 					start = (int) BitConverter.ToUInt16(data, i),
 					end = (int) BitConverter.ToUInt16(data, i + 2),
-					flags = (int) BitConverter.ToUInt16(data, i + 4),
 					special = (int) BitConverter.ToUInt16(data, i + 6),
 					tag = (int) BitConverter.ToUInt16(data, i + 8),
 					front = (int) BitConverter.ToUInt16(data, i + 10),
 					back = (int) BitConverter.ToUInt16(data, i + 12)
 				};
+
+				int flags = (int) BitConverter.ToUInt16(data, i + 4);
+				nl.impassable = (flags & 1) == 1;
+				nl.blockMonster = (flags & 2) == 2;
+				nl.twoSided = (flags & 4) == 4;
+				nl.upperUnpegged = (flags & 8) == 8;
+				nl.lowerUnpegged = (flags & 16) == 16;
+				nl.secret = (flags & 32) == 32;
+				nl.blockSound = (flags & 64) == 64;
+				nl.alwaysShow = (flags & 128) == 128;
+
 				linedefs.Add(nl);
 			}
 		}
@@ -104,9 +115,16 @@ namespace WadTools {
 					x = BitConverter.ToInt16(data, i),
 					y = BitConverter.ToInt16(data, i + 2),
 					angle = BitConverter.ToInt16(data, i + 4),
-					type = BitConverter.ToInt16(data, i + 6),
-					flags = BitConverter.ToInt16(data, i + 8)
+					type = BitConverter.ToInt16(data, i + 6)
 				};
+
+				int flags = BitConverter.ToInt16(data, i + 8);
+				nt.skill2 = (flags & 1) == 1;
+				nt.skill3 = (flags & 2) == 2;
+				nt.skill4 = (flags & 4) == 4;
+				nt.ambush = (flags & 8) == 8;
+				nt.multiplayer = (flags & 16) == 16;
+
 				things.Add(nt);
 			}
 		}

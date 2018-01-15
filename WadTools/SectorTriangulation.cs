@@ -189,8 +189,6 @@ namespace WadTools {
 
 			private void MakeCut(int shellPointIndex, int holePointIndex) {
 
-				// Debug.Log("MakeCut: "+shell[shellPointIndex]+" "+holes[0][holePointIndex]);
-
 				if (IsClockwise(holes[0]) == IsClockwise(shell)) {
 					holes[0].Reverse();
 					holePointIndex = holes[0].Count - (holePointIndex + 1);
@@ -203,6 +201,7 @@ namespace WadTools {
 				shell.Insert(shellPointIndex + holes[0].Count, holes[0][holePointIndex]);
 				shell.Insert(shellPointIndex, sp);
 				holes.RemoveAt(0);
+
 			}
 
 		}
@@ -311,7 +310,6 @@ namespace WadTools {
 
 			if (foundUnclosedSector > 0) {
 				Debug.LogError("Unclosed sector: "+sector);
-				//Debug.Log("Lonely vertexes: "+foundUnclosedSector);
 				return null;
 			}
 
