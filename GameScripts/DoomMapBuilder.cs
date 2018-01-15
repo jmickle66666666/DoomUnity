@@ -79,7 +79,7 @@ public class DoomMapBuilder {
 		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
 
 		st = new SectorTriangulation(map);
-		map = new MapData(wad, mapname);
+		map = new DoomMapData(wad, mapname);
 
 		levelObject = new GameObject(mapname);
 
@@ -156,7 +156,7 @@ public class DoomMapBuilder {
 	}
 
 	public int TestMap(WadFile wad, string mapname) {
-		map = new MapData(wad, mapname);
+		map = new DoomMapData(wad, mapname);
 		st = new SectorTriangulation(map);
 		int failedSectors = 0;
 		for (int i = 0; i < map.sectors.Count; i++) {

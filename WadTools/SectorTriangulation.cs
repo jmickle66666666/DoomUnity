@@ -208,7 +208,7 @@ namespace WadTools {
 		}
 
 		public SectorTriangulation(MapData map) {
-			this.map = map;
+			this.map = (MapData) map;
 		}
 
 		public List<SectorPolygon> Triangulate(int sector, bool benchmark = false) {
