@@ -40,7 +40,7 @@ namespace WadTools {
 		public bool secret;
 		public bool blockSound;
 		public bool alwaysShow;
-
+		public bool dontDraw;
 	}
 
 	public class Sector {
