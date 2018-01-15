@@ -26,12 +26,11 @@ namespace WadTools {
 			sidedefs = new List<Sidedef>();
 			things = new List<Thing>();
 			sectors = new List<Sector>();
-			vertexes = new List<Vertex>();
+			vertices = new List<Vertex>();
 			ParseData(textmap);
 		}
 
 		public void ParseData(string data) {
-			this.data = data;
 
 			// Remove comments
 			data = Regex.Replace(data, regexComments, "");
@@ -180,7 +179,7 @@ namespace WadTools {
 			nv.x = (int) BlockFloat(blockData, "x");
 			nv.y = (int) BlockFloat(blockData, "y");
 
-			vertexes.Add(nv);
+			vertices.Add(nv);
 			return;
 
 		}
@@ -220,7 +219,7 @@ namespace WadTools {
 			nt.ambush = BlockBool(blockData, "ambush", false);
 			nt.multiplayer = !BlockBool(blockData, "single", false);
 
-			things.Add(nl);
+			things.Add(nt);
 			return;
 
 		}
