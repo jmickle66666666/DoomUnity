@@ -11,6 +11,7 @@ public class CameraDepth : MonoBehaviour {
 	public Material mat;
 	private bool automap = false;
 	private Camera cam;
+    private float automapZoom = 15f;
 
 	// Use this for initialization
 	void Start () {
@@ -31,12 +32,29 @@ public class CameraDepth : MonoBehaviour {
 				HUD.HideMapName();
 			} else {
 				transform.localEulerAngles = new Vector3(45f, 0f, 0f);
-				transform.localPosition = new Vector3(0f, 20f, -20f);
+                transform.localPosition = new Vector3(0f, 20f, -20f);
 				cam.orthographic = true;
-				cam.orthographicSize = 15;
+                cam.orthographicSize = automapZoom;
 				automap = true;
 				HUD.ShowMapName();
 			}
 		}
+
+        if (System.Math.Abs(Input.GetAxisRaw("Mouse ScrollWheel")) > 0.01f) {
+            if (automap) {
+                cam.orthographicSize -= Input.GetAxisRaw("Mouse ScrollWheel");
+                automapZoom = cam.orthographicSize;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        if (Input.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
 	}
 }
