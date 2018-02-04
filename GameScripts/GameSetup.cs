@@ -33,6 +33,7 @@ public class CommandlineArguments {
 	public string soundfont;
 	public bool runTests;
 	public bool midi;
+    public bool nomonsters;
 
 	public CommandlineArguments() {
 		pwads = new List<string>();
@@ -41,6 +42,7 @@ public class CommandlineArguments {
 		soundfont = "";
 		runTests = false;
 		midi = false;
+        nomonsters = false;
 	}
 }
 
@@ -96,6 +98,9 @@ public class GameSetup : MonoBehaviour {
 		main = this;
 		Settings.Init();
 		ParseArguments();
+
+        Settings.Set("nomonsters", args.nomonsters ? "true" : "false");
+
 		midiEnabled = args.midi;
 
 		engineWad = new WadFile("nasty.wad");
@@ -240,12 +245,13 @@ public class GameSetup : MonoBehaviour {
 		#endif
 		args = new CommandlineArguments();
 
-		for (int i = 0; i < arguments.Length; i++) {
+        for (int i = 0; i < arguments.Length; i++) {
+
 			if (arguments[i] == "-iwad") {
 				args.iwad = arguments[i+1];
 			}
 
-			if (arguments[i] == "-file") {
+			if (arguments[i] == "-file" || (i == 0 && arguments[0][0] != '-')) {
 				int j = i + 1;
 				while (j < arguments.Length && arguments[j][0] != '-') {
 					args.pwads.Add(arguments[j]);
@@ -268,6 +274,10 @@ public class GameSetup : MonoBehaviour {
 			if (arguments[i] == "-midi") {
 				args.midi = true;
 			}
+
+            if (arguments[i] == "-nomonsters") {
+                args.nomonsters = true;
+            }
 		}
 	}
 
@@ -346,7 +356,7 @@ public class GameSetup : MonoBehaviour {
 		if (midiEnabled) {
 			PlayMidi(mapinfo[currentMap].music);
 		}
-		if (multigen != null) {
+		if (multigen != null && Settings.Get("nomonsters", "false") == "false") {
 			mapBuilder.BuildTestSprites(multigen);
 		}
 		buildingMap = false;
