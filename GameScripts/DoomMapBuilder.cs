@@ -66,8 +66,7 @@ public class DoomMapBuilder {
 	public void BuildMap(WadFile wad, string mapname) {
 
 		this.wad = wad;
-		textureTable = new TextureTable(wad.GetLump("TEXTURE1"));
-		if (wad.Contains("TEXTURE2")) textureTable.Add(wad.GetLump("TEXTURE2"));
+		textureTable = wad.textureTable;
 		paletteLookup = new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture();
 		colormapLookup = new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture();
 		doomMaterial = new Material(Shader.Find("Doom/Texture"));

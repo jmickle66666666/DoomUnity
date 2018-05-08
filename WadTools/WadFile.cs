@@ -49,6 +49,7 @@ namespace WadTools {
 		public int directoryPos;
 		public List<DirectoryEntry> directory;
 		public byte[] wadData;
+		public TextureTable textureTable;
 
 		public DataType DetectType(string name) {
 			byte[] lump = GetLump(name);
@@ -100,6 +101,15 @@ namespace WadTools {
 			return GetLump(entry.position, entry.size);
 		}
 
+		// Get all lumps with the same name
+		public List<byte[]> GetLumps(string name) {
+			List<byte[]> output = new List<byte[]>();
+			for (int i = 0; i < directory.Count; i++) {
+				if (directory[i].name == name) output.Add(GetLump(i));
+			}
+			return output;
+		}
+
 		public int GetIndex(string name) {
 			for (int i = directory.Count - 1; i >= 0; i--) {
 				if (directory[i].name == name) return i;
@@ -134,6 +144,14 @@ namespace WadTools {
 
 			directory.AddRange(wad.directory);
 
+			if (textureTable == null && wad.textureTable != null) {
+				textureTable = wad.textureTable;
+			}
+
+			if (textureTable != null && wad.textureTable != null) {
+				textureTable.Merge(wad.textureTable);
+			}
+
 			byte[] newWadData = new byte[wadData.Length + wad.wadData.Length];
 			Buffer.BlockCopy(wadData, 0, newWadData, 0, wadData.Length);
 			Buffer.BlockCopy(wad.wadData, 0, newWadData, wadData.Length, wad.wadData.Length);
@@ -159,6 +177,14 @@ namespace WadTools {
 				};
 
 				directory.Add(de);
+			}
+
+			if (Contains("PNAMES")) {
+				PatchTable pnames = new PatchTable(GetLump("PNAMES"));
+				textureTable = new TextureTable(GetLump("TEXTURE1"), pnames);
+				if (Contains("TEXTURE2")) {
+					textureTable.Add(GetLump("TEXTURE2"), pnames);
+				}
 			}
 
 		}
