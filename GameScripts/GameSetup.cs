@@ -251,7 +251,7 @@ public class GameSetup : MonoBehaviour {
 				args.iwad = arguments[i+1];
 			}
 
-			if (arguments[i] == "-file" || (i == 0 && arguments[0][0] != '-')) {
+			if (arguments[i] == "-file" || (i == 0 && arguments[0] != "" && arguments[0][0] != '-')) {
 				int j = i + 1;
 				while (j < arguments.Length && arguments[j][0] != '-') {
 					args.pwads.Add(arguments[j]);
