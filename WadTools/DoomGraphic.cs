@@ -86,6 +86,7 @@ namespace WadTools {
 
 	public class TextureTable {
 		private Dictionary<string, DoomTexture> textures;
+		private PatchTable patches;
 
 		public DoomTexture Get(string name) {
 			if (textures.ContainsKey(name)) {
@@ -97,15 +98,19 @@ namespace WadTools {
 			return null;
 		}
 
-		public TextureTable(byte[] lumpData = null) {
+		public TextureTable(byte[] lumpData = null, PatchTable patchTable = null) {
 			textures = new Dictionary<string, DoomTexture>();
 			if (lumpData != null) {
-				Add(lumpData);
+				if (patchTable == null) {
+					Debug.LogError("Must include patchtable");
+					return;
+				}
+				Add(lumpData, patchTable);
 			}
 		}
 
-		// Append a texture definition
-		public void Add(byte[] lumpData) {
+		// Append a texture definition from wad
+		public void Add(byte[] lumpData, PatchTable patchTable) {
 			uint amt = BitConverter.ToUInt32(lumpData, 0);
 			uint[] offsets = new uint[amt];
 			int i;
@@ -123,7 +128,7 @@ namespace WadTools {
 					DoomPatch np = new DoomPatch(
 						(int) BitConverter.ToInt16(lumpData, j),
 						(int) BitConverter.ToInt16(lumpData, j + 2),
-						(int) BitConverter.ToUInt16(lumpData, j + 4)
+						patchTable.patches[(int) BitConverter.ToUInt16(lumpData, j + 4)]
 					);
 					patches.Add(np);
 				}
@@ -143,6 +148,17 @@ namespace WadTools {
 				}
 			}
 		}
+
+		// Merge in an existing texture definition
+		public void Merge(TextureTable textureTable) {
+			foreach (KeyValuePair<string, DoomTexture> entry in textureTable.textures) {
+				if (textures.ContainsKey(entry.Key)) {
+					textures[entry.Key] = entry.Value;
+				} else {
+					textures.Add(entry.Key, entry.Value);
+				}
+			}
+		} 
 	}
 
 	public class DoomTexture {
@@ -162,12 +178,12 @@ namespace WadTools {
 	public class DoomPatch {
 		public int originX;
 		public int originY;
-		public int patchIndex;
+		public string patchName;
 
-		public DoomPatch(int originX, int originY, int patchIndex) {
+		public DoomPatch(int originX, int originY, string patchName) {
 			this.originX = originX;
 			this.originY = originY;
-			this.patchIndex = patchIndex;
+			this.patchName = patchName;
 		}
 	}
 
@@ -339,18 +355,8 @@ namespace WadTools {
 
 		}
 
-		public static Texture2D BuildPatch(int index, PatchTable pnames, WadFile wad, bool trueColor = false) {
-			return BuildPatch(pnames.patches[index], wad, false, trueColor);
-		}
-
-		public static Texture2D BuildPatch(int index, WadFile wad) {
-			PatchTable pnames = new PatchTable(wad.GetLump("PNAMES"));
-			return BuildPatch(pnames.patches[index], wad);
-		}
-
-		public static Texture2D BuildTexture(string name, WadFile wad, bool trueColor = false) {
-			TextureTable textures = new TextureTable(wad.GetLump("TEXTURE1"));
-			return BuildTexture(name, wad, textures, trueColor);
+		public static Texture2D BuildPatch(DoomPatch patch, WadFile wad, bool trueColor = false) {
+			return BuildPatch(patch.patchName, wad, false, trueColor);
 		}
 
 		public static Texture2D BuildTexture(string name, WadFile wad, TextureTable textures, bool trueColor = false) {
@@ -360,15 +366,13 @@ namespace WadTools {
 				return textureCache[name];
 			}
 			
-			PatchTable pnames = new PatchTable(wad.GetLump("PNAMES"));
-
 			DoomTexture texture = textures.Get(name.ToUpper());
 			
 
 			Texture2D output = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
 			for (int i = 0; i < texture.patches.Count; i++) {
 				DoomPatch p = texture.patches[i];
-				Texture2D patch2d = DoomGraphic.BuildPatch(p.patchIndex, pnames, wad, trueColor);
+				Texture2D patch2d = DoomGraphic.BuildPatch(p.patchName, wad, trueColor);
 
 				if (patch2d == null) return null;
 
