@@ -34,7 +34,7 @@ public class CameraDepth : MonoBehaviour {
 				HUD.HideMapName();
 			} else {
 				transform.localEulerAngles = new Vector3(45f, 0f, 0f);
-                transform.localPosition = new Vector3(0f, 20f, -20f);
+                transform.localPosition = new Vector3(0f, 100f, -80f);
 				cam.orthographic = true;
                 cam.orthographicSize = automapZoom;
 				automap = true;
