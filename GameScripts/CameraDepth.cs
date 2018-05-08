@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.IO;
 
 /*
 This needs to be attached to the player camera, and is necessary for correct sky rendering
@@ -56,5 +58,28 @@ public class CameraDepth : MonoBehaviour {
         {
             Cursor.lockState = CursorLockMode.Locked;
         }
+
+		if (Input.GetKeyDown(KeyCode.P)) {
+			string datetime = DateTime.Now.ToString();
+			datetime = datetime.Replace("/", "");
+			datetime = datetime.Replace(" ", "");
+			datetime = datetime.Replace(":", "");
+
+			if (!Directory.Exists("Screenshots")) {
+				Directory.CreateDirectory("Screenshots");
+			}
+
+			string pathname = "Screenshots/NaSTY_"+datetime+".png";
+
+			ScreenCapture.CaptureScreenshot(pathname);
+
+			StartCoroutine("DelayedScreenshotMessage");
+
+		}
+	}
+
+	public IEnumerator DelayedScreenshotMessage() {
+		yield return new WaitForSeconds(0.1f);
+		HUD.Message("Screenshot captured");
 	}
 }
