@@ -266,7 +266,7 @@ namespace WadTools {
 	        return output;
 		}
 
-		public Texture2D ToRenderMap(bool inverseY = false) {
+		public Texture2D ToRenderMap(bool inverseY = false, bool inverseX = false) {
 			Texture2D output = new Texture2D(width, height, TextureFormat.RGBA32, false, true);
 			int i, j;
 
@@ -305,7 +305,12 @@ namespace WadTools {
 	                	if (inverseY) {
 	                		hPixel = height - hPixel - 1;
 	                	}
-	                	output.SetPixel(i, hPixel, new Color(data[position] / 256f, 0f, 0f, 1f));
+						int wPixel = i;
+						if (inverseX) {
+							wPixel = width - i;
+							wPixel -= 1;
+						}
+	                	output.SetPixel(wPixel, hPixel, new Color(data[position] / 256f, 0f, 0f, 1f));
 	                	//output.SetPixel(i, (rowStart+j) - height, palette.GetColor((int) data[position]));
 	                    position += 1;
 	                }
@@ -320,9 +325,11 @@ namespace WadTools {
 	        return output;
 		}
 
-		public Sprite ToSprite() {
-			Texture2D texture = ToRenderMap(true);
-			Sprite output = Sprite.Create(texture, new Rect(0,0,(float)width,(float)height), new Vector2((float)offsetX / (float)width, 1.0f - ((float)offsetY / (float)height)));
+		public Sprite ToSprite(bool flip = false) {
+			Texture2D texture = ToRenderMap(true, flip);
+			Rect sRect;
+			sRect = new Rect(0,0,(float)width,(float)height);
+			Sprite output = Sprite.Create(texture, sRect, new Vector2((float)offsetX / (float)width, 1.0f - ((float)offsetY / (float)height)));
 			return output;
 		}
 

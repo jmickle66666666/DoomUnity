@@ -3,13 +3,33 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
 using UnityEngine;
+using WadTools;
 
 public class MultigenState {
+	public string name;
 	public string spriteName;
 	public string spriteFrame;
 	public string duration;
 	public string action;
 	public string nextState;
+
+	public Sprite[] GetSprite(WadFile wad) {
+		string thisSpriteName = spriteName + spriteFrame;
+		if (wad.ContainsSpriteLump(spriteName, spriteFrame + "0")) {
+			Sprite[] output = new Sprite[1] {
+				wad.GetSprite(spriteName, spriteFrame + "0")
+			};
+			return output;
+		} else if (wad.ContainsSpriteLump(spriteName, spriteFrame + "1")) {
+			Sprite[] output = new Sprite[8];
+			for (int i = 0; i < 8; i++) {
+				output[i] = wad.GetSprite(spriteName, spriteFrame + (i+1).ToString());
+			}
+			return output;
+		} else {
+			throw new Exception("Error loading sprite: "+thisSpriteName);
+		}
+	}
 }
 
 public class MultigenObject {
@@ -107,6 +127,7 @@ public class MultigenParser {
 			} else if (tokens[i].StartsWith("S_")) {
 
 				MultigenState newState = new MultigenState() {
+					name = tokens[i],
 					spriteName = tokens[i+1],
 					spriteFrame = tokens[i+2],
 					duration = tokens[i+3],

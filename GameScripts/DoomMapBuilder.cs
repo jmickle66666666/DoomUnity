@@ -180,24 +180,9 @@ public class DoomMapBuilder {
 				newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
 				newObj.transform.parent = levelObject.transform;
 
-				newObj.AddComponent<BillboardSprite>();
+				LevelEntity ent = newObj.AddComponent<LevelEntity>();
 
-				if (mobj.data["spawnstate"] != "S_NULL" && !map.things[i].multiplayer) {
-					string spriteName = multigen.states[mobj.data["spawnstate"]].spriteName + multigen.states[mobj.data["spawnstate"]].spriteFrame;
-					Sprite mobjSprite = null;
-					if (wad.Contains(spriteName + "0")) {
-						mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "0")).ToSprite();
-					} else if (wad.Contains(spriteName + "1")) {
-						mobjSprite = new DoomGraphic(wad.GetLump(spriteName + "1")).ToSprite();
-					}
-
-					if (mobjSprite != null) {
-						SpriteRenderer mobjSr = newObj.AddComponent<SpriteRenderer>();
-						mobjSr.sprite = mobjSprite;
-						mobjSr.material = spriteMaterial;
-						mobjSr.material.SetFloat("_Brightness", thingSectors[i].lightLevel /256.0f); 
-					}
-				}
+				ent.LoadMultigen(multigen, mobj, wad);
 			}
 		}
 	}
@@ -227,7 +212,7 @@ public class DoomMapBuilder {
 		BuildMap(wad, mapname);
 	}
 
-	DoomTexture GetInfo(string name) {
+	DoomTexture GetInfo(string name, bool tryUpper = true) {
 		if (textureTable.Contains(name)) {
 			return textureTable.Get(name.ToUpper());
 		} else {
@@ -244,6 +229,9 @@ public class DoomMapBuilder {
 					throw new Exception("Unknown texture type: "+name);
 				}
 			} else {
+				if (tryUpper) {
+					return GetInfo(name.ToUpper(), false);
+				}
 				throw new Exception("Cannot find texture: "+name);
 			}
 		}
@@ -601,7 +589,7 @@ public class DoomMapBuilder {
 	}
 
 
-	Texture2D GetTexture(string name) {
+	Texture2D GetTexture(string name, bool tryUpper = true) {
 
 		if (textureTable.Contains(name)) {
 			lastTexturePNG = false;
@@ -622,6 +610,9 @@ public class DoomMapBuilder {
 					throw new Exception("Unknown texture type: "+name);
 				}
 			} else {
+				if (tryUpper) {
+					return GetTexture(name.ToUpper(), false);
+				}
 				throw new Exception("Cannot find texture: "+name);
 			}
 		}

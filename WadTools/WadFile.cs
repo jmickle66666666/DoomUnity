@@ -124,6 +124,32 @@ namespace WadTools {
 			return GetLump(entry.position, entry.size);
 		}
 
+		// Used for sprites, get sprites with multiple parts of strings
+		public Sprite GetSprite(string spriteName, string spriteFrame) {
+			for (int i = directory.Count - 1; i >= 0; i--) {
+				if (directory[i].name.StartsWith(spriteName) && 
+					(directory[i].name.EndsWith(spriteFrame) || directory[i].name.Substring(4,2) == spriteFrame)
+				) { 
+					string dirName = directory[i].name;
+					bool flipped = dirName.EndsWith(spriteFrame) && dirName.Length > 6;
+					return new DoomGraphic(GetLump(directory[i])).ToSprite(flipped);
+				}
+			}
+			Debug.LogError("Couldn't find sprite: "+spriteName + spriteFrame);
+			return null;
+		}
+
+		public bool ContainsSpriteLump(string spriteName, string spriteFrame) {
+			for (int i = directory.Count - 1; i >= 0; i--) {
+				if (directory[i].name.StartsWith(spriteName) && 
+					(directory[i].name.EndsWith(spriteFrame) || directory[i].name.Substring(4,2) == spriteFrame)
+				) { 
+					return true;
+				}
+			}
+			return false;
+		}
+
 		// Get all lumps with the same name
 		public List<byte[]> GetLumps(string name) {
 			List<byte[]> output = new List<byte[]>();
