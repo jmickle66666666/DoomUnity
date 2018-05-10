@@ -354,6 +354,8 @@ namespace WadTools {
 					return patchCache[name];
 				} 
 			}
+			Debug.Log("Fart");
+			Debug.Log(wad.GetLump(name.ToUpper()).Length);
 			Texture2D output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToRenderMap();
 			if (trueColor) output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToTexture2D(new Palette(wad.GetLump("PLAYPAL")));
 			

@@ -11,6 +11,8 @@ public class TitleSetup : MonoBehaviour {
 	private MeshRenderer mr;
 	private AudioListener al;
 
+	private bool titleIsPNG;
+
 	// Use this for initialization
 	void Start () {
 
@@ -39,20 +41,45 @@ public class TitleSetup : MonoBehaviour {
 		mesh.triangles = triangles;
 		mesh.uv = uvs;
 		mf.mesh = mesh;
-		mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
+
+		
 
 		transform.localPosition = new Vector3(0f, 0f, 1f);
 
-		transform.localScale = new Vector3(3.2f, -2f, 1f);
-		float ratio = (float) Screen.width / (float) Screen.height;
-		transform.localScale = new Vector3(ratio * 2f, -2f);
+	}
+
+	public void SetupMaterial(WadFile wad) {
+		titleIsPNG = wad.DetectType("TITLEPIC") == DataType.PNG;
+		Debug.Log(wad.DetectType("TITLEPIC"));
+
+		if (titleIsPNG) {
+			mr.material = new Material(Shader.Find("Doom/Unlit Truecolor Texture"));
+		} else {
+			mr.material = new Material(Shader.Find("Doom/Unlit Texture"));
+		}
+
+		if (titleIsPNG) {
+			Texture2D image = new Texture2D(2,2);
+			ImageConversion.LoadImage(image, wad.GetLump("TITLEPIC"));
+			mr.material.SetTexture("_MainTex", image);
+			float ratio = (float) Screen.width / (float) Screen.height;
+			transform.localScale = new Vector3(ratio * 2f, 2f);
+			transform.localPosition = new Vector3(0f, 0f, 1f);
+		} else {
+			mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
+			mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
+			mr.material.SetTexture("_MainTex", DoomGraphic.BuildPatch("TITLEPIC", wad, true));
+			float ratio = (float) Screen.width / (float) Screen.height;
+			transform.localScale = new Vector3(ratio * 2f, -2f);
+			transform.localPosition = new Vector3(0f, 0f, 1f);
+	
+		}
 	}
 
 	public void Build(WadFile wad) {
 		if (mr == null) InitSelf(wad);
-		mr.material.SetTexture("_Palette", new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture());
-		mr.material.SetTexture("_Colormap", new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture());
-		mr.material.SetTexture("_MainTex", DoomGraphic.BuildPatch("TITLEPIC", wad, true));
+
+		SetupMaterial(wad);
 	}
 
 	public void Darken(bool dark) {

@@ -44,7 +44,10 @@ namespace WadTools {
 	public enum DataType {
 		MIDI,
 		MUS,
-		UNKNOWN
+		DoomGraphic,
+		DoomFlat,
+		PNG,
+		Unknown
 	}
 
 	public class WadFile {
@@ -71,7 +74,22 @@ namespace WadTools {
 				return DataType.MUS;
 			}
 
-			return DataType.UNKNOWN;
+			if (lump[1] == Convert.ToByte('P') &&
+				lump[2] == Convert.ToByte('N') &&
+				lump[3] == Convert.ToByte('G')) {
+				return DataType.PNG;
+			}
+
+			Debug.Log(lump[0]);
+			Debug.Log(lump[1]);
+			Debug.Log(lump[2]);
+			Debug.Log(lump[3]);
+
+			if (lump.Length == 4096) {
+				return DataType.DoomFlat;
+			}
+
+			return DataType.Unknown;
 		}
 
 		public string GetLumpAsText(string name) {
@@ -251,6 +269,8 @@ namespace WadTools {
 
 			wadData = new byte[0];
 			directory = new List<DirectoryEntry>();
+
+			bool hasTextures = false;
 			
 			for (int i = 0; i < zip.Count; i++) {
 				if(zip[i].IsFile) { 
@@ -258,9 +278,15 @@ namespace WadTools {
 					byte[] outBuffer = new byte[zip[i].Size];
 					stream.Read(outBuffer, 0, (int)zip[i].Size);
 					stream.Close();
-					AddLump(zip[i].Name, outBuffer);
+					string name = zip[i].Name;
+					name = Path.GetFileName(name);
+					name = Path.GetFileNameWithoutExtension(name);
+					//Debug.Log(name);
+					AddLump(name, outBuffer);
 				}
 			}
+
+			
 		}
 
 		public void SetupTextures() {
