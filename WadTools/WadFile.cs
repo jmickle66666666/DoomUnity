@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using UnityEngine;
 
+using ICSharpCode.SharpZipLib.Zip;
+
 /*
 Class for loading and pulling lumps from wad files
 */
@@ -33,6 +35,9 @@ namespace WadTools {
 					} 
 				}
 			}
+		}
+		public void SetName(string name) {
+			_name = name;
 		}
 	}
 
@@ -110,6 +115,20 @@ namespace WadTools {
 			return output;
 		}
 
+		public void AddLump(string name, byte[] data) {
+			DirectoryEntry entry = new DirectoryEntry();
+			entry.SetName(name);
+			entry.size = data.Length;
+			entry.position = wadData.Length;
+			
+			byte[] newWadData = new byte[wadData.Length + data.Length];
+			Buffer.BlockCopy(wadData, 0, newWadData, 0, wadData.Length);
+			Buffer.BlockCopy(data, 0, newWadData, wadData.Length, data.Length);
+			wadData = newWadData;
+
+			directory.Add(entry);
+		}
+
 		public int GetIndex(string name) {
 			for (int i = directory.Count - 1; i >= 0; i--) {
 				if (directory[i].name == name) return i;
@@ -136,6 +155,9 @@ namespace WadTools {
 		}
 
 		public void Merge(WadFile wad) {
+
+			if (wad.wadData == null) return;
+
 			numLumps += wad.numLumps;
 			
 			for (int i = 0; i < wad.directory.Count; i++) {
@@ -159,7 +181,27 @@ namespace WadTools {
 		}
 
 		public WadFile(string path) {
-			wadData = File.ReadAllBytes(path);
+			FileStream testStream = File.OpenRead(path);
+			byte[] checkBytes = new byte[4];
+			testStream.Read(checkBytes, 0, 4);
+
+			string testString = "";
+			testString += (char)checkBytes[0];
+			testString += (char)checkBytes[1];
+			testString += (char)checkBytes[2];
+			testString += (char)checkBytes[3];
+
+			Debug.Log(testString);
+
+			if (testString == "PWAD" || testString == "IWAD") {
+				LoadWad(path);
+			} else if (testString.Substring(0,2) == "PK") {
+				LoadPK3(path);
+			}
+		}
+
+		public void LoadWad(string filepath) {
+			wadData = File.ReadAllBytes(filepath);
 
 			type = new string(Encoding.ASCII.GetChars(wadData, 0, 4));
 
@@ -179,6 +221,34 @@ namespace WadTools {
 				directory.Add(de);
 			}
 
+			SetupTextures();
+
+		}
+
+		public void LoadPK3(string filepath) {
+			FileStream fileStream = File.OpenRead(filepath);
+			byte[] fileData = new byte[fileStream.Length];
+			fileStream.Read(fileData, 0, (int)fileStream.Length);
+			Debug.Log("PK3 Loader");
+			ZipFile zip = new ZipFile(fileStream);
+			Debug.Log("Test result: "+zip.TestArchive(true).ToString());
+
+			wadData = new byte[0];
+			directory = new List<DirectoryEntry>();
+			
+			for (int i = 0; i < zip.Count; i++) {
+				if(zip[i].IsFile) { 
+					Debug.Log(zip[i].Name + " :: " + zip[i].Size);
+					Stream stream = zip.GetInputStream(zip[i]);
+					byte[] outBuffer = new byte[zip[i].Size];
+					stream.Read(outBuffer, 0, (int)zip[i].Size);
+					stream.Close();
+					AddLump(zip[i].Name, outBuffer);
+				}
+			}
+		}
+
+		public void SetupTextures() {
 			if (Contains("PNAMES")) {
 				PatchTable pnames = new PatchTable(GetLump("PNAMES"));
 				textureTable = new TextureTable(GetLump("TEXTURE1"), pnames);
@@ -186,7 +256,14 @@ namespace WadTools {
 					textureTable.Add(GetLump("TEXTURE2"), pnames);
 				}
 			}
+		}
 
+		public static string ByteRead(byte[] bytes) {
+			string output = "";
+			for (int i = 0; i < bytes.Length; i++) {
+				output += (char) bytes[i];
+			}
+			return output;
 		}
 
 		public static string FixString(string input) {
@@ -221,6 +298,8 @@ namespace WadTools {
 			}
 			return sBuilder.ToString();
 		}
+
+		
 
 	}
 
