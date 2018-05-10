@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using WadTools;
+using System.Text;
 
 /*
 Used to build a mesh from a level, and apply the correct textures and offsets etc.
@@ -17,8 +18,8 @@ public class DoomMapBuilder {
 	public List<string> textures;
 	public MapData map;
 	public  WadFile wad;
-	private  GameObject levelObject;
-	private  TextureTable textureTable; 
+	private GameObject levelObject;
+	private TextureTable textureTable; 
 
 	public  float SCALE = 1f/64f;
 	public  float PLAYER_HEIGHT = 56f;
@@ -77,8 +78,50 @@ public class DoomMapBuilder {
 		skyMaterial.SetTexture("_Palette", paletteLookup);
 		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
 
+		// Detect map type and treat accordingly
+
+		// First see if the lump is a wad. 
+		byte[] maplump = wad.GetLump(mapname);
+
+		if (maplump.Length != 0) {
+			if (new string(Encoding.ASCII.GetChars(maplump, 0, 4)) == "PWAD") {
+				// Ok! we have a wad representing a map, so we need to dive into it.
+				WadFile mapWad = new WadFile(maplump);
+				if (mapWad.directory[1].name == "THINGS") { // not a udmf, either Doom or Hexen
+					if (mapWad.Contains("BEHAVIOR")) {
+						// Hexen
+						throw new Exception("Unsupported map format: Hexen");
+					} else {
+						map = new DoomMapData(mapWad, mapWad.directory[0].name);
+					}
+				} else if (mapWad.directory[1].name == "TEXTMAP") {
+					// UDMF format
+					Debug.Log("UDMF Map!!");
+					map = new UDMFMapData(mapWad.GetLumpAsText("TEXTMAP"));
+				} else {
+					throw new Exception("Unknown map format");
+				}
+			}
+		} else {
+			int mapIndex = wad.GetIndex(mapname);
+			if (wad.directory[mapIndex+1].name == "THINGS") {
+				if (wad.directory[mapIndex+11].name == "BEHAVIOR") {
+					throw new Exception("Unsupported map format: Hexen");
+				} else {
+					map = new DoomMapData(wad, mapname);
+				}
+			} else if (wad.directory[mapIndex+1].name == "TEXTMAP") {
+				map = new UDMFMapData(wad.GetLumpAsText(mapIndex+1));
+			} else {
+				throw new Exception("Unknown map format");
+			}
+		}
+
+		if (map == null) {
+			throw new Exception("Loading map failed.");
+		}
+
 		st = new SectorTriangulation(map);
-		map = new DoomMapData(wad, mapname);
 
 		levelObject = new GameObject(mapname);
 
@@ -264,7 +307,12 @@ public class DoomMapBuilder {
 	public void BuildLine(int index) {
 		Linedef line = map.linedefs[index];
 		Sidedef frontSide = map.sidedefs[(int) line.front];
-		Sidedef backSide = line.back!=0xFFFF?map.sidedefs[line.back]:null;
+
+		Sidedef backSide = null;
+		if (line.back != 0xFFFF && line.back != -1) {
+			backSide = map.sidedefs[line.back];
+		}
+
 		Sector frontSector = map.sectors[frontSide.sector];
 		Sector backSector = backSide!=null?map.sectors[backSide.sector]:null;
 
@@ -467,21 +515,28 @@ public class DoomMapBuilder {
 
 	private Dictionary<string, Texture2D> flatCache;
 
-	 Texture2D GetFlat(string name) {
+	Texture2D GetFlat(string name) {
 		name = name.ToUpper();
 
 		if (flatCache == null) flatCache = new Dictionary<string, Texture2D>();
 
 		if (flatCache.ContainsKey(name)) return flatCache[name];
 
-		DoomFlat flat = new DoomFlat(wad.GetLump(name));
+		DoomFlat flat;
+		if (wad.Contains(name)) {
+			flat = new DoomFlat(wad.GetLump(name));
+		} else {
+			flat = new DoomFlat(wad.GetLump("SFLR6_4"));
+		}
+		
+		
 		Texture2D output = flat.ToRenderMap();
 		flatCache.Add(name, output);
 		return output;
 	}
 
 
-	 Texture2D GetTexture(string name) {
+	Texture2D GetTexture(string name) {
 		return DoomGraphic.BuildTexture(name, wad, textureTable);
 	}
 

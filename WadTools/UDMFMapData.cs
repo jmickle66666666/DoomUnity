@@ -83,9 +83,23 @@ namespace WadTools {
 			Dictionary<string, string> output = new Dictionary<string, string>();
 			pos += 2;
 			while (tokens[pos] != "}") {
-				output.Add(tokens[pos], tokens[pos+2]);
+				if (tokens[pos + 2][0] == '"' && !tokens[pos + 2].EndsWith("\"")) {
+					string token = tokens[pos + 2];
+					int j = 0;
+
+					while (!tokens[pos + 2 + j].EndsWith("\"")) {
+						j++;
+						token += tokens[pos + 2 + j];
+					}
+					output.Add(tokens[pos], token);
+					pos += j;
+
+				} else {
+					output.Add(tokens[pos], tokens[pos+2]);
+				}
 				pos += 3;
 			}
+			pos += 1;
 			return output;
 		}
 
@@ -99,12 +113,12 @@ namespace WadTools {
 		}
 
 		string BlockString(Dictionary<string, string> block, string key, string def) {
-			if (block.ContainsKey(key)) return block[key];
+			if (block.ContainsKey(key)) return block[key].Replace("\"", "");
 			return def;
 		}
 
 		string BlockString(Dictionary<string, string> block, string key) {
-			return block[key];
+			return block[key].Replace("\"", "");
 		}
 
 		float BlockFloat(Dictionary<string, string> block, string key, float def) {
@@ -126,7 +140,7 @@ namespace WadTools {
 		}
 
 		void ParseLinedef() {
-
+			
 			Linedef nl = new Linedef();
 
 			Dictionary<string, string> blockData = ParseBlock();
@@ -194,7 +208,7 @@ namespace WadTools {
 			ns.ceilingHeight = BlockInt(blockData, "heightceiling", 0);
 			ns.floorTexture = BlockString(blockData, "texturefloor");
 			ns.ceilingTexture = BlockString(blockData, "textureceiling");
-			ns.lightLevel = BlockInt(blockData, "lightlevel");
+			ns.lightLevel = BlockInt(blockData, "lightlevel", 160);
 			ns.type = BlockInt(blockData, "special", 0);
 			ns.tag = BlockInt(blockData, "id", 0);
 
@@ -209,8 +223,8 @@ namespace WadTools {
 
 			Dictionary<string, string> blockData = ParseBlock();
 
-			nt.x = BlockInt(blockData, "x");
-			nt.y = BlockInt(blockData, "y");
+			nt.x = (int) BlockFloat(blockData, "x");
+			nt.y = (int) BlockFloat(blockData, "y");
 			nt.angle = BlockInt(blockData, "angle", 0);
 			nt.type = BlockInt(blockData, "type");
 			nt.skill2 = BlockBool(blockData, "skill2", false);

@@ -88,12 +88,22 @@ namespace WadTools {
 		private Dictionary<string, DoomTexture> textures;
 		private PatchTable patches;
 
-		public DoomTexture Get(string name) {
+		public int size {
+			get {
+				return textures.Count;
+			}
+		}
+
+		public DoomTexture Get(string name, bool tryDefault = true) {
 			if (textures.ContainsKey(name)) {
 				return textures[name];
 			} else {
-				Debug.Log(textures);
 				Debug.LogError("No such texture: "+name);
+				if (tryDefault) {
+					return Get("AASHITTY", false);
+				} else {
+					
+				}
 			}
 			return null;
 		}
@@ -365,7 +375,7 @@ namespace WadTools {
 			if (textureCache.ContainsKey(name)) {
 				return textureCache[name];
 			}
-			
+
 			DoomTexture texture = textures.Get(name.ToUpper());
 			
 

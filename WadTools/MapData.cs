@@ -9,6 +9,12 @@ Base class for map data.
 
 namespace WadTools {
 
+	public enum DoomMapFormat {
+		Doom,
+		Hexen,
+		UDMF
+	}
+
 	public class Vertex {
 		public int x;
 		public int y;

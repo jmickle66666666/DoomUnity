@@ -395,7 +395,7 @@ namespace WadTools {
 					// No need to trace them, and it'll just cause problems.
 					int fs = map.sidedefs[map.linedefs[i].front].sector;
 					int bs;
-					if (map.linedefs[i].back != 0xFFFF) {
+					if (map.linedefs[i].back != 0xFFFF && map.linedefs[i].back != -1) {
 						bs = map.sidedefs[map.linedefs[i].back].sector;
 					} else {
 						bs = -1;

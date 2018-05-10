@@ -79,6 +79,11 @@ namespace WadTools {
 			return Encoding.UTF8.GetString(data);
 		}
 
+		public string GetLumpAsText(int index) {
+			byte[] data = GetLump(index);
+			return Encoding.UTF8.GetString(data);
+		}
+
 		public MemoryStream GetLumpAsMemoryStream(string name) {
 			byte[] data = GetLump(name);
 			return new MemoryStream(data);
@@ -151,6 +156,7 @@ namespace WadTools {
 		}
 
 		public void Merge(string wadPath) {
+			Debug.Log("Merging "+wadPath);
 			Merge(new WadFile(wadPath));
 		}
 
@@ -180,29 +186,29 @@ namespace WadTools {
 			wadData = newWadData;
 		}
 
-		public WadFile(string path) {
-			FileStream testStream = File.OpenRead(path);
-			byte[] checkBytes = new byte[4];
-			testStream.Read(checkBytes, 0, 4);
-
-			string testString = "";
-			testString += (char)checkBytes[0];
-			testString += (char)checkBytes[1];
-			testString += (char)checkBytes[2];
-			testString += (char)checkBytes[3];
-
-			Debug.Log(testString);
+		public WadFile(byte[] data) {
+			string testString = new string(Encoding.ASCII.GetChars(data, 0, 4));
 
 			if (testString == "PWAD" || testString == "IWAD") {
-				LoadWad(path);
+				LoadWad(data);
 			} else if (testString.Substring(0,2) == "PK") {
-				LoadPK3(path);
+				LoadPK3(data);
 			}
 		}
 
-		public void LoadWad(string filepath) {
-			wadData = File.ReadAllBytes(filepath);
+		public WadFile(string path) {
+			byte[] data = File.ReadAllBytes(path);
+			string testString = new string(Encoding.ASCII.GetChars(data, 0, 4));
 
+			if (testString == "PWAD" || testString == "IWAD") {
+				LoadWad(data);
+			} else if (testString.Substring(0,2) == "PK") {
+				LoadPK3(data);
+			}
+		}
+
+		public void LoadWad(byte[] wadData) {
+			this.wadData = wadData;
 			type = new string(Encoding.ASCII.GetChars(wadData, 0, 4));
 
 			numLumps = (int) BitConverter.ToUInt32(wadData,4);
@@ -222,23 +228,32 @@ namespace WadTools {
 			}
 
 			SetupTextures();
+		}
 
+		public void LoadWad(string filepath) {
+			LoadWad(File.ReadAllBytes(filepath));
 		}
 
 		public void LoadPK3(string filepath) {
 			FileStream fileStream = File.OpenRead(filepath);
-			byte[] fileData = new byte[fileStream.Length];
-			fileStream.Read(fileData, 0, (int)fileStream.Length);
-			Debug.Log("PK3 Loader");
-			ZipFile zip = new ZipFile(fileStream);
-			Debug.Log("Test result: "+zip.TestArchive(true).ToString());
+			LoadPK3(fileStream);
+		}
+
+		public void LoadPK3(byte[] data) {
+			MemoryStream stream = new MemoryStream(data);
+			LoadPK3(stream);
+		}
+
+		public void LoadPK3(Stream streamData) {
+			byte[] fileData = new byte[streamData.Length];
+			streamData.Read(fileData, 0, (int)streamData.Length);
+			ZipFile zip = new ZipFile(streamData);
 
 			wadData = new byte[0];
 			directory = new List<DirectoryEntry>();
 			
 			for (int i = 0; i < zip.Count; i++) {
 				if(zip[i].IsFile) { 
-					Debug.Log(zip[i].Name + " :: " + zip[i].Size);
 					Stream stream = zip.GetInputStream(zip[i]);
 					byte[] outBuffer = new byte[zip[i].Size];
 					stream.Read(outBuffer, 0, (int)zip[i].Size);
