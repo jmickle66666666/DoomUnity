@@ -236,8 +236,9 @@ public class DoomMapBuilder {
 				if (type == DataType.DoomFlat) {
 					return new DoomTexture(name, 64, 64, null);
 				} else if (type == DataType.PNG) {
-					Texture2D image = new Texture2D(2,2);
+					Texture2D image = new Texture2D(2,2, TextureFormat.ARGB32, false);
 					ImageConversion.LoadImage(image, wad.GetLump(name));
+					image.filterMode = FilterMode.Point;
 					return new DoomTexture(name, image.width, image.height, null);
 				} else {
 					throw new Exception("Unknown texture type: "+name);
@@ -549,12 +550,11 @@ public class DoomMapBuilder {
 		} else {
 			if (lastTexturePNG) {
 				mr.material = pngMaterial;
-				mr.material.SetTexture("_MainTex", tex);
 			} else {
 				mr.material = doomMaterial;
-				mr.material.SetTexture("_MainTex", tex);
-				mr.material.SetFloat("_Brightness", light);
 			}
+			mr.material.SetTexture("_MainTex", tex);
+			mr.material.SetFloat("_Brightness", light);
 		}
 		newObj.AddComponent<MeshFilter>().mesh = mesh;
 		newObj.transform.SetParent(levelObject.transform, false);
@@ -578,8 +578,9 @@ public class DoomMapBuilder {
 				output = flat.ToRenderMap();
 				lastTexturePNG = false;
 			} else if (type == DataType.PNG) {
-				output = new Texture2D(2,2);
+				output = new Texture2D(2,2, TextureFormat.ARGB32, false);
 				ImageConversion.LoadImage(output, wad.GetLump(name));
+				output.filterMode = FilterMode.Point;
 				lastTexturePNG = true;
 			} else {
 				throw new Exception("Unknown flat type: "+name);
@@ -612,8 +613,9 @@ public class DoomMapBuilder {
 					lastTexturePNG = false;
 					return new DoomFlat(wad.GetLump(name)).ToRenderMap();
 				} else if (type == DataType.PNG) {
-					Texture2D image = new Texture2D(2,2);
+					Texture2D image = new Texture2D(2,2, TextureFormat.ARGB32, false);
 					ImageConversion.LoadImage(image, wad.GetLump(name));
+					image.filterMode = FilterMode.Point;
 					lastTexturePNG = true;
 					return image;
 				} else {

@@ -38,6 +38,7 @@ SubShader {
         fixed4 frag (v2f i) : SV_Target
         {
             float4 col = tex2D(_MainTex, i.texcoord );
+            col.rgb *= _Brightness;
             clip(col.a - 0.9);
             return col;
         }
