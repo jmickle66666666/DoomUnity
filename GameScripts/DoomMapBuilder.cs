@@ -30,6 +30,7 @@ public class DoomMapBuilder {
 	private Texture2D paletteLookup;
 	private Texture2D colormapLookup;
 	private Material doomMaterial;
+	private Material pngMaterial;
 	public static Material skyMaterial;
 	private Material spriteMaterial;
 
@@ -39,6 +40,8 @@ public class DoomMapBuilder {
 	public bool sectorsDone = false;
 	int lastBuiltLine = -1;
 	int lastBuiltSector = -1;
+
+	bool lastTexturePNG = false;
 
 	public float amountLoaded {
 		get {
@@ -73,6 +76,8 @@ public class DoomMapBuilder {
 		doomMaterial = new Material(Shader.Find("Doom/Texture"));
 		doomMaterial.SetTexture("_Palette", paletteLookup);
 		doomMaterial.SetTexture("_Colormap", colormapLookup);
+
+		pngMaterial = new Material(Shader.Find("Doom/Unlit Truecolor Texture"));
 
 		skyMaterial = new Material(Shader.Find("Doom/Sky"));
 		skyMaterial.SetTexture("_Palette", paletteLookup);
@@ -223,10 +228,30 @@ public class DoomMapBuilder {
 	}
 
 	DoomTexture GetInfo(string name) {
-		return textureTable.Get(name.ToUpper());
+		if (textureTable.Contains(name)) {
+			return textureTable.Get(name.ToUpper());
+		} else {
+			if (wad.Contains(name)) {
+				DataType type = wad.DetectType(name);
+				if (type == DataType.DoomFlat) {
+					return new DoomTexture(name, 64, 64, null);
+				} else if (type == DataType.PNG) {
+					Texture2D image = new Texture2D(2,2);
+					ImageConversion.LoadImage(image, wad.GetLump(name));
+					return new DoomTexture(name, image.width, image.height, null);
+				} else {
+					throw new Exception("Unknown texture type: "+name);
+				}
+			} else {
+				throw new Exception("Cannot find texture: "+name);
+			}
+		}
 	}
 
 	public void BuildSector(int index) {
+
+		if (map.sectors[index].ceilingTexture == "-" && map.sectors[index].floorTexture == "-") return;
+
 	 	st = new SectorTriangulation(map);
 		List<SectorPolygon> polygons = st.Triangulate(index);
 
@@ -249,11 +274,16 @@ public class DoomMapBuilder {
 		
 
 		for (int i = 0; i < polygons.Count; i++) {
+			Mesh mesh;
+			Vector3[] vertices;
+			int[] tris;
+			Vector2[] uvs;
 
-			Mesh mesh = new Mesh();
-			Vector3[] vertices = polygons[i].PointsToVector3(floorHeight).ToArray();
-			int[] tris = polygons[i].triangles.ToArray();
-			Vector2[] uvs = polygons[i].points.ToArray();
+			
+			mesh = new Mesh();
+			vertices = polygons[i].PointsToVector3(floorHeight).ToArray();
+			tris = polygons[i].triangles.ToArray();
+			uvs = polygons[i].points.ToArray();
 
 			for (int j = 0; j < uvs.Length; j++) {
 				uvs[j] /= 64f;
@@ -262,21 +292,28 @@ public class DoomMapBuilder {
 			mesh.vertices = vertices;
 			mesh.triangles = tris;
 			mesh.uv = uvs;
+			if (map.sectors[index].floorTexture != "-") {
+				GameObject newObj = new GameObject();
+				MeshRenderer mr = newObj.AddComponent<MeshRenderer>();
 
-			GameObject newObj = new GameObject();
-			MeshRenderer mr = newObj.AddComponent<MeshRenderer>();
-
-			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
-			if (map.sectors[index].floorTexture != "F_SKY1") {
-				mr.material = doomMaterial;
-				mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].floorTexture));
-				mr.material.SetFloat("_Brightness", brightness);
-			} else {
-				mr.material = skyMaterial;
+				newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+				if (map.sectors[index].floorTexture != "F_SKY1") {
+					Texture2D tex = GetFlat(map.sectors[index].floorTexture);
+					if (lastTexturePNG) {
+						mr.material = pngMaterial;
+					} else {
+						mr.material = doomMaterial;
+					}
+					
+					mr.material.SetTexture("_MainTex", tex);
+					mr.material.SetFloat("_Brightness", brightness);
+				} else {
+					mr.material = skyMaterial;
+				}
+				newObj.AddComponent<MeshFilter>().mesh = mesh;
+				newObj.transform.SetParent(levelObject.transform, false);
 			}
-			newObj.AddComponent<MeshFilter>().mesh = mesh;
-			newObj.transform.SetParent(levelObject.transform, false);
-
+			
 			mesh = new Mesh();
 			Array.Reverse(tris);
 			for (int j = 0; j < vertices.Length; j++) {
@@ -285,20 +322,25 @@ public class DoomMapBuilder {
 			mesh.vertices = vertices;
 			mesh.triangles = tris;
 			mesh.uv = uvs;
-
-			newObj = new GameObject();
-			newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
-			mr = newObj.AddComponent<MeshRenderer>();
-			if (map.sectors[index].ceilingTexture != "F_SKY1") {
-				mr.material = doomMaterial;
-				mr.material.SetTexture("_MainTex", GetFlat(map.sectors[index].ceilingTexture));
-				mr.material.SetFloat("_Brightness", brightness);
-			} else {
-				mr.material = skyMaterial;
+			if (map.sectors[index].ceilingTexture != "-") {
+				GameObject newObj = new GameObject();
+				newObj.AddComponent<MeshCollider>().sharedMesh = mesh;
+				MeshRenderer mr = newObj.AddComponent<MeshRenderer>();
+				if (map.sectors[index].ceilingTexture != "F_SKY1") {
+					Texture2D tex = GetFlat(map.sectors[index].ceilingTexture);
+					if (lastTexturePNG) {
+						mr.material = pngMaterial;
+					} else {
+						mr.material = doomMaterial;
+					}
+					mr.material.SetTexture("_MainTex", tex);
+					mr.material.SetFloat("_Brightness", brightness);
+				} else {
+					mr.material = skyMaterial;
+				}
+				newObj.AddComponent<MeshFilter>().mesh = mesh;
+				newObj.transform.SetParent(levelObject.transform, false);
 			}
-			newObj.AddComponent<MeshFilter>().mesh = mesh;
-			newObj.transform.SetParent(levelObject.transform, false);
-
 		}
 		lastBuiltSector = index;
 		
@@ -505,9 +547,14 @@ public class DoomMapBuilder {
 		if (sky) {
 			mr.material = skyMaterial;
 		} else {
-			mr.material = doomMaterial;
-			mr.material.SetTexture("_MainTex", tex);
-			mr.material.SetFloat("_Brightness", light);
+			if (lastTexturePNG) {
+				mr.material = pngMaterial;
+				mr.material.SetTexture("_MainTex", tex);
+			} else {
+				mr.material = doomMaterial;
+				mr.material.SetTexture("_MainTex", tex);
+				mr.material.SetFloat("_Brightness", light);
+			}
 		}
 		newObj.AddComponent<MeshFilter>().mesh = mesh;
 		newObj.transform.SetParent(levelObject.transform, false);
@@ -524,20 +571,60 @@ public class DoomMapBuilder {
 
 		DoomFlat flat;
 		if (wad.Contains(name)) {
-			flat = new DoomFlat(wad.GetLump(name));
+			Texture2D output;
+			DataType type = wad.DetectType(name);
+			if (type == DataType.DoomFlat) {
+				flat = new DoomFlat(wad.GetLump(name));
+				output = flat.ToRenderMap();
+				lastTexturePNG = false;
+			} else if (type == DataType.PNG) {
+				output = new Texture2D(2,2);
+				ImageConversion.LoadImage(output, wad.GetLump(name));
+				lastTexturePNG = true;
+			} else {
+				throw new Exception("Unknown flat type: "+name);
+			}
+
+			flatCache.Add(name, output);
+			return output;
+			
 		} else {
-			flat = new DoomFlat(wad.GetLump("SFLR6_4"));
+			if (textureTable.Contains(name)) {
+				return DoomGraphic.BuildTexture(name, wad, textureTable);
+			}
 		}
 		
+		throw new Exception("Cannot find flat: "+name);
 		
-		Texture2D output = flat.ToRenderMap();
-		flatCache.Add(name, output);
-		return output;
+		
 	}
 
 
 	Texture2D GetTexture(string name) {
-		return DoomGraphic.BuildTexture(name, wad, textureTable);
+
+		if (textureTable.Contains(name)) {
+			lastTexturePNG = false;
+			return DoomGraphic.BuildTexture(name, wad, textureTable);
+		} else {
+			if (wad.Contains(name)) {
+				DataType type = wad.DetectType(name);
+				if (type == DataType.DoomFlat) {
+					lastTexturePNG = false;
+					return new DoomFlat(wad.GetLump(name)).ToRenderMap();
+				} else if (type == DataType.PNG) {
+					Texture2D image = new Texture2D(2,2);
+					ImageConversion.LoadImage(image, wad.GetLump(name));
+					lastTexturePNG = true;
+					return image;
+				} else {
+					throw new Exception("Unknown texture type: "+name);
+				}
+			} else {
+				throw new Exception("Cannot find texture: "+name);
+			}
+		}
+
+		
 	}
 
 	void GetTextures(int lineIndex) {

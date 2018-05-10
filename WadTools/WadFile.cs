@@ -79,7 +79,7 @@ namespace WadTools {
 				lump[3] == Convert.ToByte('G')) {
 				return DataType.PNG;
 			}
-			
+
 			if (lump.Length == 4096) {
 				return DataType.DoomFlat;
 			}
@@ -265,8 +265,6 @@ namespace WadTools {
 			wadData = new byte[0];
 			directory = new List<DirectoryEntry>();
 
-			bool hasTextures = false;
-			
 			for (int i = 0; i < zip.Count; i++) {
 				if(zip[i].IsFile) { 
 					Stream stream = zip.GetInputStream(zip[i]);
@@ -277,7 +275,7 @@ namespace WadTools {
 					name = Path.GetFileName(name);
 					name = Path.GetFileNameWithoutExtension(name);
 					//Debug.Log(name);
-					AddLump(name, outBuffer);
+					AddLump(name.ToUpper(), outBuffer);
 				}
 			}
 

@@ -119,6 +119,10 @@ namespace WadTools {
 			}
 		}
 
+		public bool Contains(string name) {
+			return textures.ContainsKey(name);
+		}
+
 		// Append a texture definition from wad
 		public void Add(byte[] lumpData, PatchTable patchTable) {
 			uint amt = BitConverter.ToUInt32(lumpData, 0);
@@ -354,7 +358,7 @@ namespace WadTools {
 					return patchCache[name];
 				} 
 			}
-			
+
 			Texture2D output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToRenderMap();
 			if (trueColor) output = new DoomGraphic(wad.GetLump(name.ToUpper())).ToTexture2D(new Palette(wad.GetLump("PLAYPAL")));
 			
