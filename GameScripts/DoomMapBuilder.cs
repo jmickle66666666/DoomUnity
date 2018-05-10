@@ -173,16 +173,19 @@ public class DoomMapBuilder {
 		spriteMaterial.SetTexture("_Colormap", colormapLookup);
 
 		for (int i = 0; i < map.things.Count; i++) {
-			MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
-			if (mobj != null) {
-				GameObject newObj = new GameObject(mobj.name);
-				newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
-				newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
-				newObj.transform.parent = levelObject.transform;
+			if (!map.things[i].multiplayer) {
+				MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
+				if (mobj != null) {
+					GameObject newObj = new GameObject(mobj.name);
+					newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
+					newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
+					newObj.transform.parent = levelObject.transform;
 
-				LevelEntity ent = newObj.AddComponent<LevelEntity>();
+					LevelEntity ent = newObj.AddComponent<LevelEntity>();
 
-				ent.LoadMultigen(multigen, mobj, wad);
+					ent.LoadMultigen(multigen, mobj, wad);
+					ent.direction = (float) map.things[i].angle;
+				}
 			}
 		}
 	}

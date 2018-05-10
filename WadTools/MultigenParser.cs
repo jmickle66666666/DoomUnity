@@ -8,8 +8,30 @@ using WadTools;
 public class MultigenState {
 	public string name;
 	public string spriteName;
-	public string spriteFrame;
-	public string duration;
+	private string _spriteFrame;
+
+	public string spriteFrame {
+		get {
+			return _spriteFrame;
+		}
+		set {
+			_spriteFrame = value[0].ToString();
+			fullBright = (value.Length > 1 && value[1] == '*');
+		}
+	}
+
+	public bool fullBright;
+	public string _duration;
+
+	public string duration {
+		get {
+			return _duration.Replace("*", "");
+		}
+		set {
+			_duration = value;
+		}
+	}
+
 	public string action;
 	public string nextState;
 

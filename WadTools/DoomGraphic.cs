@@ -462,7 +462,7 @@ namespace WadTools {
 			for (int i = 0; i < 64; i++) {
 				for (int j = 0; j < 64; j++){
 					int index = data[(j*64)+i];
-					output.SetPixel(i, j, new Color(index / 256f,0f, 0f, 1f));
+					output.SetPixel(i, 63 - j, new Color(index / 256f,0f, 0f, 1f));
 				}
 			}
 			output.Apply();
