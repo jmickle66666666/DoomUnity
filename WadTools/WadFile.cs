@@ -79,12 +79,7 @@ namespace WadTools {
 				lump[3] == Convert.ToByte('G')) {
 				return DataType.PNG;
 			}
-
-			Debug.Log(lump[0]);
-			Debug.Log(lump[1]);
-			Debug.Log(lump[2]);
-			Debug.Log(lump[3]);
-
+			
 			if (lump.Length == 4096) {
 				return DataType.DoomFlat;
 			}

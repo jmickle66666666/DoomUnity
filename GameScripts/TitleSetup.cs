@@ -50,7 +50,6 @@ public class TitleSetup : MonoBehaviour {
 
 	public void SetupMaterial(WadFile wad) {
 		titleIsPNG = wad.DetectType("TITLEPIC") == DataType.PNG;
-		Debug.Log(wad.DetectType("TITLEPIC"));
 
 		if (titleIsPNG) {
 			mr.material = new Material(Shader.Find("Doom/Unlit Truecolor Texture"));
