@@ -17,6 +17,8 @@ Drop the "DoomUnity" folder into your project and try some stuff out!
 `MapData map = new MapData(wad, "MAP01");`
 `Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);`
 
+You will need SharpZip, too, for PK3 support. At some point I will try and either pack it up in the source, or make it optional.
+
 # Can I play doom in this yet?
 
 Kinda? you can run around levels and look at monsters!
