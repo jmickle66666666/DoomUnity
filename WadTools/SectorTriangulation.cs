@@ -219,7 +219,13 @@ namespace WadTools {
 			int i;
 
 			// Trace sector lines 
-			List<List<Vector2>> polygons = TraceLines(sector);
+			List<List<Vector2>> polygons;
+			try {
+				polygons = TraceLines(sector);
+			} catch {
+				Debug.LogError("Error tracing lines on sector: "+sector.ToString());
+				return null;
+			}
 
 			if (polygons == null) return null;
 
@@ -389,7 +395,7 @@ namespace WadTools {
 			List<Linedef> output = new List<Linedef>();
 			List<int> sidedefs = GetSectorSidedefs(sector);
 
-			for (int i = 0; i < map.linedefs.Count; i++) {
+			for (int i = 0; i < map.linedefs.Length; i++) {
 				if (sidedefs.Contains(map.linedefs[i].front) || sidedefs.Contains(map.linedefs[i].back)) {
 					// We need to ignore linedefs that have the same front and back sector. 
 					// No need to trace them, and it'll just cause problems.
@@ -412,7 +418,7 @@ namespace WadTools {
 		private List<int> GetSectorSidedefs(int sector) {
 			List<int> output = new List<int>();
 
-			for (int i = 0; i < map.sidedefs.Count; i++) {
+			for (int i = 0; i < map.sidedefs.Length; i++) {
 				if (map.sidedefs[i].sector == sector) {
 					output.Add(i);
 				}

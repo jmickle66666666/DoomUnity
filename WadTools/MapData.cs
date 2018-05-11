@@ -75,11 +75,11 @@ namespace WadTools {
 
 	public class MapData {
 
-		public List<Vertex> vertices;
-		public List<Linedef> linedefs;
-		public List<Sector> sectors;
-		public List<Sidedef> sidedefs;
-		public List<Thing> things;
+		public Vertex[] vertices;
+		public Linedef[] linedefs;
+		public Sector[] sectors;
+		public Sidedef[] sidedefs;
+		public Thing[] things;
 
 		public MapData() {
 

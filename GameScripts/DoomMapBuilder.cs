@@ -46,14 +46,14 @@ public class DoomMapBuilder {
 	public float amountLoaded {
 		get {
 			if (map == null) return 0.0f;
-			return (((float) lastBuiltLine / (float) map.linedefs.Count) + ((float) lastBuiltSector / (float) map.sectors.Count)) * 0.5f;
+			return (((float) lastBuiltLine / (float) map.linedefs.Length) + ((float) lastBuiltSector / (float) map.sectors.Length)) * 0.5f;
 		}
 	}
 
 	private SectorTriangulation st;
 
 	public  int GetIndexOfThing(int thingType) {
-		for (int i = map.things.Count - 1; i >= 0; i--) {
+		for (int i = map.things.Length - 1; i >= 0; i--) {
 			if (map.things[i].type == thingType) {
 				return i;
 			}
@@ -133,7 +133,7 @@ public class DoomMapBuilder {
 		CoroutineRunner cr = levelObject.AddComponent<CoroutineRunner>();
 
 		unclaimedThings = new List<int>();
-		for (int i = 0; i < map.things.Count; i++) {
+		for (int i = 0; i < map.things.Length; i++) {
 			unclaimedThings.Add(i);
 		}
 		thingSectors = new Dictionary<int, Sector>();
@@ -156,7 +156,9 @@ public class DoomMapBuilder {
 				Debug.LogWarning("Unclaimed Thing: "+unclaimedThings[i]);
 			}
 		}
-		if (linesDone) doneBuilding();
+		if (linesDone) {
+			doneBuilding();
+		}
 	}
 
 	public void DoneBuildingLines () {
@@ -172,10 +174,10 @@ public class DoomMapBuilder {
 		spriteMaterial.SetTexture("_Palette", paletteLookup);
 		spriteMaterial.SetTexture("_Colormap", colormapLookup);
 
-		for (int i = 0; i < map.things.Count; i++) {
+		for (int i = 0; i < map.things.Length; i++) {
 			if (!map.things[i].multiplayer) {
 				MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
-				if (mobj != null) {
+				if (mobj != null && thingSectors.ContainsKey(i)) {
 					GameObject newObj = new GameObject(mobj.name);
 					newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
 					newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
@@ -194,7 +196,7 @@ public class DoomMapBuilder {
 		map = new DoomMapData(wad, mapname);
 		st = new SectorTriangulation(map);
 		int failedSectors = 0;
-		for (int i = 0; i < map.sectors.Count; i++) {
+		for (int i = 0; i < map.sectors.Length; i++) {
 			List<SectorPolygon> polygons = null;
 			try {
 				polygons = st.Triangulate(i);
@@ -659,7 +661,7 @@ public class CoroutineRunner : MonoBehaviour {
 		yield return null;  // one frame so the game can do an update before any loading happens/
 							// this is mainly so the HUD message "switching to mapxx" happens
 		float time = Time.realtimeSinceStartup;
-		for (int i = 0; i < map.linedefs.Count; i++) {
+		for (int i = 0; i < map.linedefs.Length; i++) {
 
 			dmb.BuildLine(i);
 
@@ -678,7 +680,7 @@ public class CoroutineRunner : MonoBehaviour {
 		backgroundLoading = Settings.Get("m_backgroundload", "false") == "true";
 		yield return null;
 		float time = Time.realtimeSinceStartup;
-		for (int i = 0; i < map.sectors.Count; i++) {
+		for (int i = 0; i < map.sectors.Length; i++) {
 
 			dmb.BuildSector(i);
 

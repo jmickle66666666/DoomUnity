@@ -17,17 +17,27 @@ namespace WadTools {
 		string[] tokens;
 		int pos;
 
+		List<Linedef> mlinedefs;
+		List<Sidedef> msidedefs;
+		List<Thing> mthings;
+		List<Sector> msectors;
+		List<Vertex> mvertices;
 
 		// Unused, but necessary
 		string udmfNamespace;
 
 		public UDMFMapData(string textmap) {
-			linedefs = new List<Linedef>();
-			sidedefs = new List<Sidedef>();
-			things = new List<Thing>();
-			sectors = new List<Sector>();
-			vertices = new List<Vertex>();
+			mlinedefs = new List<Linedef>();
+			msidedefs = new List<Sidedef>();
+			mthings = new List<Thing>();
+			msectors = new List<Sector>();
+			mvertices = new List<Vertex>();
 			ParseData(textmap);
+			linedefs = mlinedefs.ToArray();
+			sidedefs = msidedefs.ToArray();
+			things = mthings.ToArray();
+			sectors = msectors.ToArray();
+			vertices = mvertices.ToArray();
 		}
 
 		public void ParseData(string data) {
@@ -161,7 +171,7 @@ namespace WadTools {
 			nl.alwaysShow = BlockBool(blockData, "mapped", false);
 			nl.dontDraw = BlockBool(blockData, "dontdraw", false);
 
-			linedefs.Add(nl);
+			mlinedefs.Add(nl);
 			return;
 
 		}
@@ -179,7 +189,7 @@ namespace WadTools {
 			ns.mid = BlockString(blockData, "texturemiddle", "-");
 			ns.sector = BlockInt(blockData, "sector");
 
-			sidedefs.Add(ns);
+			msidedefs.Add(ns);
 			return;
 
 		}
@@ -193,7 +203,7 @@ namespace WadTools {
 			nv.x = (int) BlockFloat(blockData, "x");
 			nv.y = (int) BlockFloat(blockData, "y");
 
-			vertices.Add(nv);
+			mvertices.Add(nv);
 			return;
 
 		}
@@ -212,7 +222,7 @@ namespace WadTools {
 			ns.type = BlockInt(blockData, "special", 0);
 			ns.tag = BlockInt(blockData, "id", 0);
 
-			sectors.Add(ns);
+			msectors.Add(ns);
 			return;
 
 		}
@@ -233,7 +243,7 @@ namespace WadTools {
 			nt.ambush = BlockBool(blockData, "ambush", false);
 			nt.multiplayer = !BlockBool(blockData, "single", false);
 
-			things.Add(nt);
+			mthings.Add(nt);
 			return;
 
 		}

@@ -27,21 +27,21 @@ namespace WadTools {
 		public void LoadVertices(byte[] data) {
 			int size = 4;
 
-			vertices = new List<Vertex>();
+			vertices = new Vertex[data.Length / size];
 
 			for (int i = 0; i < data.Length; i+=size) {
 				Vertex nv = new Vertex() {
 					x = BitConverter.ToInt16(data, i),
 					y = BitConverter.ToInt16(data, i + 2)
 				};
-				vertices.Add(nv);
+				vertices[i / size] = nv;
 			}
 		}
 
 		public void LoadLinedefs(byte[] data) {
 			int size = 14;
 
-			linedefs = new List<Linedef>();
+			linedefs = new Linedef[data.Length / size];
 
 			for (int i = 0; i < data.Length; i+=size) {
 
@@ -64,14 +64,14 @@ namespace WadTools {
 				nl.blockSound = (flags & 64) == 64;
 				nl.alwaysShow = (flags & 128) == 128;
 
-				linedefs.Add(nl);
+				linedefs[i / size] = nl;
 			}
 		}
 
 		public void LoadSectors(byte[] data) {
 			int size = 26;
 
-			sectors = new List<Sector>();
+			sectors = new Sector[data.Length / size];
 
 			for (int i = 0; i < data.Length; i+=size) {
 				Sector ns = new Sector() {
@@ -83,14 +83,14 @@ namespace WadTools {
 					type = BitConverter.ToInt16(data, i + 22),
 					tag = BitConverter.ToInt16(data, i + 24)
 				};
-				sectors.Add(ns);
+				sectors[i / size] = ns;
 			}
 		}
 
 		public void LoadSidedefs(byte[] data) {
 			int size = 30;
 
-			sidedefs = new List<Sidedef>();
+			sidedefs = new Sidedef[data.Length / size];
 
 			for (int i = 0; i < data.Length; i+=size) {
 				Sidedef ns = new Sidedef() {
@@ -101,14 +101,14 @@ namespace WadTools {
 					mid = FixString(new string(Encoding.ASCII.GetChars(data, i + 20, 8))),
 					sector = BitConverter.ToInt16(data, i + 28),
 				};
-				sidedefs.Add(ns);
+				sidedefs[i / size] = ns;
 			}
 		}
 
 		public void LoadThings(byte[] data) {
 			int size = 10;
 
-			things = new List<Thing>();
+			things = new Thing[data.Length / size];
 
 			for (int i = 0; i < data.Length; i+=size) {
 				Thing nt = new Thing() {
@@ -124,8 +124,7 @@ namespace WadTools {
 				nt.skill4 = (flags & 4) == 4;
 				nt.ambush = (flags & 8) == 8;
 				nt.multiplayer = (flags & 16) == 16;
-
-				things.Add(nt);
+				things[i / size] = nt;
 			}
 		}
 		
