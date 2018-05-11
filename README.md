@@ -1,15 +1,15 @@
 # DoomUnity
 
-# what?
+## What?
 
 Various tools for working with Doom WADs and levels in Unity.
 Also a Doom engine, called NaSTY (Not a Sourceport, Thank You)
 
-# why?
+## Why?
 
 Because it doesn't already exist. There are various cool applications for such a set of tools but personally I just like the idea of letting potential games of mine use doom levels.
 
-# how?
+## How?
 
 Download a zip of the project from the code or release section and extract the DoomUnity folder contained within into your Unity project, or create a new folder in your Unity project called "DoomUnity" and clone the repository there.
 
@@ -23,30 +23,40 @@ MapData map = new MapData(wad, "MAP01");
 Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);
 ```
 
-# Can I play doom in this yet?
+# Can I play Doom WADs with this yet?
 
-Kinda? you can run around levels and look at monsters!
+Kinda? you can run around levels and look at monsters! You will of course first need a Doom IWAD to play with. The currently supported IWADs are:
 
-To get the engine running in Unity, just pop a gameobject in an empty scene and add the `GameSetup` component, and attach the `VanillaPlayer` prefab to the player prefab option.
-You can enter and commandline arguments here, too. 
+- Doom
+- Doom II
+- Final Doom
+- Freedoom
+- Chex Quest
 
-You will need a Doom IWAD! Currently supports Doom 1, Doom 2, Final Doom, Freedoom and Chex Quest.
+## Playing with the compiled build
 
-To run extra PWADs, add `-file path_to_wads` to the commandline parameters. 
+1. Download the latest nasty build (Linux, OSx or Win) from the [Releases](https://github.com/jmickle66666666/DoomUnity/releases) section and extract it.
+2. Add one or more supported IWADS to the root of the nasty build folder.
+3. Run nasty.exe. If there is more than one IWAD in the folder you will be prompted to select one.
+
+## Playing in Unity with source code
+
+To run the engine in Unity, you'll first need to generate the engine wad and put that in the root folder of your Unity project (just below Assets). See "Building the engine wad" below for more info. Alternatively, you can just download a [build](https://github.com/jmickle66666666/DoomUnity/releases) and extract the nasty.wad from there. It won't be updated to the latest source, but this might not be a problem.
+
+To start the engine in Unity, just create an empty gameobject in a new scene and add the `GameSetup` component to it. Then add the `VanillaPlayer` prefab to the "Player Prefab" field.
+
+You can also enter commandline arguments here in the `Editor Args` field. For example,
+to run extra PWADs, add `-file path_to_wads` to the commandline parameters.
 
 For Midi, you must have a soundfont file in the root directory, and merge in a wad with MIDI files.
 The IWADS use MUS files and those are not supported yet.
 
 # Building the engine wad
 
-To run the engine stuff, you'll need to generate `nasty.wad` and put that in the root folder of your project (just below Assets).
-
-To build the engine wad: you need to have python 3, omgifol, and pillow
+To build the engine wad (nasty.wad): you'll need python 3, omgifol, and pillow.
 
 `pip install omgifol`  
 `pip install pillow`
 
-you will want to change the path to the root directory of the project or build.
+You will want to change the path to the root directory of the project or build.
 then just run `python3 build_wad.py` to generate the engine wad.
-
-(If you cba, you can just download one of the releases and pick out the nasty.wad from there. It won't be updated to the current source but might not be a problem)
