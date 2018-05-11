@@ -175,44 +175,51 @@ public class LevelEntity : MonoBehaviour {
 					AudioSource.PlayClipAtPoint(seeSound, transform.position);
 				}
 
-				ChangeState();
+				LoadState();
 			}
 		}
 	}
 
-	public void A_Chase() {
-		if (reactionTime > 0f) reactionTime -= Time.deltaTime;
+	// UNFINISHED
 
-		if (target == null) {
-			LookForPlayers();
+	// public void A_Chase() {
+	// 	if (reactionTime > 0f) reactionTime -= Time.deltaTime;
 
-			if (target == null) {
-				state = multigen.states[mobj.data["spawnstate"]];
-				ChangeState();
-			}
+	// 	if (target == null) {
+	// 		LookForPlayers();
 
-			return;
-		}
+	// 		if (target == null) {
+	// 			state = multigen.states[mobj.data["spawnstate"]];
+	// 			LoadState();
+	// 		}
 
-		if (justAttacked) { 
-			justAttacked = false;
-			NewChaseDir();
-			return;
-		}
+	// 		return;
+	// 	}
 
-		if (mobj.data["meleestate"] != "S_NULL" && CheckRange()) {
-			if (attackSound != null) {
-				AudioSource.PlayClipAtPoint(attackSound, transform.position);
-			}
+	// 	if (justAttacked) { 
+	// 		justAttacked = false;
+	// 		NewChaseDir();
+	// 		return;
+	// 	}
 
-			state = multigen.states[mobj.data["meleestate"]];
-			ChangeState();
-		}		
-	}
+	// 	if (mobj.data["meleestate"] != "S_NULL" && CheckRange()) {
+	// 		if (attackSound != null) {
+	// 			AudioSource.PlayClipAtPoint(attackSound, transform.position);
+	// 		}
 
-	public void A_FaceTarget() {
-		direction = Mathf.Atan2(Camera.main.transform.position.z - transform.position.z, Camera.main.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
-	}
+	// 		state = multigen.states[mobj.data["meleestate"]];
+	// 		LoadState();
+	// 		return;
+	// 	}		
+
+	// 	if (mobj.data["missilestate"] != "S_NULL") {
+
+	// 	}
+	// }
+
+	// public void A_FaceTarget() {
+	// 	direction = Mathf.Atan2(Camera.main.transform.position.z - transform.position.z, Camera.main.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
+	// }
 
 	
 }

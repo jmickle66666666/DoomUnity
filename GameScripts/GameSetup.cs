@@ -357,7 +357,7 @@ public class GameSetup : MonoBehaviour {
 			PlayMidi(mapinfo[currentMap].music);
 		}
 		if (multigen != null && Settings.Get("nomonsters", "false") == "false") {
-			mapBuilder.BuildTestSprites(multigen);
+			mapBuilder.BuildLevelEntities(multigen);
 		}
 		buildingMap = false;
 		GameObject.Destroy(GameObject.Find("CLEAR"));

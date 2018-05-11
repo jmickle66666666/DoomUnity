@@ -166,7 +166,7 @@ public class DoomMapBuilder {
 		}
 	}
 
-	public void BuildTestSprites(MultigenParser multigen) {
+	public void BuildLevelEntities(MultigenParser multigen) {
 
 		spriteMaterial = new Material(Shader.Find("Doom/Texture"));
 		spriteMaterial.SetTexture("_Palette", paletteLookup);
