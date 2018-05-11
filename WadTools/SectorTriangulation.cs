@@ -219,7 +219,13 @@ namespace WadTools {
 			int i;
 
 			// Trace sector lines 
-			List<List<Vector2>> polygons = TraceLines(sector);
+			List<List<Vector2>> polygons;
+			try {
+				polygons = TraceLines(sector);
+			} catch {
+				Debug.LogError("Error tracing lines on sector: "+sector.ToString());
+				return null;
+			}
 
 			if (polygons == null) return null;
 

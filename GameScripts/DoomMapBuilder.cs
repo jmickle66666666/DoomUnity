@@ -177,7 +177,7 @@ public class DoomMapBuilder {
 		for (int i = 0; i < map.things.Length; i++) {
 			if (!map.things[i].multiplayer) {
 				MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
-				if (mobj != null) {
+				if (mobj != null && thingSectors.ContainsKey(i)) {
 					GameObject newObj = new GameObject(mobj.name);
 					newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
 					newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
