@@ -357,7 +357,12 @@ public class GameSetup : MonoBehaviour {
 			PlayMidi(mapinfo[currentMap].music);
 		}
 		if (multigen != null && Settings.Get("nomonsters", "false") == "false") {
+			float monsterBuildTime = Time.realtimeSinceStartup;
 			mapBuilder.BuildLevelEntities(multigen);
+			int thingCount = mapBuilder.map.things.Count;
+			monsterBuildTime = Time.realtimeSinceStartup-monsterBuildTime;
+			Debug.Log("Monster build time: "+monsterBuildTime);
+			Debug.Log("Time per thing: "+(monsterBuildTime / thingCount));
 		}
 		buildingMap = false;
 		GameObject.Destroy(GameObject.Find("CLEAR"));

@@ -35,12 +35,14 @@ public class LevelEntity : MonoBehaviour {
 	bool timerActive = true;
 	float stateTimer;
 
-	Dictionary<string, Sprite[]> sprites;
+	static Dictionary<string, Sprite[]> sprites;
 
 	public void LoadMultigen(MultigenParser multigen, MultigenObject mobj, WadFile wad) {
 		this.mobj = mobj;
 		this.multigen = multigen;
-		sprites = new Dictionary<string, Sprite[]>();
+		if (sprites == null) {
+			sprites = new Dictionary<string, Sprite[]>();
+		}
 		this.wad = wad;
 
 		boxCollider = GetComponent<BoxCollider>();
@@ -119,12 +121,13 @@ public class LevelEntity : MonoBehaviour {
 	}
 	
 	void LoadState() {
-		if (!sprites.ContainsKey(spriteName)) {
-			sprites.Add(spriteName, state.GetSprite(wad));
-		}
-
 		if (state.name == "S_NULL") {
 			GameObject.Destroy(gameObject);
+			return;
+		}
+		
+		if (!sprites.ContainsKey(spriteName)) {
+			sprites.Add(spriteName, state.GetSprite(wad));
 		}
 
 		if (state.duration == "-1") timerActive = false;
