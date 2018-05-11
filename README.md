@@ -13,7 +13,7 @@ Because it doesn't already exist. There are various cool applications for such a
 
 Download a zip of the project from the code or release section and extract the DoomUnity folder contained within into your Unity project, or create a new folder in your Unity project called "DoomUnity" and clone the repository there.
 
-You will also need to [download the SharpZip DLL](https://github.com/icsharpcode/SharpZipLib/releases) and import it into your Unity project for PK3 support. At some point I will try include it in the source, or make it optional.
+You will also need to [download the SharpZip DLL](https://github.com/icsharpcode/SharpZipLib/releases) and import it into your Unity project for PK3 support. At some point I will try to include this in the source, or make it optional.
 
 Here are some commands you can try once everything is imported:
 
