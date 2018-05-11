@@ -17,9 +17,11 @@ You will also need to [download the SharpZip DLL](https://github.com/icsharpcode
 
 Here are some commands you can try once everything is imported:
 
-`WadFile wad = new WadFile(path_to_wad);`
-`MapData map = new MapData(wad, "MAP01");`
-`Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);`
+```
+WadFile wad = new WadFile(path_to_wad);
+MapData map = new MapData(wad, "MAP01");
+Texture2D impSprite = DoomGraphic.BuildPatch("TROOA1", wad);
+```
 
 # Can I play doom in this yet?
 
