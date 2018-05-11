@@ -42,6 +42,7 @@ public class DoomMapBuilder {
 	int lastBuiltSector = -1;
 
 	bool lastTexturePNG = false;
+	bool benchmark;
 
 	public float amountLoaded {
 		get {
@@ -67,8 +68,8 @@ public class DoomMapBuilder {
 		else skyName = "SKY1";
 	}
 
-	public void BuildMap(WadFile wad, string mapname) {
-
+	public void BuildMap(WadFile wad, string mapname, bool benchmark = false) {
+		this.benchmark = benchmark;
 		this.wad = wad;
 		textureTable = wad.textureTable;
 		paletteLookup = new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture();
@@ -110,7 +111,7 @@ public class DoomMapBuilder {
 		} else {
 			int mapIndex = wad.GetIndex(mapname);
 			if (wad.directory[mapIndex+1].name == "THINGS") {
-				if (wad.directory[mapIndex+11].name == "BEHAVIOR") {
+				if (wad.directory.Count > mapIndex+11 && wad.directory[mapIndex+11].name == "BEHAVIOR") {
 					throw new Exception("Unsupported map format: Hexen");
 				} else {
 					map = new DoomMapData(wad, mapname);
@@ -126,7 +127,7 @@ public class DoomMapBuilder {
 			throw new Exception("Loading map failed.");
 		}
 
-		st = new SectorTriangulation(map);
+		st = new SectorTriangulation(map, benchmark);
 
 		levelObject = new GameObject(mapname);
 
@@ -157,6 +158,9 @@ public class DoomMapBuilder {
 			}
 		}
 		if (linesDone) {
+			if (benchmark) {
+				st.PrintDebugTimes();
+			}
 			doneBuilding();
 		}
 	}
@@ -164,6 +168,9 @@ public class DoomMapBuilder {
 	public void DoneBuildingLines () {
 		linesDone = true;
 		if (sectorsDone) {
+			if (benchmark) {
+				st.PrintDebugTimes();
+			}
 			doneBuilding();
 		}
 	}
@@ -246,7 +253,7 @@ public class DoomMapBuilder {
 
 		if (map.sectors[index].ceilingTexture == "-" && map.sectors[index].floorTexture == "-") return;
 
-	 	st = new SectorTriangulation(map);
+	 	//st = new SectorTriangulation(map);
 		List<SectorPolygon> polygons = st.Triangulate(index);
 
 		if (polygons == null) return;

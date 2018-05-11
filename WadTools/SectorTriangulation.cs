@@ -206,15 +206,37 @@ namespace WadTools {
 
 		}
 
-		public SectorTriangulation(MapData map) {
+		public SectorTriangulation(MapData map, bool benchmark = false) {
 			this.map = (MapData) map;
+
+			traceLinesTime = 0;
+			cleanLinesTime = 0;
+			buildIslandsTime = 0;
+			cutPolygonsTime = 0;
+			earClipTime = 0;
+			this.benchmark = benchmark;
 		}
 
-		public List<SectorPolygon> Triangulate(int sector, bool benchmark = false) {
+		bool benchmark;
+		float debugTime;
+		float traceLinesTime;
+		float cleanLinesTime;
+		float buildIslandsTime;
+		float cutPolygonsTime;
+		float earClipTime;
 
-			float time = 0f;
+		public void PrintDebugTimes() {
+			Debug.Log("Trace Lines: "+traceLinesTime);
+			Debug.Log("Clean Lines: "+cleanLinesTime);
+			Debug.Log("Build Islands: "+buildIslandsTime);
+			Debug.Log("Cut polygons: "+cutPolygonsTime);
+			Debug.Log("Ear Clip: "+earClipTime);
+		}
+
+		public List<SectorPolygon> Triangulate(int sector) {
+
 			if (benchmark) {
-				time = Time.realtimeSinceStartup;
+				debugTime = Time.realtimeSinceStartup;
 			}
 			int i;
 
@@ -227,21 +249,42 @@ namespace WadTools {
 				return null;
 			}
 
+			if (benchmark) {
+				traceLinesTime += Time.realtimeSinceStartup - debugTime;
+				debugTime = Time.realtimeSinceStartup;
+			}
+
 			if (polygons == null) return null;
 
 			// Remove points on straight lines
 			for (i = 0; i < polygons.Count; i++) {
 				polygons[i] = CleanLines(polygons[i]);
 			}
+
+			if (benchmark) {
+				cleanLinesTime += Time.realtimeSinceStartup - debugTime;
+				debugTime = Time.realtimeSinceStartup;
+			}
+
 			// Determine islands
 			if (polygons.Count == 0) return null;
 			List<SectorIsland> islands = BuildIslands(polygons);
+
+			if (benchmark) {
+				buildIslandsTime += Time.realtimeSinceStartup - debugTime;
+				debugTime = Time.realtimeSinceStartup;
+			}
 
 			// Cut islands
 			List<List<Vector2>> cutPolygons = new List<List<Vector2>>();
 			for (i = 0; i < islands.Count; i++) {
 				List<Vector2> cut = islands[i].Cut();
 				if (cut != null) cutPolygons.Add(cut);	
+			}
+
+			if (benchmark) {
+				cutPolygonsTime += Time.realtimeSinceStartup - debugTime;
+				debugTime = Time.realtimeSinceStartup;
 			}
 
 			// Ear clip
@@ -251,13 +294,13 @@ namespace WadTools {
 				SectorPolygon sp = EarClip(cutPolygons[i]);
 				if (sp != null) output.Add(sp);
 			}
-			
-			// Output
 
 			if (benchmark) {
-				Debug.Log("Triangulation time: "+(Time.realtimeSinceStartup - time));
+				earClipTime += Time.realtimeSinceStartup - debugTime;
+				debugTime = Time.realtimeSinceStartup;
 			}
-
+			
+			// Output
 			return output;
 		}
 
@@ -289,10 +332,12 @@ namespace WadTools {
 			int i;
 			int safe1 = 1000;
 			int safe2 = 1;
+			int imax;
 
 			// First check all vertexes reference two linedefs! This is to find unclosed sectors
 			Dictionary<int, int> vertexLines = new Dictionary<int, int>();
-			for (int v = 0; v < lines.Count; v++) {
+			imax = lines.Count;
+			for (int v = 0; v < imax; v++) {
 				if (!vertexLines.ContainsKey(lines[v].start)) {
 					vertexLines.Add(lines[v].start, 1);
 				} else {
@@ -323,22 +368,21 @@ namespace WadTools {
 				safe1--;
 
 				List<int> trace = new List<int>();
-
 				Linedef line = lines[0];
+				
 				lines.RemoveAt(0);
-
 				trace.Add(line.start);
 				int next = line.end;
-				
 				
 				safe2 = 1000;
 				while ( trace[0] != next && safe2 > 0) { // be careful!!!!
 					safe2--;
 
 					// New approach: find all connected lines and pick the most acute angle
-					List<int> connectedLines = new List<int>(); // Just use the line index
-					List<bool> connectedLineFront = new List<bool>();
-					for (i = 0; i < lines.Count; i++) {
+					List<int> connectedLines = new List<int>(10); // Just use the line index
+					List<bool> connectedLineFront = new List<bool>(10);
+					imax = lines.Count;
+					for (i = 0; i < imax; i++) {
 						if (lines[i].start == next) {
 							connectedLines.Add(i);
 							connectedLineFront.Add(true);
@@ -347,7 +391,7 @@ namespace WadTools {
 							connectedLineFront.Add(false);
 						}
 					}
-
+					int conLines = connectedLines.Count;
 					if (connectedLines.Count == 1) {
 						trace.Add(next);
 						next = connectedLineFront[0]?lines[connectedLines[0]].end:lines[connectedLines[0]].start;
@@ -359,7 +403,7 @@ namespace WadTools {
 						Vector2 v3 = VertexToVector2(pointIndex);
 						float minAngle = Mathf.Abs(LineAngle(v1, v2) - LineAngle(v3, v2));
 						int minIndex = 0;
-						for (i = 1; i < connectedLines.Count; i++) {
+						for (i = 1; i < conLines; i++) {
 							pointIndex = connectedLineFront[i]?lines[connectedLines[i]].end:lines[connectedLines[i]].start;
 							v3 = VertexToVector2(pointIndex);
 							float newAngle = Mathf.Abs(LineAngle(v1, v2) - LineAngle(v3, v2));
@@ -376,8 +420,9 @@ namespace WadTools {
 
 				// Convert it to vector2 for actual use.
 				// I used the index above for speed.
-				List<Vector2> vector2trace = new List<Vector2>();
-				for (i = 0; i < trace.Count; i++) {
+				imax = trace.Count;
+				List<Vector2> vector2trace = new List<Vector2>(imax);
+				for (i = 0; i < imax; i++) {
 					vector2trace.Add(VertexToVector2(trace[i]));
 				}
 				output.Add(vector2trace);
