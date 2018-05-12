@@ -48,13 +48,7 @@ public class HUD : MonoBehaviour {
 		gameObject.layer = 9;
 		SetupCamera();
 		SetupMaterials();
-		//audioSource = gameObject.AddComponent<AudioSource>();
-		//audioSource.spatialBlend = 0.0f;
-		// try {
-		// soundMessage = new DoomSound(wad.GetLump("DSRADIO"), "HUD/Message").ToAudioClip();
-		// } catch {}
 		SpriteRenderer sr = consoleObject.AddComponent<SpriteRenderer>();
-		
 
 		if (wad.DetectType("TITLEPIC") == DataType.PNG) {
 			Texture2D image = new Texture2D(2,2);
@@ -62,13 +56,11 @@ public class HUD : MonoBehaviour {
 			sr.sprite = Sprite.Create(image, new Rect(0f, 0f, image.width, image.height), new Vector2(0.5f, -0.45f));
 			sr.flipY = false;
 			consoleObject.transform.localScale = new Vector3(320f / image.width, 200f / image.height);
-			//sr.color = new Color(0.1f, 0.1f, 0.1f, 1.0f);
 		} else {
 			sr.material = messageMaterial;
 			sr.sprite = Sprite.Create(new DoomGraphic(wad.GetLump("TITLEPIC")).ToRenderMap(), new Rect(0f, 0f, 320, -200), new Vector2(0.5f, -0.45f));
 			sr.flipY = true;
 			sr.material.SetFloat("_Brightness", 0.3f);
-			
 		}
 		
 		consoleObject.layer = 9;
@@ -90,11 +82,11 @@ public class HUD : MonoBehaviour {
 		mapNameObj.transform.localScale = new Vector3(1f, -1f, 1f);
 		HideMapName();
 
-		// GameObject statusBar = new GameObject("StatusBar");
-		// statusBar.layer = 9;
-		// statusBar.transform.parent = transform;
-		// StatusBar sbar = statusBar.AddComponent<StatusBar>();
-		// sbar.Build(wad);
+		GameObject statusBar = new GameObject("StatusBar");
+		statusBar.layer = 9;
+		statusBar.transform.parent = transform;
+		StatusBar sbar = statusBar.AddComponent<StatusBar>();
+		sbar.Build(wad);
 
 	}
 
