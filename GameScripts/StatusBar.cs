@@ -14,6 +14,8 @@ public class StatusBar : MonoBehaviour {
 	Material spriteMaterial;
 	float aspectRatio;
 
+	Dictionary<string, Sprite> faceSprites;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -61,5 +63,40 @@ public class StatusBar : MonoBehaviour {
 		sasr.material = spriteMaterial;
 		sasr.sprite = starmsSprite;
 		weaponSlotsObj.transform.localPosition = new Vector3(-0.36f, -1f, -0.1f);
+
+		faceSprites = new Dictionary<string, Sprite>();
+	}
+
+	string GetFaceSprite(int healthState, int facing, bool pain, bool happy, bool angry) {
+		string output = "STF";
+
+		if (angry) {
+			output += "KILL";
+			output += healthState.ToString();
+			return output;
+		}
+
+		if (happy) {
+			output += "EVL";
+			output += healthState.ToString();
+			return output;
+		}
+
+		if (pain) {
+			if (facing == 0) output += "TL";
+			if (facing == 2) output += "TR";
+
+			if (facing == 1) {
+				output += "OUCH";
+				output += healthState.ToString();
+			} else {
+				output += healthState.ToString();
+				output += "0";
+			}
+
+			return output;
+		}
+
+		return output + "ST" + healthState.ToString() + facing.ToString();
 	}
 }
