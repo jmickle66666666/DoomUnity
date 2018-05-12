@@ -374,6 +374,7 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		player = Instantiate(playerPrefab);
+		player.name = "Player";
 		player.transform.localScale = new Vector3(playerScale,playerScale,playerScale);
 		player.transform.position = new Vector3(playerThing.x * mapBuilder.SCALE, 
 								 			    (mapBuilder.thingSectors[playerIndex].floorHeight + mapBuilder.PLAYER_HEIGHT) * mapBuilder.SCALE * 1.2f, 
