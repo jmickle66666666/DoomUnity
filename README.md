@@ -73,4 +73,4 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 SimpleJSON.cs has an MIT License, and is outlined [in the source](https://github.com/jmickle66666666/DoomUnity/blob/master/External/SimpleJSON.cs)
 
-The FirstPersonDrifter controller and the [C# Digital Audio Synth](https://github.com/n-yoda/unity-midi/tree/master/Assets/UnityMidi/CSharpSynth) do not include licenses.
+The FirstPersonDrifter controller and the [C# Digital Audio Synth](https://github.com/n-yoda/unity-midi/tree/master/Assets/UnityMidi/CSharpSynth) do not include licenses, and are NOT covered by any license provided elsewhere in this project.
