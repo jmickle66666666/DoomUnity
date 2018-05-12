@@ -83,7 +83,50 @@ namespace WadTools {
 
 		public MapData() {
 
+		}	
+
+		public static MapData Load(WadFile wad, string mapname) {
+			byte[] maplump = wad.GetLump(mapname);
+			MapData map = null;
+
+			// Detect map type and treat accordingly
+			// First see if the lump is a wad. 
+			if (maplump.Length != 0) {
+				if (new string(Encoding.ASCII.GetChars(maplump, 0, 4)) == "PWAD") {
+					// Ok! we have a wad representing a map, so we need to dive into it.
+					WadFile mapWad = new WadFile(maplump);
+					if (mapWad.directory[1].name == "THINGS") { // not a udmf, either Doom or Hexen
+						if (mapWad.Contains("BEHAVIOR")) {
+							// Hexen
+							throw new Exception("Unsupported map format: Hexen");
+						} else {
+							map = new DoomMapData(mapWad, mapWad.directory[0].name);
+						}
+					} else if (mapWad.directory[1].name == "TEXTMAP") {
+						map = new UDMFMapData(mapWad.GetLumpAsText("TEXTMAP"));
+					} else {
+						throw new Exception("Unknown map format");
+					}
+				}
+			} else {
+				int mapIndex = wad.GetIndex(mapname);
+				if (wad.directory[mapIndex+1].name == "THINGS") {
+					if (wad.directory.Count > mapIndex+11 && wad.directory[mapIndex+11].name == "BEHAVIOR") {
+						throw new Exception("Unsupported map format: Hexen");
+					} else {
+						map = new DoomMapData(wad, mapname);
+					}
+				} else if (wad.directory[mapIndex+1].name == "TEXTMAP") {
+					map = new UDMFMapData(wad.GetLumpAsText(mapIndex+1));
+				} else {
+					throw new Exception("Unknown map format");
+				}
+			}
+			if (map == null) {
+				throw new Exception("Error loading map: "+mapname);
+			} else {
+				return map;
+			}
 		}
-		
 	}
 }

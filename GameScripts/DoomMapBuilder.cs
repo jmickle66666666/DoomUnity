@@ -15,33 +15,37 @@ public class DoomMapBuilder {
 	public delegate void DoneBuilding();
 	public DoneBuilding doneBuilding;
 
-	public List<string> textures;
+	// Object references
 	public MapData map;
 	public  WadFile wad;
 	private GameObject levelObject;
 	private TextureTable textureTable; 
+	private SectorTriangulation st;
 
-	public  float SCALE = 1f/64f;
-	public  float PLAYER_HEIGHT = 56f;
+	// Constanst
+	public static float SCALE = 1f/64f;
+	public static float PLAYER_HEIGHT = 56f;
 
-	public  Dictionary<int, Sector> thingSectors;
-	private  List<int> unclaimedThings;
+	// Thing placement
+	public Dictionary<int, Sector> thingSectors;
+	private List<int> unclaimedThings;
 
+	// Texture setup
 	private Texture2D paletteLookup;
 	private Texture2D colormapLookup;
 	private Material doomMaterial;
 	private Material pngMaterial;
 	public static Material skyMaterial;
 	private Material spriteMaterial;
-
 	private string skyName = "SKY1";
 
+	// Level building status
 	public bool linesDone = false;
 	public bool sectorsDone = false;
 	int lastBuiltLine = -1;
 	int lastBuiltSector = -1;
-
 	bool lastTexturePNG = false;
+
 	bool benchmark;
 
 	public float amountLoaded {
@@ -51,9 +55,7 @@ public class DoomMapBuilder {
 		}
 	}
 
-	private SectorTriangulation st;
-
-	public  int GetIndexOfThing(int thingType) {
+	public int GetIndexOfThing(int thingType) {
 		for (int i = map.things.Length - 1; i >= 0; i--) {
 			if (map.things[i].type == thingType) {
 				return i;
@@ -69,75 +71,45 @@ public class DoomMapBuilder {
 	}
 
 	public void BuildMap(WadFile wad, string mapname, bool benchmark = false) {
+		
 		this.benchmark = benchmark;
 		this.wad = wad;
 		textureTable = wad.textureTable;
+
+		// Graphics setup. TODO: Move this to DoomGraphic, or somewhere else graphic related.
 		paletteLookup = new Palette(wad.GetLump("PLAYPAL")).GetLookupTexture();
 		colormapLookup = new Colormap(wad.GetLump("COLORMAP")).GetLookupTexture();
+		
 		doomMaterial = new Material(Shader.Find("Doom/Texture"));
 		doomMaterial.SetTexture("_Palette", paletteLookup);
 		doomMaterial.SetTexture("_Colormap", colormapLookup);
-
+		
 		pngMaterial = new Material(Shader.Find("Doom/Unlit Truecolor Texture"));
-
+		
 		skyMaterial = new Material(Shader.Find("Doom/Sky"));
 		skyMaterial.SetTexture("_Palette", paletteLookup);
 		skyMaterial.SetTexture("_RenderMap", GetTexture(skyName));
+		
+		spriteMaterial = new Material(Shader.Find("Doom/Texture"));
+		spriteMaterial.SetTexture("_Palette", paletteLookup);
+		spriteMaterial.SetTexture("_Colormap", colormapLookup);
 
-		// Detect map type and treat accordingly
-
-		// First see if the lump is a wad. 
-		byte[] maplump = wad.GetLump(mapname);
-
-		if (maplump.Length != 0) {
-			if (new string(Encoding.ASCII.GetChars(maplump, 0, 4)) == "PWAD") {
-				// Ok! we have a wad representing a map, so we need to dive into it.
-				WadFile mapWad = new WadFile(maplump);
-				if (mapWad.directory[1].name == "THINGS") { // not a udmf, either Doom or Hexen
-					if (mapWad.Contains("BEHAVIOR")) {
-						// Hexen
-						throw new Exception("Unsupported map format: Hexen");
-					} else {
-						map = new DoomMapData(mapWad, mapWad.directory[0].name);
-					}
-				} else if (mapWad.directory[1].name == "TEXTMAP") {
-					// UDMF format
-					Debug.Log("UDMF Map!!");
-					map = new UDMFMapData(mapWad.GetLumpAsText("TEXTMAP"));
-				} else {
-					throw new Exception("Unknown map format");
-				}
-			}
-		} else {
-			int mapIndex = wad.GetIndex(mapname);
-			if (wad.directory[mapIndex+1].name == "THINGS") {
-				if (wad.directory.Count > mapIndex+11 && wad.directory[mapIndex+11].name == "BEHAVIOR") {
-					throw new Exception("Unsupported map format: Hexen");
-				} else {
-					map = new DoomMapData(wad, mapname);
-				}
-			} else if (wad.directory[mapIndex+1].name == "TEXTMAP") {
-				map = new UDMFMapData(wad.GetLumpAsText(mapIndex+1));
-			} else {
-				throw new Exception("Unknown map format");
-			}
-		}
-
+		map = MapData.Load(wad, mapname);
 		if (map == null) {
 			throw new Exception("Loading map failed.");
 		}
 
 		st = new SectorTriangulation(map, benchmark);
-
 		levelObject = new GameObject(mapname);
 
-		CoroutineRunner cr = levelObject.AddComponent<CoroutineRunner>();
-
+		// Build thing information
 		unclaimedThings = new List<int>();
 		for (int i = 0; i < map.things.Length; i++) {
 			unclaimedThings.Add(i);
 		}
 		thingSectors = new Dictionary<int, Sector>();
+
+		CoroutineRunner cr = levelObject.AddComponent<CoroutineRunner>();
 		cr.dmb = this;
 		cr.map = map;
 		linesDone = false;
@@ -147,6 +119,15 @@ public class DoomMapBuilder {
 		cr.StartCoroutine(cr.BuildSectors());
 
 		levelObject.transform.localScale = new Vector3(SCALE,SCALE * 1.2f,SCALE);
+	}
+
+	public void BuildMap(string wadpath, string mapname) {
+		wad = new WadFile(wadpath);
+		BuildMap(wad, mapname);
+	}
+
+	public void BuildMap(string mapname) {
+		BuildMap(wad, mapname);
 	}
 
 	public void DoneBuildingSectors() {
@@ -176,11 +157,6 @@ public class DoomMapBuilder {
 	}
 
 	public void BuildLevelEntities(MultigenParser multigen) {
-
-		spriteMaterial = new Material(Shader.Find("Doom/Texture"));
-		spriteMaterial.SetTexture("_Palette", paletteLookup);
-		spriteMaterial.SetTexture("_Colormap", colormapLookup);
-
 		for (int i = 0; i < map.things.Length; i++) {
 			if (!map.things[i].multiplayer) {
 				MultigenObject mobj = multigen.GetObjectByDoomedNum(map.things[i].type);
@@ -199,6 +175,7 @@ public class DoomMapBuilder {
 		}
 	}
 
+	// Test a map without building it
 	public int TestMap(WadFile wad, string mapname) {
 		map = new DoomMapData(wad, mapname);
 		st = new SectorTriangulation(map);
@@ -213,15 +190,6 @@ public class DoomMapBuilder {
 			if (polygons == null) failedSectors += 1;
 		}
 		return failedSectors;
-	}
-
-	public void BuildMap(string wadpath, string mapname) {
-		wad = new WadFile(wadpath);
-		BuildMap(wad, mapname);
-	}
-
-	public void BuildMap(string mapname) {
-		BuildMap(wad, mapname);
 	}
 
 	DoomTexture GetInfo(string name, bool tryUpper = true) {
@@ -630,24 +598,6 @@ public class DoomMapBuilder {
 		}
 
 		
-	}
-
-	void GetTextures(int lineIndex) {
-		Linedef line = map.linedefs[lineIndex];
-		Sidedef front = map.sidedefs[line.front];
-
-		if (textures == null) textures = new List<string>();
-
-		if (!textures.Contains(front.lower)) textures.Add(front.lower);
-		if (!textures.Contains(front.mid)) textures.Add(front.mid);
-		if (!textures.Contains(front.upper)) textures.Add(front.upper);
-
-		if (line.back != 0xFFFF) {
-			Sidedef back = map.sidedefs[line.back];
-			if (!textures.Contains(back.lower)) textures.Add(back.lower);
-			if (!textures.Contains(back.mid)) textures.Add(back.mid);
-			if (!textures.Contains(back.upper)) textures.Add(back.upper);
-		}
 	}
 
 }

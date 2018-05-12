@@ -380,9 +380,9 @@ public class GameSetup : MonoBehaviour {
 		player = Instantiate(playerPrefab);
 		player.name = "Player";
 		player.transform.localScale = new Vector3(playerScale,playerScale,playerScale);
-		player.transform.position = new Vector3(playerThing.x * mapBuilder.SCALE, 
-								 			    (mapBuilder.thingSectors[playerIndex].floorHeight + mapBuilder.PLAYER_HEIGHT) * mapBuilder.SCALE * 1.2f, 
-								 			    playerThing.y * mapBuilder.SCALE);
+		player.transform.position = new Vector3(playerThing.x * DoomMapBuilder.SCALE, 
+								 			    (mapBuilder.thingSectors[playerIndex].floorHeight + DoomMapBuilder.PLAYER_HEIGHT) * DoomMapBuilder.SCALE * 1.2f, 
+								 			    playerThing.y * DoomMapBuilder.SCALE);
 		player.transform.localEulerAngles = new Vector3(0f, 90f - playerThing.angle, 0f);
 		fpd = player.GetComponent<FirstPersonDrifter>();
 
