@@ -1,0 +1,55 @@
+{
+    "ARM1" : {
+        "bonus" : "GreenArmor",
+        "message" : "GOTARMOR"
+    },
+    "ARM2" : {
+        "bonus" : "MegaArmor",
+        "message" : "GOTMEGA"
+    },
+    "BON1" : {
+        "bonus" : "Health",
+        "amount" : 1,
+        "message" : "GOTHTHBONUS"
+    },
+    "BON2" : {
+        "bonus" : "Armor",
+        "amount" : 1,
+        "message" : "GOTARMBONUS"
+    },
+    "BFUG" : {
+        "weapon" : "BFG",
+        "sound" : "DSWPNUP",
+        "message" : "GOTBFG9000"
+    },
+    "MGUN" : {
+        "weapon" : "Chaingun",
+        "sound" : "DSWPNUP",
+        "message" : "GOTCHAINGUN"
+    },
+    "CSAW" : {
+        "weapon" : "Chainsaw",
+        "sound" : "DSWPNUP",
+        "message" : "GOTCHAINSAW"
+    },
+    "LAUN" : {
+        "weapon" : "RocketLauncher",
+        "sound" : "DSWPNUP",
+        "message" : "GOTLAUNCHER"
+    },
+    "PLAS" : {
+        "weapon" : "PlasmaRifle",
+        "sound" : "DSWPNUP",
+        "message" : "GOTPLASMA"
+    },
+    "SHOT" : {
+        "weapon" : "Shotgun",
+        "sound" : "DSWPNUP",
+        "message" : "GOTSHOTGUN"
+    },
+    "SGN2" : {
+        "weapon" : "SuperShotgun",
+        "sound" : "DSWPNUP",
+        "message" : "GOTSHOTGUN2"
+    }
+}

@@ -7,6 +7,8 @@ using System.Reflection;
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider))]
 public class LevelEntity : MonoBehaviour {
+
+	// Object references
 	BoxCollider boxCollider;
 	SpriteRenderer spriteRenderer;
 	Material spriteMaterial;
@@ -14,36 +16,50 @@ public class LevelEntity : MonoBehaviour {
 	MultigenParser multigen;
 	MultigenObject mobj;
 	WadFile wad;
+
+	// State control
 	public string stateName;
 	public float direction;
 	static float tick = (1.0f / 35.0f);
+	bool timerActive = true;
+	float stateTimer;
 
+	// Monster attack behaviour
 	public float reactionTime;
-
 	GameObject target;
 	bool justAttacked = false;
 
+	// Sounds
 	AudioClip seeSound;
 	AudioClip attackSound;
+	static AudioClip itemPickupSound;
+	static AudioClip weaponPickupSound;
 
+	// Static sprite cache
 	string spriteName {
 		get {
 			return state.spriteName + state.spriteFrame;
 		}
 	}
-
-	bool timerActive = true;
-	float stateTimer;
-
 	static Dictionary<string, Sprite[]> sprites;
 
 	public void LoadMultigen(MultigenParser multigen, MultigenObject mobj, WadFile wad) {
+
 		this.mobj = mobj;
 		this.multigen = multigen;
+		this.wad = wad;
+
 		if (sprites == null) {
 			sprites = new Dictionary<string, Sprite[]>();
 		}
-		this.wad = wad;
+
+		if (itemPickupSound == null) {
+			itemPickupSound = new DoomSound(wad.GetLump("DSITEMUP"), "DSITEMUP").ToAudioClip();
+		}
+
+		if (weaponPickupSound == null) {
+			weaponPickupSound = new DoomSound(wad.GetLump("DSWPNUP"), "DSWPNUP").ToAudioClip();
+		}
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.isTrigger = !mobj.data["flags"].Contains("MF_SOLID");
@@ -156,6 +172,19 @@ public class LevelEntity : MonoBehaviour {
 
 	bool CheckRange() {
 		return false;
+	}
+
+	void OnTriggerEnter(Collider collision) {
+		if (mobj.data["flags"].Contains("MF_SPECIAL")) { // MF_SPECIAL identifies pickups
+			if (collision.gameObject.name == "Player") {
+
+				ItemInfo info = ItemData.Get(state.spriteName);
+				DoomSound.PlaySoundAtPoint(wad, info.sound, transform.position);
+				HUD.Message(Locale.Get(info.message));
+
+				GameObject.Destroy(gameObject);
+			}
+		}
 	}
 
 	///// CODEPOINTERS =====================================

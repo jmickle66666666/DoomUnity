@@ -36,5 +36,23 @@ namespace WadTools {
 			output.SetData(audioData, 0);
 			return output;
 		}
+
+		static Dictionary<string, AudioClip> soundCache;
+
+		public static void PlaySoundAtPoint(WadFile wad, string name, Vector3 point) {
+			if (soundCache == null) {
+				soundCache = new Dictionary<string, AudioClip>();
+			}
+
+			AudioClip clip;
+			if (soundCache.ContainsKey(name)) {
+				clip = soundCache[name];
+			} else {
+				clip = new DoomSound(wad.GetLump(name), name).ToAudioClip();
+				soundCache.Add(name, clip);
+			}
+
+			AudioSource.PlayClipAtPoint(clip, point);
+		}
 	}
 }
