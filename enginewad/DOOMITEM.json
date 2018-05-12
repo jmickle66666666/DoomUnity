@@ -1,19 +1,19 @@
 {
     "ARM1" : {
-        "bonus" : "greenarmor",
+        "bonus" : "GreenArmor",
         "message" : "GOTARMOR"
     },
     "ARM2" : {
-        "bonus" : "megaarmor",
+        "bonus" : "MegaArmor",
         "message" : "GOTMEGA"
     },
     "BON1" : {
-        "bonus" : "health",
+        "bonus" : "Health",
         "amount" : 1,
         "message" : "GOTHTHBONUS"
     },
     "BON2" : {
-        "bonus" : "armor",
+        "bonus" : "Armor",
         "amount" : 1,
         "message" : "GOTARMBONUS"
     },

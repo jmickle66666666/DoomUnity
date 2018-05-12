@@ -175,12 +175,12 @@ public class LevelEntity : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider collision) {
-		Debug.Log("Collision Enter");
 		if (mobj.data["flags"].Contains("MF_SPECIAL")) { // MF_SPECIAL identifies pickups
 			if (collision.gameObject.name == "Player") {
 
-				AudioSource.PlayClipAtPoint(itemPickupSound, transform.position);
-				// TODO: Identify the item by sprite, and act accordingly
+				ItemInfo info = ItemData.Get(state.spriteName);
+				DoomSound.PlaySoundAtPoint(wad, info.sound, transform.position);
+				HUD.Message(Locale.Get(info.message));
 
 				GameObject.Destroy(gameObject);
 			}

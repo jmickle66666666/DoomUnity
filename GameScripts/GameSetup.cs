@@ -197,8 +197,11 @@ public class GameSetup : MonoBehaviour {
 		if (info.mapInfo != null) {
 			mapinfo = MapInfoLump.Load(engineWad.GetLumpAsText(info.mapInfo), engineWad);
 		}
+		Debug.Log("Merging: "+path);
+		engineWad.Merge(new WadFile(path));
 
-		wad = new WadFile(path);
+		wad = engineWad;
+
 		if (info.mapnameFormat == "MAP") mapFormat = MapFormat.MAP;
 		if (info.mapnameFormat == "EM") mapFormat = MapFormat.EM;
 		iwadSelector = false;
@@ -210,7 +213,8 @@ public class GameSetup : MonoBehaviour {
 		if (info.multigen != null) {
 			multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
 		}
-
+		Locale.Load(wad.GetLumpAsText("LOCAL_EN"));
+		ItemData.Load(wad.GetLumpAsText("DOOMITEM"));
 		StartGame(info);
 	}
 

@@ -1,4 +1,6 @@
 {
+    "DEFAULT_ITEM" : "Picked up an item!",
+
     "PRESSKEY" : 	"press a key.",
     "PRESSYN" : 	"press y or n.",
     "QUITMSG" :	"are you sure you want to\nquit this great game?",

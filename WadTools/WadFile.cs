@@ -209,15 +209,15 @@ namespace WadTools {
 				wad.directory[i].position += wadData.Length;
 			}
 
+			if (wad.textureTable != null) {
+				if (textureTable == null) {
+					textureTable = wad.textureTable;
+				} else {
+					textureTable.Merge(wad.textureTable);
+				}
+			}
+
 			directory.AddRange(wad.directory);
-
-			if (textureTable == null && wad.textureTable != null) {
-				textureTable = wad.textureTable;
-			}
-
-			if (textureTable != null && wad.textureTable != null) {
-				textureTable.Merge(wad.textureTable);
-			}
 
 			byte[] newWadData = new byte[wadData.Length + wad.wadData.Length];
 			Buffer.BlockCopy(wadData, 0, newWadData, 0, wadData.Length);
