@@ -167,6 +167,7 @@ public class DoomMapBuilder {
 			combine[i].mesh = meshFilters[i].sharedMesh;
 			combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
 			//meshFilters[i].gameObject.SetActive(false);
+			meshFilters[i].gameObject.layer = 10;
 			MeshRenderer mr = meshFilters[i].gameObject.GetComponent<MeshRenderer>();
 			materials[i] = mr.material;
 			GameObject.Destroy(mr);

@@ -19,6 +19,7 @@ public class LevelEntity : MonoBehaviour {
 
 	// State control
 	public string stateName;
+	string nextState;
 	public float direction;
 	static float tick = (1.0f / 35.0f);
 	bool timerActive = true;
@@ -26,12 +27,18 @@ public class LevelEntity : MonoBehaviour {
 
 	// Monster attack behaviour
 	public float reactionTime;
-	GameObject target;
+	public GameObject target;
 	bool justAttacked = false;
+	int moveTime = 0;
+	float radius;
+	float height;
+	float speed;
+	Vector3 move;
 
 	// Sounds
 	AudioClip seeSound;
 	AudioClip attackSound;
+	AudioClip activeSound;
 	static AudioClip itemPickupSound;
 	static AudioClip weaponPickupSound;
 
@@ -64,8 +71,10 @@ public class LevelEntity : MonoBehaviour {
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.isTrigger = !mobj.data["flags"].Contains("MF_SOLID");
 
-		float radius = ReadFracValue(mobj.data["radius"]);
-		float height = ReadFracValue(mobj.data["height"]);
+		radius = ReadFracValue(mobj.data["radius"]);
+		height = ReadFracValue(mobj.data["height"]);
+		speed = float.Parse(mobj.data["speed"]) / 128f;
+		move = new Vector3();
 
 		boxCollider.size = new Vector3(radius, height, radius);
 
@@ -85,8 +94,18 @@ public class LevelEntity : MonoBehaviour {
 			seeSound = new DoomSound(wad.GetLump(seeSoundName), seeSoundName).ToAudioClip();
 		}
 
-		state = multigen.states[mobj.data["spawnstate"]];
-		LoadState();
+		string activeSoundName = ParseSoundName(mobj.data["activesound"]);
+		if (wad.Contains(activeSoundName)) {
+			activeSound = new DoomSound(wad.GetLump(activeSoundName), activeSoundName).ToAudioClip();
+		}
+
+		string attackSoundName = ParseSoundName(mobj.data["attacksound"]);
+		if (wad.Contains(attackSoundName)) {
+			attackSound = new DoomSound(wad.GetLump(attackSoundName), attackSoundName).ToAudioClip();
+		}
+
+		UpdateVerticalPosition();
+		SetState(mobj.data["spawnstate"]);
 	}
 
 	string ParseSoundName(string value) {
@@ -148,6 +167,7 @@ public class LevelEntity : MonoBehaviour {
 
 		if (state.duration == "-1") timerActive = false;
 		stateTimer += float.Parse(state.duration) * tick;
+		nextState = state.nextState;
 		MethodInfo method = this.GetType().GetMethod(state.action);
 		if (method != null) {
 			method.Invoke(this, new object[]{});
@@ -157,21 +177,110 @@ public class LevelEntity : MonoBehaviour {
 	}
 
 	void ChangeState() {
-		state = multigen.states[state.nextState];
+		state = multigen.states[nextState];
 		
 		LoadState();
 	}
 
-	void LookForPlayers() {
+	void SetState(string newState) {
+		state = multigen.states[newState];
+		LoadState();
+	}
 
+	void SetNextState(string newState) {
+		nextState = newState;
+	}
+
+	void LookForPlayers() {
+		GameObject player = GameObject.Find("Player");
+
+		target = player;
+		return;
+
+		float playerDistance = Vector3.Distance(transform.position, player.transform.position);
+
+		RaycastHit raycastinfo;
+		Ray checkRay = new Ray(transform.position, (player.transform.position - transform.position).normalized);
+
+		if (!Physics.Raycast(checkRay, out raycastinfo, playerDistance * 0.95f)) {
+			target = player;
+		}
 	}
 
 	void NewChaseDir() {
+		// TODO
+		//boxCollider.Raycast
+		moveTime = Random.Range(0,16);
+		move.x = 0f;
+		move.y = 0f;
 
+		if (CheckMeleeRange()) {
+			NewFleeDir();
+			return;
+		}
+
+		if (target.transform.position.x - speed > transform.position.x) {
+			move.x = 1f;
+		} else if (target.transform.position.x + speed< transform.position.x) {
+			move.x = -1f;
+		} 
+		
+		if (target.transform.position.z + speed < transform.position.z) {
+			move.z = -1f;
+		} else if (target.transform.position.z - speed > transform.position.z) {
+			move.z = 1f;
+		}
+
+		direction = Mathf.Atan2(move.z, move.x) * Mathf.Rad2Deg;
 	}
 
-	bool CheckRange() {
-		return false;
+	void NewFleeDir() {
+		move.x = 0f;
+		move.y = 0f;
+
+		if (target.transform.position.x < transform.position.x) {
+			move.x = 1f;
+		} else if (target.transform.position.x > transform.position.x) {
+			move.x = -1f;
+		} 
+		
+		if (target.transform.position.z > transform.position.z) {
+			move.z = -1f;
+		} else if (target.transform.position.z < transform.position.z) {
+			move.z = 1f;
+		}
+
+		direction = Mathf.Atan2(move.z, move.x) * Mathf.Rad2Deg;
+	}
+
+	bool CheckMeleeRange() {
+		// TODO
+		return Vector3.Distance(transform.position, target.transform.position) - radius < 1.0f;
+	}
+
+	bool CheckMissileRange() {
+		// TODO
+		return true;
+	}
+
+	void Move() {
+		// First redo vertical height
+		UpdateVerticalPosition();
+
+		if (!Physics.Raycast(transform.position + new Vector3(0f, 0.375f, 0f), move, speed + radius)) {
+			transform.Translate(move * speed, Space.World);
+			//moveTime = Random.Range(0,255) & 15;
+		}
+	}
+
+	void UpdateVerticalPosition() {
+		RaycastHit hit;
+		Ray ray = new Ray(transform.position + new Vector3(0f, 1f, 0f), Vector3.down);
+
+		if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Level"))) {
+			float yHeight = hit.point.y;
+			transform.position = new Vector3(transform.position.x, yHeight, transform.position.z);
+		}
 	}
 
 	void OnTriggerEnter(Collider collision) {
@@ -185,6 +294,10 @@ public class LevelEntity : MonoBehaviour {
 				GameObject.Destroy(gameObject);
 			}
 		}
+	}
+
+	bool IsValid(string value) {
+		return value != "0" && value != "S_NULL";
 	}
 
 	///// CODEPOINTERS =====================================
@@ -201,57 +314,69 @@ public class LevelEntity : MonoBehaviour {
 			Ray checkRay = new Ray(transform.position, (Camera.main.transform.position - transform.position).normalized);
 
 			if (!Physics.Raycast(checkRay, out raycastinfo, playerDistance)) {
-				state = multigen.states[mobj.data["seestate"]];
 				
 				if (seeSound != null) {
 					AudioSource.PlayClipAtPoint(seeSound, transform.position);
 				}
-
-				LoadState();
+				
+				SetNextState(mobj.data["seestate"]);
 			}
 		}
 	}
 
 	// UNFINISHED
 
-	// public void A_Chase() {
-	// 	if (reactionTime > 0f) reactionTime -= Time.deltaTime;
+	public void A_Chase() {
+		if (reactionTime > 0f) reactionTime -= Time.deltaTime;
+		
+		if (target == null) {
+			
+			LookForPlayers();
 
-	// 	if (target == null) {
-	// 		LookForPlayers();
+			if (target == null) {
+				SetNextState(mobj.data["spawnstate"]);
+			}
 
-	// 		if (target == null) {
-	// 			state = multigen.states[mobj.data["spawnstate"]];
-	// 			LoadState();
-	// 		}
+			return;
+		}
+		
+		if (justAttacked) { 
+			justAttacked = false;
+			NewChaseDir();
+			return;
+		}
+		
+		if (IsValid(mobj.data["meleestate"]) && CheckMeleeRange()) {
+			if (attackSound != null) {
+				AudioSource.PlayClipAtPoint(attackSound, transform.position);
+			}
 
-	// 		return;
-	// 	}
+			SetState(mobj.data["meleestate"]);
+			return;
+		}		
+		
+		if (IsValid(mobj.data["missilestate"])) {
+			if (( /* difficulty is not nightmare, && */ moveTime > 0) || !CheckMissileRange()) {
+				moveTime -= 1;
+				Move();
+				if (moveTime <= 0) {
+					NewChaseDir();
+				}
 
-	// 	if (justAttacked) { 
-	// 		justAttacked = false;
-	// 		NewChaseDir();
-	// 		return;
-	// 	}
+				if (Random.value < (3f/255f)) {
+					AudioSource.PlayClipAtPoint(activeSound, transform.position);
+				}
+			} else {
+				SetState(mobj.data["missilestate"]);
+				justAttacked = true;
+				return;
+			}
+		}
+	}
 
-	// 	if (mobj.data["meleestate"] != "S_NULL" && CheckRange()) {
-	// 		if (attackSound != null) {
-	// 			AudioSource.PlayClipAtPoint(attackSound, transform.position);
-	// 		}
-
-	// 		state = multigen.states[mobj.data["meleestate"]];
-	// 		LoadState();
-	// 		return;
-	// 	}		
-
-	// 	if (mobj.data["missilestate"] != "S_NULL") {
-
-	// 	}
-	// }
-
-	// public void A_FaceTarget() {
-	// 	direction = Mathf.Atan2(Camera.main.transform.position.z - transform.position.z, Camera.main.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
-	// }
+	public void A_FaceTarget() {
+		direction = Mathf.Atan2(target.transform.position.z - transform.position.z, target.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
+	}
 
 	
 }
