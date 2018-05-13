@@ -378,5 +378,19 @@ public class LevelEntity : MonoBehaviour {
 		direction = Mathf.Atan2(target.transform.position.z - transform.position.z, target.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
 	}
 
+	public void A_PosAttack() {
+		A_FaceTarget();
+
+		if (attackSound != null) {
+			AudioSource.PlayClipAtPoint(attackSound, transform.position);
+		}
+		
+		// TODO: Shoot a bullet
+	}
+
+	public void A_SPosAttack() {
+		A_PosAttack();
+	}
+
 	
 }
