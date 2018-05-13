@@ -9,7 +9,7 @@ Base class for map data.
 
 namespace WadTools {
 
-	public enum DoomMapFormat {
+	public enum MapFormat {
 		Doom,
 		Hexen,
 		UDMF
@@ -80,6 +80,7 @@ namespace WadTools {
 		public Sector[] sectors;
 		public Sidedef[] sidedefs;
 		public Thing[] things;
+		public MapFormat format;
 
 		public MapData() {
 
