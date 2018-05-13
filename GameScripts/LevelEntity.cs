@@ -392,5 +392,16 @@ public class LevelEntity : MonoBehaviour {
 		A_PosAttack();
 	}
 
+	public void A_TroopAttack() {
+		A_FaceTarget();
+
+		if (CheckMeleeRange()) {
+			DoomSound.PlaySoundAtPoint(wad, "DSCLAW", transform.position);
+			return;
+		}
+
+		// Spawn missile
+	}
+
 	
 }
