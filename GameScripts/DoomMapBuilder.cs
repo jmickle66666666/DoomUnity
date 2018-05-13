@@ -19,6 +19,8 @@ public class DoomMapBuilder {
 	public MapData map;
 	public  WadFile wad;
 	private GameObject levelObject;
+	private GameObject geoObject;
+	private GameObject thingsObject;
 	private TextureTable textureTable; 
 	private SectorTriangulation st;
 
@@ -101,6 +103,10 @@ public class DoomMapBuilder {
 
 		st = new SectorTriangulation(map, benchmark);
 		levelObject = new GameObject(mapname);
+		geoObject = new GameObject("Geometry");
+		thingsObject = new GameObject("Things");
+		geoObject.transform.SetParent(levelObject.transform);
+		thingsObject.transform.SetParent(levelObject.transform);
 
 		// Build thing information
 		unclaimedThings = new List<int>();
@@ -140,6 +146,7 @@ public class DoomMapBuilder {
 		}
 		if (linesDone) {
 			Cleanup();
+			doneBuilding();
 		}
 	}
 
@@ -147,6 +154,7 @@ public class DoomMapBuilder {
 		linesDone = true;
 		if (sectorsDone) {
 			Cleanup();
+			doneBuilding();
 		}
 	}
 
@@ -155,19 +163,17 @@ public class DoomMapBuilder {
 			st.PrintDebugTimes();
 		}
 
-
 		GameObject worldMesh = new GameObject("WorldMesh");
 		MeshRenderer meshRenderer = worldMesh.AddComponent<MeshRenderer>();
 		worldMesh.AddComponent<MeshCollider>();
 
-		MeshFilter[] meshFilters = levelObject.GetComponentsInChildren<MeshFilter>();
+		MeshFilter[] meshFilters = geoObject.GetComponentsInChildren<MeshFilter>();
 		CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 		Material[] materials = new Material[meshFilters.Length];
 		for (int i = 0; i < meshFilters.Length; i++) {
 			combine[i].mesh = meshFilters[i].sharedMesh;
 			combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
 			//meshFilters[i].gameObject.SetActive(false);
-			meshFilters[i].gameObject.layer = 10;
 			MeshRenderer mr = meshFilters[i].gameObject.GetComponent<MeshRenderer>();
 			materials[i] = mr.material;
 			GameObject.Destroy(mr);
@@ -192,7 +198,7 @@ public class DoomMapBuilder {
 					GameObject newObj = new GameObject(mobj.name);
 					newObj.transform.localPosition = new Vector3(map.things[i].x * SCALE, thingSectors[i].floorHeight * SCALE * 1.2f, map.things[i].y * SCALE);
 					newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
-					newObj.transform.parent = levelObject.transform;
+					newObj.transform.parent = thingsObject.transform;
 
 					LevelEntity ent = newObj.AddComponent<LevelEntity>();
 
@@ -308,7 +314,8 @@ public class DoomMapBuilder {
 					mr.material = skyMaterial;
 				}
 				newObj.AddComponent<MeshFilter>().mesh = mesh;
-				newObj.transform.SetParent(levelObject.transform, false);
+				newObj.transform.SetParent(geoObject.transform, false);
+				newObj.name = "Floor "+index.ToString();
 			}
 			
 			mesh = new Mesh();
@@ -336,7 +343,8 @@ public class DoomMapBuilder {
 					mr.material = skyMaterial;
 				}
 				newObj.AddComponent<MeshFilter>().mesh = mesh;
-				newObj.transform.SetParent(levelObject.transform, false);
+				newObj.transform.SetParent(geoObject.transform, false);
+				newObj.name = "Ceiling "+index.ToString();
 			}
 		}
 		lastBuiltSector = index;
@@ -385,7 +393,7 @@ public class DoomMapBuilder {
 
 			if (line.lowerUnpegged) frontOffset.y += GetInfo(frontSide.mid).height - (z2-z1);
 			// Just Midtex
-			BuildQuad(new Vector3(x1, z1, y1), new Vector3(x2,z2,y2), frontSide.mid, frontOffset, frontBrightness, true);
+			BuildQuad(index, new Vector3(x1, z1, y1), new Vector3(x2,z2,y2), frontSide.mid, frontOffset, frontBrightness, true);
 		} else {
 			// Lower texture
 			float midBottom;
@@ -402,7 +410,7 @@ public class DoomMapBuilder {
 						float diff = Mathf.Max(frontSector.ceilingHeight, backSector.ceilingHeight) - backSector.floorHeight;
 						offset.y -= GetInfo(frontSide.lower).height - diff;
 					}
-					BuildQuad(new Vector3(x1,frontSector.floorHeight, y1), new Vector3(x2, backSector.floorHeight, y2), frontSide.lower, offset, frontBrightness, true, lowerSky);
+					BuildQuad(index, new Vector3(x1,frontSector.floorHeight, y1), new Vector3(x2, backSector.floorHeight, y2), frontSide.lower, offset, frontBrightness, true, lowerSky);
 				}
 				midBottom = backSector.floorHeight;
 			} else {
@@ -415,7 +423,7 @@ public class DoomMapBuilder {
 						float diff = Mathf.Max(frontSector.ceilingHeight, backSector.ceilingHeight) - frontSector.floorHeight;
 						offset.y -= GetInfo(backSide.lower).height - diff;
 					}
-					BuildQuad(new Vector3(x2, backSector.floorHeight, y2), new Vector3(x1, frontSector.floorHeight, y1), backSide.lower, offset, backBrightness, true, lowerSky);
+					BuildQuad(index, new Vector3(x2, backSector.floorHeight, y2), new Vector3(x1, frontSector.floorHeight, y1), backSide.lower, offset, backBrightness, true, lowerSky);
 				}
 				midBottom = frontSector.floorHeight;
 			}
@@ -432,7 +440,7 @@ public class DoomMapBuilder {
 						offset.y += GetInfo(backSide.upper).height - (backSector.ceilingHeight-frontSector.ceilingHeight);
 					}
 
-					BuildQuad(new Vector3(x2, frontSector.ceilingHeight, y2), new Vector3(x1, backSector.ceilingHeight, y1), backSide.upper, offset, backBrightness, true, upperSky);
+					BuildQuad(index, new Vector3(x2, frontSector.ceilingHeight, y2), new Vector3(x1, backSector.ceilingHeight, y1), backSide.upper, offset, backBrightness, true, upperSky);
 				}
 				midTop = frontSector.ceilingHeight;
 			} else {
@@ -444,7 +452,7 @@ public class DoomMapBuilder {
 					if (!line.upperUnpegged && !upperSky) {
 						offset.y += GetInfo(frontSide.upper).height - (frontSector.ceilingHeight-backSector.ceilingHeight);
 					}
-					BuildQuad(new Vector3(x1, backSector.ceilingHeight, y1), new Vector3(x2, frontSector.ceilingHeight, y2), frontSide.upper, offset, frontBrightness, true, upperSky);
+					BuildQuad(index, new Vector3(x1, backSector.ceilingHeight, y1), new Vector3(x2, frontSector.ceilingHeight, y2), frontSide.upper, offset, frontBrightness, true, upperSky);
 				}
 				midTop = backSector.ceilingHeight;
 			}
@@ -462,7 +470,7 @@ public class DoomMapBuilder {
 					fmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(frontSide.mid).height);
 				}
 
-				BuildQuad(new Vector3(x1, fmidBottom, y1), new Vector3(x2,fmidTop,y2), frontSide.mid, offset, frontBrightness, line.impassable);
+				BuildQuad(index, new Vector3(x1, fmidBottom, y1), new Vector3(x2,fmidTop,y2), frontSide.mid, offset, frontBrightness, line.impassable);
 			}
 			if (backSide.mid != "-") {
 				offset.Set(backOffset.x, backOffset.y);
@@ -475,7 +483,7 @@ public class DoomMapBuilder {
 					bmidTop = Mathf.Min(midTop, offset.y + midTop);
 					bmidBottom = Mathf.Max(midBottom, midTop + offset.y - GetInfo(backSide.mid).height);
 				}
-				BuildQuad(new Vector3(x2, bmidBottom, y2), new Vector3(x1,bmidTop,y1), backSide.mid, offset, backBrightness, line.impassable);
+				BuildQuad(index, new Vector3(x2, bmidBottom, y2), new Vector3(x1,bmidTop,y1), backSide.mid, offset, backBrightness, line.impassable);
 			}
 		}
 
@@ -484,7 +492,7 @@ public class DoomMapBuilder {
 
 	private  Dictionary<string, Material> materialCache;
 
-	void BuildQuad(Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool impassable, bool sky = false) {
+	void BuildQuad(int index, Vector3 v1, Vector3 v2, string texture, Vector2 uvOffset, float light, bool impassable, bool sky = false) {
 	 	// This is where we discard parts of a line that have no height or texture
 
 	 	if (v1.y == v2.y) {
@@ -553,8 +561,17 @@ public class DoomMapBuilder {
 			mr.material.SetFloat("_Brightness", light);
 		}
 		newObj.AddComponent<MeshFilter>().mesh = mesh;
-		newObj.transform.SetParent(levelObject.transform, false);
+		newObj.transform.SetParent(geoObject.transform, false);
+		newObj.name = "Line "+index.ToString();
 	}
+
+	// Build all the lines and floor/ceiling of a sector (or grab already built), and 
+	// flip the normals? We want it to be additive, not subtractive.
+	GameObject BuildInverseSector(int sector) {
+		return null;
+	}
+
+
 
 	private Dictionary<string, Texture2D> flatCache;
 

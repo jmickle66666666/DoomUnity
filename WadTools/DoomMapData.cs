@@ -12,6 +12,7 @@ namespace WadTools {
 	public class DoomMapData : MapData {
 
 		public DoomMapData(WadFile wad, string name) {
+			this.format = MapFormat.Doom;
 			int index = wad.GetIndex(name);
 			LoadThings(wad.GetLump(index + 1));
 			LoadLinedefs(wad.GetLump(index + 2));

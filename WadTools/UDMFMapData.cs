@@ -27,6 +27,7 @@ namespace WadTools {
 		string udmfNamespace;
 
 		public UDMFMapData(string textmap) {
+			this.format = MapFormat.UDMF;
 			mlinedefs = new List<Linedef>();
 			msidedefs = new List<Sidedef>();
 			mthings = new List<Thing>();
