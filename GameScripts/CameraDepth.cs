@@ -71,7 +71,7 @@ public class CameraDepth : MonoBehaviour {
 
 			string pathname = "Screenshots/NaSTY_"+datetime+".png";
 
-			ScreenCapture.CaptureScreenshot(pathname);
+			ScreenCapture.CaptureScreenshot(pathname, int.Parse(Settings.Get("SCREENSHOT_SCALE", "2")));
 
 			StartCoroutine("DelayedScreenshotMessage");
 
