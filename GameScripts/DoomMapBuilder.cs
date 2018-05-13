@@ -139,21 +139,48 @@ public class DoomMapBuilder {
 			}
 		}
 		if (linesDone) {
-			if (benchmark) {
-				st.PrintDebugTimes();
-			}
-			doneBuilding();
+			Cleanup();
 		}
 	}
 
 	public void DoneBuildingLines () {
 		linesDone = true;
 		if (sectorsDone) {
-			if (benchmark) {
-				st.PrintDebugTimes();
-			}
-			doneBuilding();
+			Cleanup();
 		}
+	}
+
+	void Cleanup() {
+		if (benchmark) {
+			st.PrintDebugTimes();
+		}
+
+
+		GameObject worldMesh = new GameObject("WorldMesh");
+		MeshRenderer meshRenderer = worldMesh.AddComponent<MeshRenderer>();
+		worldMesh.AddComponent<MeshCollider>();
+
+		MeshFilter[] meshFilters = levelObject.GetComponentsInChildren<MeshFilter>();
+		CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+		Material[] materials = new Material[meshFilters.Length];
+		for (int i = 0; i < meshFilters.Length; i++) {
+			combine[i].mesh = meshFilters[i].sharedMesh;
+			combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+			//meshFilters[i].gameObject.SetActive(false);
+			MeshRenderer mr = meshFilters[i].gameObject.GetComponent<MeshRenderer>();
+			materials[i] = mr.material;
+			GameObject.Destroy(mr);
+		}
+
+		meshRenderer.materials = materials;
+
+		MeshFilter meshFilter = worldMesh.AddComponent<MeshFilter>();
+		meshFilter.mesh = new Mesh();
+		meshFilter.mesh.CombineMeshes(combine, false);
+
+		worldMesh.transform.parent = levelObject.transform;
+
+		doneBuilding();
 	}
 
 	public void BuildLevelEntities(MultigenParser multigen) {
