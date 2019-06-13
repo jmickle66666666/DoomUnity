@@ -146,7 +146,7 @@ public class DoomMapBuilder {
 		}
 		if (linesDone) {
 			Cleanup();
-			doneBuilding();
+			if (doneBuilding != null) doneBuilding();
 		}
 	}
 
@@ -154,7 +154,7 @@ public class DoomMapBuilder {
 		linesDone = true;
 		if (sectorsDone) {
 			Cleanup();
-			doneBuilding();
+			if (doneBuilding != null) doneBuilding();
 		}
 	}
 
