@@ -187,7 +187,7 @@ public class DoomMapBuilder {
 
 		worldMesh.transform.parent = levelObject.transform;
 
-		doneBuilding();
+		if (doneBuilding != null) doneBuilding();
 	}
 
 	public void BuildLevelEntities(MultigenParser multigen) {
