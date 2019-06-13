@@ -15,12 +15,12 @@ namespace WadTools {
 		UDMF
 	}
 
-	public class Vertex {
+	public struct Vertex {
 		public int x;
 		public int y;
 	}
 
-	public class Sidedef {
+	public struct Sidedef {
 		public int xOffset;
 		public int yOffset;
 		public string upper;
@@ -29,7 +29,7 @@ namespace WadTools {
 		public int sector;
 	}
 
-	public class Linedef {
+	public struct Linedef {
 		public int start;
 		public int end;
 		public int flags;
@@ -49,7 +49,7 @@ namespace WadTools {
 		public bool dontDraw;
 	}
 
-	public class Sector {
+	public struct Sector {
 		public int floorHeight;
 		public int ceilingHeight;
 		public string floorTexture;
@@ -59,7 +59,7 @@ namespace WadTools {
 		public int tag;
 	}
 
-	public class Thing {
+	public struct Thing {
 		public int x;
 		public int y;
 		public int angle;
