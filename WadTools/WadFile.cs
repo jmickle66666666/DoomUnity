@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using UnityEngine;
 
-using ICSharpCode.SharpZipLib.Zip;
+//using ICSharpCode.SharpZipLib.Zip;
 
 /*
 Class for loading and pulling lumps from wad files
@@ -231,7 +231,7 @@ namespace WadTools {
 			if (testString == "PWAD" || testString == "IWAD") {
 				LoadWad(data);
 			} else if (testString.Substring(0,2) == "PK") {
-				LoadPK3(data);
+				// LoadPK3(data);
 			}
 		}
 
@@ -242,7 +242,7 @@ namespace WadTools {
 			if (testString == "PWAD" || testString == "IWAD") {
 				LoadWad(data);
 			} else if (testString.Substring(0,2) == "PK") {
-				LoadPK3(data);
+				// LoadPK3(data);
 			}
 		}
 
@@ -273,40 +273,40 @@ namespace WadTools {
 			LoadWad(File.ReadAllBytes(filepath));
 		}
 
-		public void LoadPK3(string filepath) {
-			FileStream fileStream = File.OpenRead(filepath);
-			LoadPK3(fileStream);
-		}
+		// public void LoadPK3(string filepath) {
+		// 	FileStream fileStream = File.OpenRead(filepath);
+		// 	LoadPK3(fileStream);
+		// }
 
-		public void LoadPK3(byte[] data) {
-			MemoryStream stream = new MemoryStream(data);
-			LoadPK3(stream);
-		}
+		// public void LoadPK3(byte[] data) {
+		// 	MemoryStream stream = new MemoryStream(data);
+		// 	LoadPK3(stream);
+		// }
 
-		public void LoadPK3(Stream streamData) {
-			byte[] fileData = new byte[streamData.Length];
-			streamData.Read(fileData, 0, (int)streamData.Length);
-			ZipFile zip = new ZipFile(streamData);
+		// public void LoadPK3(Stream streamData) {
+		// 	byte[] fileData = new byte[streamData.Length];
+		// 	streamData.Read(fileData, 0, (int)streamData.Length);
+		// 	ZipFile zip = new ZipFile(streamData);
 
-			wadData = new byte[0];
-			directory = new List<DirectoryEntry>();
+		// 	wadData = new byte[0];
+		// 	directory = new List<DirectoryEntry>();
 
-			for (int i = 0; i < zip.Count; i++) {
-				if(zip[i].IsFile) { 
-					Stream stream = zip.GetInputStream(zip[i]);
-					byte[] outBuffer = new byte[zip[i].Size];
-					stream.Read(outBuffer, 0, (int)zip[i].Size);
-					stream.Close();
-					string name = zip[i].Name;
-					name = Path.GetFileName(name);
-					name = Path.GetFileNameWithoutExtension(name);
-					//Debug.Log(name);
-					AddLump(name.ToUpper(), outBuffer);
-				}
-			}
+		// 	for (int i = 0; i < zip.Count; i++) {
+		// 		if(zip[i].IsFile) { 
+		// 			Stream stream = zip.GetInputStream(zip[i]);
+		// 			byte[] outBuffer = new byte[zip[i].Size];
+		// 			stream.Read(outBuffer, 0, (int)zip[i].Size);
+		// 			stream.Close();
+		// 			string name = zip[i].Name;
+		// 			name = Path.GetFileName(name);
+		// 			name = Path.GetFileNameWithoutExtension(name);
+		// 			//Debug.Log(name);
+		// 			AddLump(name.ToUpper(), outBuffer);
+		// 		}
+		// 	}
 
 			
-		}
+		// }
 
 		public void SetupTextures() {
 			if (Contains("PNAMES")) {

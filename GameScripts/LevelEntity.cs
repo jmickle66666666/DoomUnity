@@ -197,14 +197,14 @@ public class LevelEntity : MonoBehaviour {
 		target = player;
 		return;
 
-		float playerDistance = Vector3.Distance(transform.position, player.transform.position);
+		// float playerDistance = Vector3.Distance(transform.position, player.transform.position);
 
-		RaycastHit raycastinfo;
-		Ray checkRay = new Ray(transform.position, (player.transform.position - transform.position).normalized);
+		// RaycastHit raycastinfo;
+		// Ray checkRay = new Ray(transform.position, (player.transform.position - transform.position).normalized);
 
-		if (!Physics.Raycast(checkRay, out raycastinfo, playerDistance * 0.95f)) {
-			target = player;
-		}
+		// if (!Physics.Raycast(checkRay, out raycastinfo, playerDistance * 0.95f)) {
+		// 	target = player;
+		// }
 	}
 
 	void NewChaseDir() {

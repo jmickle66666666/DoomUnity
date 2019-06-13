@@ -26,7 +26,7 @@ public class HUD : MonoBehaviour {
 	//private AudioSource audioSource;
 	//private AudioClip soundMessage;
 	GameObject consoleObject;
-	int maxConsoleMessages = 20;
+	// int maxConsoleMessages = 20;
 
 	Vector3 consoleOpenHeight = new Vector3(0f, -0.7f, 0f);
 	Vector3 consoleClosedHeight = new Vector3(0f, 0.1f, 0f);
