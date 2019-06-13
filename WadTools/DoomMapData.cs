@@ -18,6 +18,7 @@ namespace WadTools {
 			LoadLinedefs(wad.GetLump(index + 2));
 			LoadSidedefs(wad.GetLump(index + 3));
 			LoadVertices(wad.GetLump(index + 4));
+			LoadNodes(wad.GetLump(index + 7));
 			LoadSectors(wad.GetLump(index + 8));
 		}
 
@@ -126,6 +127,36 @@ namespace WadTools {
 				nt.ambush = (flags & 8) == 8;
 				nt.multiplayer = (flags & 16) == 16;
 				things[i / size] = nt;
+			}
+		}
+
+		public void LoadNodes(byte[] data) {
+			int size = 28;
+
+			nodes = new Node[data.Length / size];
+
+			for (int i = 0; i < data.Length; i+=size) {
+				Node nn = new Node() {
+					x = BitConverter.ToInt16(data, i),
+					y = BitConverter.ToInt16(data, i + 2),
+					dx = BitConverter.ToInt16(data, i + 4),
+					dy = BitConverter.ToInt16(data, i + 6),
+					rightBounds = new NodeBounds() {
+						top = BitConverter.ToInt16(data, i + 8),
+						bottom = BitConverter.ToInt16(data, i + 10),
+						left = BitConverter.ToInt16(data, i + 12),
+						right = BitConverter.ToInt16(data, i + 14)
+					},
+					leftBounds = new NodeBounds() {
+						top = BitConverter.ToInt16(data, i + 16),
+						bottom = BitConverter.ToInt16(data, i + 18),
+						left = BitConverter.ToInt16(data, i + 20),
+						right = BitConverter.ToInt16(data, i + 22)
+					},
+					rightChild = BitConverter.ToInt16(data, i + 24),
+					leftChild = BitConverter.ToInt16(data, i + 26)
+				};
+				nodes[i / size] = nn;
 			}
 		}
 		

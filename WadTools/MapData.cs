@@ -73,6 +73,24 @@ namespace WadTools {
 		public bool multiplayer;
 	}
 
+	public struct NodeBounds {
+		public int top;
+		public int bottom;
+		public int left;
+		public int right;
+	}
+
+	public struct Node {
+		public int x;
+		public int y;
+		public int dx;
+		public int dy;
+		public NodeBounds rightBounds;
+		public NodeBounds leftBounds;
+		public int rightChild;
+		public int leftChild;
+	}
+
 	public class MapData {
 
 		public Vertex[] vertices;
@@ -80,6 +98,7 @@ namespace WadTools {
 		public Sector[] sectors;
 		public Sidedef[] sidedefs;
 		public Thing[] things;
+		public Node[] nodes;
 		public MapFormat format;
 
 		public MapData() {
