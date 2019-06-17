@@ -73,6 +73,20 @@ namespace WadTools {
 		public bool multiplayer;
 	}
 
+	public struct Subsector {
+		public int segCount;
+		public int firstSeg;
+	}
+
+	public struct Seg {
+		public int startIndex;
+		public int endIndex;
+		public int angle;
+		public int linedefIndex;
+		public bool direction;
+		public int offset;
+	}
+
 	public struct NodeBounds {
 		public int top;
 		public int bottom;
@@ -99,6 +113,8 @@ namespace WadTools {
 		public Sidedef[] sidedefs;
 		public Thing[] things;
 		public Node[] nodes;
+		public Subsector[] subsectors;
+		public Seg[] segs;
 		public MapFormat format;
 
 		public MapData() {

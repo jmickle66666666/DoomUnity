@@ -88,7 +88,7 @@ public class GameSetup : MonoBehaviour {
 	private MidiPlayer midiPlayer;
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
-	[SerializeField] private string editorArgs;
+	public string editorArgs;
 	private bool buildingMap = false;
 
 	private CommandlineArguments args;

@@ -18,6 +18,8 @@ namespace WadTools {
 			LoadLinedefs(wad.GetLump(index + 2));
 			LoadSidedefs(wad.GetLump(index + 3));
 			LoadVertices(wad.GetLump(index + 4));
+			LoadSegs(wad.GetLump(index + 5));
+			LoadSubsectors(wad.GetLump(index + 6));
 			LoadNodes(wad.GetLump(index + 7));
 			LoadSectors(wad.GetLump(index + 8));
 		}
@@ -127,6 +129,38 @@ namespace WadTools {
 				nt.ambush = (flags & 8) == 8;
 				nt.multiplayer = (flags & 16) == 16;
 				things[i / size] = nt;
+			}
+		}
+
+		public void LoadSubsectors(byte[] data) {
+			int size = 4;
+
+			subsectors = new Subsector[data.Length / size];
+
+			for (int i = 0; i < data.Length; i+=size) {
+				Subsector ns = new Subsector() {
+					segCount = BitConverter.ToInt16(data, i),
+					firstSeg = BitConverter.ToInt16(data, i + 2)
+				};
+				subsectors[i / size] = ns;
+			}
+		}
+
+		public void LoadSegs(byte[] data) {
+			int size = 12;
+
+			segs = new Seg[data.Length / size];
+
+			for (int i = 0; i < data.Length; i+=size) {
+				Seg ns = new Seg() {
+					startIndex = BitConverter.ToInt16(data, i),
+					endIndex = BitConverter.ToInt16(data, i + 2),
+					angle = BitConverter.ToInt16(data, i + 4),
+					linedefIndex = BitConverter.ToInt16(data, i + 6),
+					direction = BitConverter.ToInt16(data, i + 8) == 1,
+					offset = BitConverter.ToInt16(data, i + 10)
+				};
+				segs[i / size] = ns;
 			}
 		}
 
