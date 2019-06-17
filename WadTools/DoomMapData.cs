@@ -12,6 +12,9 @@ namespace WadTools {
 	public class DoomMapData : MapData {
 
 		public DoomMapData(WadFile wad, string name) {
+
+			bounds = new NodeBounds();
+
 			this.format = MapFormat.Doom;
 			int index = wad.GetIndex(name);
 			LoadThings(wad.GetLump(index + 1));
@@ -39,6 +42,18 @@ namespace WadTools {
 					y = BitConverter.ToInt16(data, i + 2)
 				};
 				vertices[i / size] = nv;
+
+				if (i == 0) {
+					bounds.top = nv.y;
+					bounds.bottom = nv.y;
+					bounds.left = nv.x;
+					bounds.right = nv.x;
+				} else {
+					if (nv.y > bounds.top) bounds.top = nv.y;
+					if (nv.y < bounds.bottom) bounds.bottom = nv.y;
+					if (nv.x > bounds.right) bounds.right = nv.x;
+					if (nv.x < bounds.left) bounds.left = nv.x;
+				}
 			}
 		}
 

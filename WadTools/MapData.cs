@@ -116,6 +116,7 @@ namespace WadTools {
 		public Subsector[] subsectors;
 		public Seg[] segs;
 		public MapFormat format;
+		public NodeBounds bounds;
 
 		public MapData() {
 
