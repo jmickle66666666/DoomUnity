@@ -56,6 +56,7 @@ public class LevelEntity : MonoBehaviour {
 	// Player/sight information
 	public static LevelEntity playerEntity; // DUMMY
 	public static Transform playerTransform;
+	public static GameObject player;
 	public static Camera mainCamera;
 	Vector3 sightPosition {
 		get {
@@ -479,7 +480,7 @@ public class LevelEntity : MonoBehaviour {
 
 	void OnTriggerEnter(Collider collision) {
 		if (MF_SPECIAL) { // MF_SPECIAL identifies pickups
-			if (collision.gameObject.name == "Player") {
+			if (collision.gameObject == player) {
 
 				ItemInfo info = ItemData.Get(state.spriteName);
 				DoomSound.PlaySoundAtPoint(wad, info.sound, transform.position);

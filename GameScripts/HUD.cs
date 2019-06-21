@@ -37,7 +37,7 @@ public class HUD : MonoBehaviour {
 
 	GameObject mapNameObj;
 	SpriteRenderer mapNameSR;
-	string mapname;
+	static string mapname;
 
 	// Use this for initialization
 	void Start () {
@@ -88,6 +88,7 @@ public class HUD : MonoBehaviour {
 		mapNameObj.layer = LayerMask.NameToLayer("HUD");
 		mapNameObj.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), -((float)Screen.width/(float)Screen.height) + 0.5f, 0.1f);
 		mapNameObj.transform.localScale = new Vector3(1f, -1f, 1f);
+		if (mapname != null) UpdateMapName();
 		HideMapName();
 
 		// GameObject statusBar = new GameObject("StatusBar");
@@ -106,7 +107,7 @@ public class HUD : MonoBehaviour {
 		cam = cameraObject.AddComponent<Camera>();
 		cam.orthographic = true;
 		cam.orthographicSize = 1;
-		cam.cullingMask = LayerMask.GetMask(new string[] {"HUD"});
+		cam.cullingMask = LayerMask.GetMask("HUD");
 		cam.clearFlags = CameraClearFlags.Depth;
 	}
 	
@@ -269,8 +270,10 @@ public class HUD : MonoBehaviour {
 	}
 
 	public static void SetMapName(string mapname) {
-		main.mapname = mapname;
-		main.UpdateMapName();
+		HUD.mapname = mapname;
+		if (main != null) {
+			main.UpdateMapName();
+		}
 	}
 
 	public static void HideMapName() {

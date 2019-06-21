@@ -147,8 +147,8 @@ public class DoomMenu {
 	}
 
 	public void Show(bool show, bool silent = false) {
-		if (!silent) audioSource.PlayOneShot(show?soundActivate:soundDismiss);
 		mainMenu.SetActive(show);
+		if (!silent) audioSource.PlayOneShot(show?soundActivate:soundDismiss);
 	}
 
 	public void Accept() {

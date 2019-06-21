@@ -89,6 +89,7 @@ public class GameSetup : MonoBehaviour {
 	public bool midiEnabled = false;
 	public string editorArgs;
 	public GameObject stBarObject;
+	public GameObject HUDObject;
 
 	private CommandlineArguments args;
 
@@ -173,8 +174,9 @@ public class GameSetup : MonoBehaviour {
 
 	void SetupHUD() {
 		HUD.wad = wad;
-		GameObject HUDObject = new GameObject("HUD");
+		HUDObject = new GameObject("HUD");
 		HUDObject.AddComponent<HUD>();
+		HUDObject.SetActive(false);
 
 		stBarObject = new GameObject("STBAR");
 		stBarObject.AddComponent<StatusBar>().Build(wad);
@@ -183,11 +185,11 @@ public class GameSetup : MonoBehaviour {
 
 	void SetupTitleCamera() {
 		GameObject titleCameraObject = new GameObject("TitleCamera");
-		titleCameraObject.layer = LayerMask.NameToLayer("MENU");
+		// titleCameraObject.layer = LayerMask.NameToLayer("MENU");
 		Camera titleCamera = titleCameraObject.AddComponent<Camera>();
 		titleCamera.orthographic = true;
 		titleCamera.orthographicSize = 1f;
-		titleCamera.cullingMask = LayerMask.GetMask(new string[] {"MENU"});
+		titleCamera.cullingMask = LayerMask.GetMask("MENU");
 		GameObject titleQuad = new GameObject("TitleQuad");
 		titleQuad.layer = LayerMask.NameToLayer("MENU");
 		titleQuad.transform.parent = titleCameraObject.transform;
@@ -347,6 +349,7 @@ public class GameSetup : MonoBehaviour {
 			PlayMidi(mapinfo[currentMap].music);
 		}
 
+		HUDObject.SetActive(true);
 		// GameObject.Destroy(GameObject.Find("CLEAR"));
 		HUD.SetMapName(mapinfo[currentMap].name);
 		// HUD.Message("Test!");
@@ -430,7 +433,7 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void SetPlayerActive(bool active) {
-		if (player != null) {
+		if (mapBuilder != null && mapBuilder.playerControl != null) {
 			mapBuilder.playerControl.locked = active;
 		}	
 	}

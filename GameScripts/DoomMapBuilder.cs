@@ -85,6 +85,7 @@ public class DoomMapBuilder {
 
 		LevelEntity.playerEntity = playerControl.levelEntity;
 		LevelEntity.playerTransform = playerControl.camera.transform;
+		LevelEntity.player = player;
 		LevelEntity.mainCamera = playerControl.camera;
 	}
 

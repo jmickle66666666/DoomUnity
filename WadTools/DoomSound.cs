@@ -34,6 +34,7 @@ namespace WadTools {
 				audioData[i] = ((float) sampleData[i] / 128.0f) - 1.0f;
 			}
 			output.SetData(audioData, 0);
+			// output.preloadAudioData;
 			return output;
 		}
 
