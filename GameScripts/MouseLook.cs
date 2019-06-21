@@ -1,19 +1,14 @@
-﻿// original by asteins
-// adapted by @torahhorse
-// http://wiki.unity3d.com/index.php/SmoothMouseLook
-
-// Instructions:
-// There should be one MouseLook script on the Player itself, and another on the camera
-// player's MouseLook should use MouseX, camera's MouseLook should use MouseY
-
+﻿
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public class MouseLook : MonoBehaviour
 {
+
+	// I copied this from my doom project's player controller, mouse/camera rotation is a p a i n
  
-	public enum RotationAxes { MouseX = 1, MouseY = 2 }
+	public enum RotationAxes { MouseX = 1, MouseY = 2, None = 3 }
 	public RotationAxes axes = RotationAxes.MouseX;
 	public bool invertY = false;
 	
@@ -30,9 +25,6 @@ public class MouseLook : MonoBehaviour
 	
 	void Start ()
 	{			
-		sensitivityX = float.Parse(Settings.Get("mouse_sensitivityx", "10"));
-		sensitivityY = float.Parse(Settings.Get("mouse_sensitivityy", "9"));
-
 		if (GetComponent<Rigidbody>())
 		{
 			GetComponent<Rigidbody>().freezeRotation = true;
@@ -49,7 +41,7 @@ public class MouseLook : MonoBehaviour
 			Quaternion xQuaternion = Quaternion.AngleAxis (rotationX, Vector3.up);
 			transform.localRotation = originalRotation * xQuaternion;			
 		}
-		else
+		else if (axes == RotationAxes.MouseY)
 		{			
 			float invertFlag = 1f;
  			if( invertY )

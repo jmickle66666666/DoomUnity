@@ -46,7 +46,7 @@ public class StatusBar : MonoBehaviour {
 		Sprite stbarSprite = Sprite.Create(stbarTexture, new Rect(0,0,(float)stbarTexture.width,(float)stbarTexture.height), new Vector2(0.5f, 0f));
 		statusBarObj = new GameObject("STBAR");
 		statusBarObj.transform.parent = transform;
-		statusBarObj.layer = 9;
+		statusBarObj.layer = LayerMask.NameToLayer("HUD");
 		SpriteRenderer sbsr = statusBarObj.AddComponent<SpriteRenderer>();
 		sbsr.material = spriteMaterial;
 		sbsr.sprite = stbarSprite;
@@ -56,7 +56,7 @@ public class StatusBar : MonoBehaviour {
 		Sprite starmsSprite = Sprite.Create(starmsTexture, new Rect(0,0,(float)starmsTexture.width,(float)starmsTexture.height), new Vector2(0.5f, 0f));
 		weaponSlotsObj = new GameObject("STARMS");
 		weaponSlotsObj.transform.parent = transform;
-		weaponSlotsObj.layer = 9;
+		weaponSlotsObj.layer = LayerMask.NameToLayer("HUD");
 		SpriteRenderer sasr = weaponSlotsObj.AddComponent<SpriteRenderer>();
 		sasr.material = spriteMaterial;
 		sasr.sprite = starmsSprite;

@@ -45,7 +45,7 @@ public class HUD : MonoBehaviour {
 		consoleMessages = new List<GameObject>();
 		consoleObject = new GameObject("console");
 		main = this;
-		gameObject.layer = 9;
+		gameObject.layer = LayerMask.NameToLayer("HUD");
 		SetupCamera();
 		SetupMaterials();
 		//audioSource = gameObject.AddComponent<AudioSource>();
@@ -71,7 +71,7 @@ public class HUD : MonoBehaviour {
 			
 		}
 		
-		consoleObject.layer = 9;
+		consoleObject.layer = LayerMask.NameToLayer("HUD");
 
 		GameObject consoleInputObject = new GameObject("Console Input");
 		consoleInputSR = consoleInputObject.AddComponent<SpriteRenderer>();
@@ -79,13 +79,13 @@ public class HUD : MonoBehaviour {
 		consoleInputObject.transform.parent = consoleObject.transform;
 		consoleInputObject.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), 1f, -0.1f);
 		consoleInputObject.transform.localScale = new Vector3(1f, -1f, 1f);
-		consoleInputObject.layer = 9;
+		consoleInputObject.layer = LayerMask.NameToLayer("HUD");
 
 		mapNameObj = new GameObject("Map name");
 		mapNameSR = mapNameObj.AddComponent<SpriteRenderer>();
 		mapNameSR.material = messageMaterial;
 		mapNameObj.transform.parent = transform;
-		mapNameObj.layer = 9;
+		mapNameObj.layer = LayerMask.NameToLayer("HUD");
 		mapNameObj.transform.localPosition = new Vector3(-((float)Screen.width/(float)Screen.height), -((float)Screen.width/(float)Screen.height) + 0.5f, 0.1f);
 		mapNameObj.transform.localScale = new Vector3(1f, -1f, 1f);
 		HideMapName();
@@ -106,7 +106,7 @@ public class HUD : MonoBehaviour {
 		cam = cameraObject.AddComponent<Camera>();
 		cam.orthographic = true;
 		cam.orthographicSize = 1;
-		cam.cullingMask = 512;
+		cam.cullingMask = LayerMask.GetMask(new string[] {"HUD"});
 		cam.clearFlags = CameraClearFlags.Depth;
 	}
 	
@@ -230,7 +230,7 @@ public class HUD : MonoBehaviour {
 		HUDMessage hudMessage = new HUDMessage();
 		hudMessage.life = messageLife;
 		hudMessage.obj = new GameObject(message);
-		hudMessage.obj.layer = 9;
+		hudMessage.obj.layer = LayerMask.NameToLayer("HUD");
 		hudMessage.obj.transform.localScale = new Vector3(1f, -1f, 1f);
 		hudMessage.obj.transform.parent = main.gameObject.transform;
 		SpriteRenderer hs = hudMessage.obj.AddComponent<SpriteRenderer>();
@@ -253,7 +253,7 @@ public class HUD : MonoBehaviour {
 
 	private static void ConsoleLog(Texture2D messageTexture, string message) {
 		GameObject messageObject = new GameObject(message);
-		messageObject.layer = 9;
+		messageObject.layer = LayerMask.NameToLayer("HUD");
 		messageObject.transform.localScale = new Vector3(1f, -1f, 1f);
 		messageObject.transform.parent = main.consoleObject.transform;
 		main.consoleMessages.Insert(0, messageObject);

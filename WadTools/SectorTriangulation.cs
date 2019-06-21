@@ -49,7 +49,7 @@ namespace WadTools {
 		private WadFile wad;
 		private MapData map;
 
-		private class SectorIsland {
+		public class SectorIsland {
 			public List<Vector2> shell;
 			public List<List<Vector2>> holes;
 
@@ -472,7 +472,7 @@ namespace WadTools {
 			return output;
 		}
 
-		private List<SectorIsland> BuildIslands(List<List<Vector2>> polygons) {
+		public List<SectorIsland> BuildIslands(List<List<Vector2>> polygons) {
 
 			List<SectorIsland> output = new List<SectorIsland>();
 

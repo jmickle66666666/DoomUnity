@@ -58,6 +58,7 @@ namespace WadTools {
 		public List<DirectoryEntry> directory;
 		public byte[] wadData;
 		public TextureTable textureTable;
+		public MultigenParser multigen;
 
 		public DataType DetectType(string name) {
 			byte[] lump = GetLump(name);

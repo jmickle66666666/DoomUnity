@@ -26,4 +26,4 @@ for f in files:
 			
 	wad.data[f[:f.find('.')]] = lump
 
-wad.to_file("../../../nasty.wad")
+wad.to_file("../../nasty.wad")

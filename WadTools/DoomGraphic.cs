@@ -95,8 +95,8 @@ namespace WadTools {
 		}
 
 		public DoomTexture Get(string name, bool tryDefault = true) {
-			if (textures.ContainsKey(name)) {
-				return textures[name];
+			if (textures.ContainsKey(name.ToUpper())) {
+				return textures[name.ToUpper()];
 			} else {
 				Debug.LogError("No such texture: "+name);
 				if (tryDefault) {
@@ -157,7 +157,7 @@ namespace WadTools {
 				if (textures.ContainsKey(newTex.name)) {
 					textures[newTex.name] = newTex;
 				} else {
-					//Debug.Log(newTex.name);
+					// Debug.Log(newTex.name);
 					textures.Add(newTex.name, newTex);
 				}
 			}
@@ -381,14 +381,14 @@ namespace WadTools {
 			return BuildPatch(patch.patchName, wad, false, trueColor);
 		}
 
-		public static Texture2D BuildTexture(string name, WadFile wad, TextureTable textures, bool trueColor = false) {
+		public static Texture2D BuildTexture(string name, WadFile wad, bool trueColor = false) {
 			if (textureCache == null) textureCache = new Dictionary<string, Texture2D>();
 
 			if (textureCache.ContainsKey(name)) {
 				return textureCache[name];
 			}
 
-			DoomTexture texture = textures.Get(name.ToUpper());
+			DoomTexture texture = wad.textureTable.Get(name.ToUpper());
 			
 
 			Texture2D output = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);

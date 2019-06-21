@@ -66,9 +66,9 @@ public class GameSetup : MonoBehaviour {
 	public static GameSetup main;
 	public GameObject playerPrefab;
 	private GameObject player;
-	private FirstPersonDrifter fpd;
 	private string currentMap = "";
 	private DoomMapBuilder mapBuilder;
+	// private DoomMeshGenerator meshBuilder;
 	public static WadFile wad;
 	private DoomMenu menu;
 	private bool menuActive;
@@ -83,13 +83,11 @@ public class GameSetup : MonoBehaviour {
 	private bool iwadSelector = false;
 	private List<IwadInfo> foundIwads;
 	private List<string> iwadPaths;
-	private MultigenParser multigen;
 
 	private MidiPlayer midiPlayer;
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
 	public string editorArgs;
-	private bool buildingMap = false;
 
 	private CommandlineArguments args;
 
@@ -180,13 +178,13 @@ public class GameSetup : MonoBehaviour {
 
 	void SetupTitleCamera() {
 		GameObject titleCameraObject = new GameObject("TitleCamera");
-		titleCameraObject.layer = 8;
+		titleCameraObject.layer = LayerMask.NameToLayer("MENU");
 		Camera titleCamera = titleCameraObject.AddComponent<Camera>();
 		titleCamera.orthographic = true;
 		titleCamera.orthographicSize = 1f;
-		titleCamera.cullingMask = 256;
+		titleCamera.cullingMask = LayerMask.GetMask(new string[] {"MENU"});
 		GameObject titleQuad = new GameObject("TitleQuad");
-		titleQuad.layer = 8;
+		titleQuad.layer = LayerMask.NameToLayer("MENU");
 		titleQuad.transform.parent = titleCameraObject.transform;
 		title = titleQuad.AddComponent<TitleSetup>();
 		title.Build(engineWad);
@@ -211,7 +209,7 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		if (info.multigen != null) {
-			multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
+			wad.multigen = new MultigenParser(engineWad.GetLumpAsText(info.multigen));
 		}
 		Locale.Load(wad.GetLumpAsText("LOCAL_EN"));
 		ItemData.Load(wad.GetLumpAsText("DOOMITEM"));
@@ -237,9 +235,9 @@ public class GameSetup : MonoBehaviour {
 			}
 		}
 
-		if (buildingMap) {
-			GUI.Box(new Rect(0f, 198f * hscale, mapBuilder.amountLoaded * Screen.width, 200f*hscale), "");
-		}
+		// if (buildingMap) {
+		// 	GUI.Box(new Rect(0f, 198f * hscale, mapBuilder.amountLoaded * Screen.width, 200f*hscale), "");
+		// }
 	}
 
 	void ParseArguments() {
@@ -286,22 +284,6 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void StartGame(IwadInfo info) {
-		mapBuilder = new DoomMapBuilder();
-
-		if (args.runTests) {
-			Debug.Log("Running tests...");
-
-			// Keep a separate map builder to avoid issues building maps afterwards
-			DoomMapBuilder testMapBuilder = new DoomMapBuilder();
-
-			foreach (KeyValuePair<string, MapInfo> entry in mapinfo) {
-				int errors = testMapBuilder.TestMap(wad, entry.Key);
-				if (errors > 0) {
-					Debug.Log("Failed sectors in "+entry.Key+": "+errors);
-				}
-			}
-		}
-
 		if (args.warp == "") {
 			title.Build(wad);
 			PlayMidi(info.titleMusic);
@@ -337,56 +319,32 @@ public class GameSetup : MonoBehaviour {
 
 	float time;
 
-	void BuildMap(string mapname) {
+	void BuildMap(string mapName) {
 		if (menuActive) {
 			menu.Show(false, true);
 			menuActive = false;
 		}
 		if (GameObject.Find(currentMap) != null) GameObject.Find(currentMap).name = "CLEAR";
 		time = Time.realtimeSinceStartup;
-		currentMap = mapname;
-		if (mapinfo != null) {
-			mapBuilder.SetMapInfo(mapinfo.ContainsKey(mapname) ? mapinfo[mapname] : null);
-		}
-		mapBuilder.doneBuilding = FinishMap;
-		mapBuilder.BuildMap(wad, mapname);
-		buildingMap = true;
-	}
+		currentMap = mapName;
 
-	void FinishMap() {
-		Debug.Log("Map build time: "+(Time.realtimeSinceStartup-time));
+		mapBuilder = new DoomMapBuilder(wad, new DoomMapData(wad, mapName));
+
+		mapBuilder.BuildMap();
+		mapBuilder.BuildPlayer(playerPrefab);
+		if (wad.multigen != null && Settings.Get("nomonsters", "false") == "false") {
+			mapBuilder.BuildLevelEntities();
+		}
+
 		title.DisableCamera();
-		CreatePlayer();
+
 		if (midiEnabled) {
 			PlayMidi(mapinfo[currentMap].music);
 		}
-		if (multigen != null && Settings.Get("nomonsters", "false") == "false") {
-			mapBuilder.BuildLevelEntities(multigen);
-		}
-		buildingMap = false;
-		GameObject.Destroy(GameObject.Find("CLEAR"));
+
+		// GameObject.Destroy(GameObject.Find("CLEAR"));
 		HUD.SetMapName(mapinfo[currentMap].name);
-	}
-
-	void CreatePlayer() {
-		int playerIndex = mapBuilder.GetIndexOfThing(1);
-		Thing playerThing = mapBuilder.map.things[playerIndex];
-		float playerScale = 0.6f;
-
-		if (player != null) {
-			GameObject.Destroy(player);
-		}
-
-		player = Instantiate(playerPrefab);
-		player.name = "Player";
-		player.transform.localScale = new Vector3(playerScale,playerScale,playerScale);
-		player.transform.position = new Vector3(playerThing.x * DoomMapBuilder.SCALE, 
-								 			    (mapBuilder.thingSectors[playerIndex].floorHeight + DoomMapBuilder.PLAYER_HEIGHT) * DoomMapBuilder.SCALE * 1.2f, 
-								 			    playerThing.y * DoomMapBuilder.SCALE);
-		player.transform.localEulerAngles = new Vector3(0f, 90f - playerThing.angle, 0f);
-		fpd = player.GetComponent<FirstPersonDrifter>();
-
-		player.transform.Find("Main Camera").GetComponent<MouseLook>().enabled = (Settings.Get("MOUSE_VLOOK", "false") == "true");
+		HUD.Message("Test!");
 	}
 	
 	private List<string> cheatCodes;
@@ -466,8 +424,7 @@ public class GameSetup : MonoBehaviour {
 
 	void SetPlayerActive(bool active) {
 		if (player != null) {
-			player.GetComponent<MouseLook>().enabled = active;
-			fpd.enabled = active;
+			mapBuilder.playerControl.locked = active;
 		}	
 	}
 
@@ -526,15 +483,15 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		if (currentCheat == "idclip") {
-			HUD.Message("no clip mode "+(fpd.noClip?"off":"on"));
-			fpd.noClip = !fpd.noClip;
+			HUD.Message("no clip mode "+(mapBuilder.playerControl.noClip?"off":"on"));
+			mapBuilder.playerControl.noClip = !mapBuilder.playerControl.noClip;
 			currentCheat = "";
 		}
 	}
 
 	public void WarpMap(string mapname) {
 		mapname = mapname.ToUpper();
-		if (mapBuilder.wad.Contains(mapname)) {
+		if (wad.Contains(mapname)) {
 			HUD.Message("Warping to map: "+mapname);
 			BuildMap(mapname);
 		} else {

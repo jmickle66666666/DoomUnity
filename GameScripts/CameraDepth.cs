@@ -21,9 +21,9 @@ public class CameraDepth : MonoBehaviour {
 	}
 
 	void Update() {
-		if (DoomMapBuilder.skyMaterial != null) {
-			DoomMapBuilder.skyMaterial.SetFloat("_CameraAngle", transform.eulerAngles.y);
-		}
+		// if (DoomMapBuilder.skyMaterial != null) {
+		// 	DoomMapBuilder.skyMaterial.SetFloat("_CameraAngle", transform.eulerAngles.y);
+		// }
 
 		if (Input.GetKeyDown(KeyCode.Tab)) {
 			if (automap) {

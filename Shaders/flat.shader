@@ -1,6 +1,6 @@
 // Shader for the textures and flats in a level
 
-Shader "Doom/Texture" {
+Shader "Doom/Flat" {
  
 Properties {
     _MainTex ("Render Map", 2D) = "white" {}
@@ -23,44 +23,31 @@ SubShader {
 
             struct v2f {
                 float4 vertex : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
-                float brightness : TEXCOORD1;
+                float3 worldPosition : TEXCOORD0;
             };
 
             sampler2D _MainTex;
             sampler2D _Palette;
             sampler2D _Colormap;
             float _Brightness;
-            float4 _MainTex_ST;
 
             v2f vert (appdata_base v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-                // o.brightness = _Brightness;
-                o.brightness = floor(_Brightness*16)/16;
-
-                float3 worldNormal = mul( unity_ObjectToWorld, float4( v.normal, 0.0 ) ).xyz;
-                // o.brightness -= 8.0/256.0;
-                o.brightness -= saturate(abs(worldNormal.z) * 50) * 20/256;
-                o.brightness += saturate(abs(worldNormal.x) * 50) * 20/256;
-                // if (worldNormal.y > 0.95) o.brightness = 0;
-                
+                o.worldPosition = mul (unity_ObjectToWorld, v.vertex);
                 return o;
             }
 
-            
-
             fixed4 frag (v2f i) : SV_Target
             {
-
                 
-                float odepth = doomLight(i.vertex.z, i.brightness);
+                float odepth = doomLight(i.vertex.z, _Brightness);
 
-                float indexCol = tex2D(_MainTex, i.texcoord).r;
 
-                float alpha = tex2D(_MainTex, i.texcoord).a;
+                float indexCol = tex2D(_MainTex, i.worldPosition.xz).r;
+
+                float alpha = tex2D(_MainTex, i.worldPosition.xz).a;
                 float colormapIndex = indexCol;
                 float brightnessLookup = (floor((1.0-odepth) * 32.0)) / 32.0;
 
