@@ -88,6 +88,7 @@ public class GameSetup : MonoBehaviour {
 	private Dictionary<string,MapInfo> mapinfo;
 	public bool midiEnabled = false;
 	public string editorArgs;
+	public GameObject stBarObject;
 
 	private CommandlineArguments args;
 
@@ -174,6 +175,10 @@ public class GameSetup : MonoBehaviour {
 		HUD.wad = wad;
 		GameObject HUDObject = new GameObject("HUD");
 		HUDObject.AddComponent<HUD>();
+
+		stBarObject = new GameObject("STBAR");
+		stBarObject.AddComponent<StatusBar>().Build(wad);
+		stBarObject.SetActive(false);
 	}
 
 	void SetupTitleCamera() {
@@ -344,7 +349,9 @@ public class GameSetup : MonoBehaviour {
 
 		// GameObject.Destroy(GameObject.Find("CLEAR"));
 		HUD.SetMapName(mapinfo[currentMap].name);
-		HUD.Message("Test!");
+		// HUD.Message("Test!");
+
+		stBarObject.SetActive(true);
 	}
 	
 	private List<string> cheatCodes;

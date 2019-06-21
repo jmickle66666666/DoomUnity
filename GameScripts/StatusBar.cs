@@ -32,7 +32,7 @@ public class StatusBar : MonoBehaviour {
 		SetupMaterial();
 		BuildStatusBar();
 
-		if (aspectRatio < 1.6f) transform.localScale = new Vector3(aspectRatio / 1.6f,aspectRatio / 1.6f,0f);
+		transform.localScale = new Vector3(aspectRatio / 1.6f,aspectRatio / 1.6f,0f);
 	}
 
 	void SetupMaterial() {
@@ -42,6 +42,8 @@ public class StatusBar : MonoBehaviour {
 	}
 
 	void BuildStatusBar() {
+		float offset = 1.6f / aspectRatio;
+
 		Texture2D stbarTexture = new DoomGraphic(wad.GetLump("STBAR")).ToRenderMap(true);
 		Sprite stbarSprite = Sprite.Create(stbarTexture, new Rect(0,0,(float)stbarTexture.width,(float)stbarTexture.height), new Vector2(0.5f, 0f));
 		statusBarObj = new GameObject("STBAR");
@@ -50,7 +52,7 @@ public class StatusBar : MonoBehaviour {
 		SpriteRenderer sbsr = statusBarObj.AddComponent<SpriteRenderer>();
 		sbsr.material = spriteMaterial;
 		sbsr.sprite = stbarSprite;
-		statusBarObj.transform.localPosition = new Vector3(0f, -1f, 0f);
+		statusBarObj.transform.localPosition = new Vector3(0f, -offset, 0f);
 
 		Texture2D starmsTexture = new DoomGraphic(wad.GetLump("STARMS")).ToRenderMap(true);
 		Sprite starmsSprite = Sprite.Create(starmsTexture, new Rect(0,0,(float)starmsTexture.width,(float)starmsTexture.height), new Vector2(0.5f, 0f));
@@ -60,6 +62,6 @@ public class StatusBar : MonoBehaviour {
 		SpriteRenderer sasr = weaponSlotsObj.AddComponent<SpriteRenderer>();
 		sasr.material = spriteMaterial;
 		sasr.sprite = starmsSprite;
-		weaponSlotsObj.transform.localPosition = new Vector3(-0.36f, -1f, -0.1f);
+		weaponSlotsObj.transform.localPosition = new Vector3(-0.36f, -offset, -0.1f);
 	}
 }

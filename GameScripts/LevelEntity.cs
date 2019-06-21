@@ -496,10 +496,6 @@ public class LevelEntity : MonoBehaviour {
 
 	void PlaySound(AudioClip clip, bool fullVolume = false)
 	{
-		if (clip == seeSound && seeSounds != null) {
-			PlaySound(seeSounds[Random.Range(0, seeSounds.Length)], fullVolume);
-			return;
-		}
 		audioSource.Stop();
 		audioSource.spatialBlend = fullVolume?0f:1f;
 		audioSource.clip = clip;
@@ -522,6 +518,8 @@ public class LevelEntity : MonoBehaviour {
 			if (seeSound != null) {
 				bool fullVolume = mobj.name == "MT_CYBORG" || mobj.name == "MT_SPIDER";
 				PlaySound(seeSound, fullVolume);
+			} else if (seeSounds != null) {
+				PlaySound(seeSounds[Random.Range(0, seeSounds.Length)]);
 			}
 			
 			SetNextState(mobj.data["seestate"]);
