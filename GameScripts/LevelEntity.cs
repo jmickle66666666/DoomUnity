@@ -4,14 +4,15 @@ using UnityEngine;
 using WadTools;
 using System.Reflection;
 
+[SelectionBase]
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider))]
 public class LevelEntity : MonoBehaviour {
 
 	// Object references
 	BoxCollider boxCollider;
 	SpriteRenderer spriteRenderer;
+	Transform spriteTransform;
 	Material spriteMaterial;
 	MultigenState state;
 	MultigenObject mobj;
@@ -37,7 +38,7 @@ public class LevelEntity : MonoBehaviour {
 	public float height;
 	public float speed;
 	Vector3 move;
-	// Vector2 momentum;
+	static float stepHeight = 0.375f;
 
 	// flags
 	bool MF_MISSILE = false;
@@ -89,15 +90,28 @@ public class LevelEntity : MonoBehaviour {
 			weaponPickupSound = new DoomSound(wad.GetLump("DSWPNUP"), "DSWPNUP").ToAudioClip();
 		}
 
+		MF_MISSILE = mobj.data["flags"].Contains("MF_MISSILE");
+		MF_SPECIAL = mobj.data["flags"].Contains("MF_SPECIAL");
+		MF_SOLID = mobj.data["flags"].Contains("MF_SOLID");
+
 		boxCollider = GetComponent<BoxCollider>();
-		boxCollider.isTrigger = !mobj.data["flags"].Contains("MF_SOLID");
+		boxCollider.isTrigger = !MF_SOLID;
+
+		
 
 		radius = ReadFracValue(mobj.data["radius"]);
 		height = ReadFracValue(mobj.data["height"]);
 		speed = ReadFracValue(mobj.data["speed"]);
 		move = new Vector3();
 
-		boxCollider.size = new Vector3(radius, height, radius);
+		float vHeight = height;
+		if (!MF_SPECIAL) {
+			vHeight -= stepHeight * 0.5f;
+		} else {
+			vHeight *= 2f;
+		}
+		boxCollider.size = new Vector3(radius, vHeight, radius);
+		boxCollider.center = new Vector3(0f, (vHeight * 0.5f), 0f);
 
 		reactionTime = float.Parse(mobj.data["reactiontime"]) * tick;
 
@@ -107,7 +121,7 @@ public class LevelEntity : MonoBehaviour {
 		spriteMaterial.SetTexture("_Palette", paletteLookup);
 		spriteMaterial.SetTexture("_Colormap", colormapLookup);
 
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer = spriteTransform.gameObject.AddComponent<SpriteRenderer>();
 		spriteRenderer.material = spriteMaterial;
 
 		switch (mobj.data["seesound"]) {
@@ -136,9 +150,7 @@ public class LevelEntity : MonoBehaviour {
 				break;
 		}
 
-		MF_MISSILE = mobj.data["flags"].Contains("MF_MISSILE");
-		MF_SPECIAL = mobj.data["flags"].Contains("MF_SPECIAL");
-		MF_SOLID = mobj.data["flags"].Contains("MF_SOLID");
+		
 
 		string activeSoundName = ParseSoundName(mobj.data["activesound"]);
 		if (wad.Contains(activeSoundName)) {
@@ -199,7 +211,7 @@ public class LevelEntity : MonoBehaviour {
 			spriteRenderer.sprite = sprites[spriteName][0];
 		}
 
-		transform.localEulerAngles = new Vector3(0f, mainCamera.transform.eulerAngles.y, 0f);
+		spriteTransform.eulerAngles = new Vector3(0f, mainCamera.transform.eulerAngles.y, 0f);
 		
 		if (timerActive) {
 			stateTimer -= Time.deltaTime;
@@ -299,8 +311,7 @@ public class LevelEntity : MonoBehaviour {
 	}
 
 	void NewChaseDir() {
-		// TODO
-		//boxCollider.Raycast
+		// TODO: actually recreate from p_enemy.c
 		moveTime = Random.Range(0,16);
 		move.x = 0f;
 		move.y = 0f;
@@ -349,7 +360,6 @@ public class LevelEntity : MonoBehaviour {
 
 		float distance = Vector3.Distance(sightPosition, targetTransform.position);
 
-		// TODO: use target radius information.
 		if (distance >= 0.6875f + target.radius)
 		{
 			return false;
@@ -446,10 +456,13 @@ public class LevelEntity : MonoBehaviour {
 	{
 		GameObject newObj = new GameObject(mobj.name);
 		newObj.transform.localPosition = position;
-		newObj.transform.localScale = new Vector3(1.6f,1.76f,1.6f);
+
 
 		LevelEntity ent = newObj.AddComponent<LevelEntity>();
 
+		ent.spriteTransform = new GameObject("Sprite").transform;
+		ent.spriteTransform.SetParent(newObj.transform, false);
+		ent.spriteTransform.localScale= new Vector3(1.6f,1.76f,1.6f);
 		ent.LoadMultigen(mobj, wad);
 		ent.direction = direction;
 
@@ -457,14 +470,40 @@ public class LevelEntity : MonoBehaviour {
 	}
 
 	void Move() {
-		// First redo vertical height
-		if (!MF_MISSILE) {
-			UpdateVerticalPosition();
+		RaycastHit forwardHit;
+		bool moveForward = !Physics.BoxCast(
+			transform.position + boxCollider.center, 
+			boxCollider.size,
+			move,
+			out forwardHit,
+			Quaternion.identity,
+			speed * move.magnitude
+		);
+
+		bool moveStepped = !Physics.BoxCast(
+			transform.position + boxCollider.center + Vector3.up * stepHeight, 
+			boxCollider.size,
+			move,
+			Quaternion.identity,
+			speed * move.magnitude
+		);
+
+		bool noLedge = Physics.Raycast((transform.position + move * speed) + Vector3.up * stepHeight * 0.1f, Vector3.down, stepHeight * 1.1f);
+
+		if (moveForward) {
+			if (noLedge) {
+				transform.Translate(move * speed, Space.World);
+			}
+		} else {
+			if (moveStepped) {
+				transform.Translate(move * speed, Space.World);
+			} else {
+				transform.Translate(move * forwardHit.distance, Space.World);
+			}
 		}
 
-		if (!Physics.Raycast(transform.position + new Vector3(0f, 0.375f, 0f), move, speed + radius)) {
-			transform.Translate(move * speed, Space.World);
-			//moveTime = Random.Range(0,255) & 15;
+		if (!MF_MISSILE) {
+			UpdateVerticalPosition();
 		}
 	}
 
