@@ -15,7 +15,7 @@ namespace WadTools {
     {
 
         WadFile wad;
-        MapData map;
+        public MapData map;
         Dictionary<string, Material> wallMaterials;
         Dictionary<string, Material> flatMaterials;
         Material skyMaterial;
@@ -23,7 +23,8 @@ namespace WadTools {
 
         Transform lines;
         Transform sectors;
-        SectorObject[] sectorObjects;
+        Transform triggers;
+        public SectorObject[] sectorObjects;
 
         public DoomMeshGenerator(WadFile wad, MapData map, NodeTriangulation nodeTri) 
         {
@@ -57,9 +58,11 @@ namespace WadTools {
             
             lines = new GameObject("Lines").transform;
             sectors = new GameObject("Sectors").transform;
+            triggers = new GameObject("Triggers").transform;
 
             lines.parent = output.transform;
             sectors.parent = output.transform;
+            triggers.parent = output.transform;
 
             sectorObjects = new SectorObject[map.sectors.Length];
 
@@ -110,6 +113,24 @@ namespace WadTools {
                     quads[j].transform.SetParent(line.transform, false);
                 }
                 line.transform.parent = lines;
+                
+                if (map.linedefs[i].special != 0) {
+                    var triggerObject = new GameObject($"Trigger {i}");
+                    Mesh mesh = BuildTriggerMesh(i);
+                    triggerObject.AddComponent<MeshFilter>().sharedMesh = mesh;
+                    var trigger = triggerObject.AddComponent<LinedefTrigger>();
+                    var collider = triggerObject.AddComponent<MeshCollider>();
+                    collider.sharedMesh = mesh;
+                    collider.convex = true;
+                    collider.isTrigger = true;
+                    triggerObject.layer = LayerMask.NameToLayer("Trigger");
+                    triggerObject.transform.parent = triggers;
+
+                    trigger.linedefIndex = i;
+                    trigger.sectorTag = map.linedefs[i].tag;
+                    trigger.specialType = map.linedefs[i].special;
+                    trigger.doomMesh = this;
+                }
             }
 
             return output;        
@@ -379,6 +400,27 @@ namespace WadTools {
                     break;
             }
             return false;
+        }
+
+        Mesh BuildTriggerMesh(int lineIndex)
+        {
+            int x1 = map.vertices[map.linedefs[lineIndex].start].x;
+            int y1 = map.vertices[map.linedefs[lineIndex].start].y;
+            int x2 = map.vertices[map.linedefs[lineIndex].end].x;
+            int y2 = map.vertices[map.linedefs[lineIndex].end].y;
+            Vector3[] vertices = new Vector3[] {
+                new Vector3(x1, map.lowestHeight, y1),
+                new Vector3(x1, map.tallestHeight, y1),
+                new Vector3(x2, map.tallestHeight, y2),
+                new Vector3(x2, map.lowestHeight, y2)
+            };
+            int[] triangles = new int[] {
+                0, 1, 2, 0, 2, 3
+            };
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            return mesh;
         }
 
         Mesh BuildQuad(Vector2Int start, Vector2Int end, Vector2Int height, Vector2[] uv)

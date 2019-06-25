@@ -27,6 +27,8 @@ public class DoomPlayer : MonoBehaviour {
 	bool onGround = false;
 	public float gravity = 1f;
 
+	RaycastHit useRay;
+
 	// Use this for initialization
 	void Start () {
 		movement = new Vector3();
@@ -66,6 +68,20 @@ public class DoomPlayer : MonoBehaviour {
 			onGround = ((coll & CollisionFlags.Below) != 0);
 			if (onGround) {
 				momentum.y = 0f;
+			}
+
+			if (!(coll == CollisionFlags.Below)) {
+				momentum = Vector3.zero;
+			}
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space)) {
+
+			if (Physics.Raycast(camera.transform.position, camera.transform.forward, out useRay, 2f, ~LayerMask.NameToLayer("Trigger"))) {
+				LinedefTrigger trigger = useRay.collider.gameObject.GetComponent<LinedefTrigger>();
+				if (trigger != null && trigger.triggerType == TriggerType.Use) {
+					trigger.Trigger();
+				}
 			}
 		}
 	}

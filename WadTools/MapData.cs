@@ -117,6 +117,8 @@ namespace WadTools {
 		public Seg[] segs;
 		public MapFormat format;
 		public NodeBounds bounds;
+		public int lowestHeight;
+		public int tallestHeight;
 
 		public MapData() {
 
@@ -133,6 +135,69 @@ namespace WadTools {
 						if (sidedefs[linedefs[i].back].sector == sector) {
 							output.Add(i);
 						}
+					}
+				}
+			}
+
+			return output.ToArray();
+		}
+
+		// Doors open the sector on the reverse side
+		public int GetLineDoorSector(int line) {
+			return sidedefs[linedefs[line].back].sector;
+		}
+
+		public int[] GetSectorsWithTag(int tag) {
+			List<int> output = new List<int>();
+			for (int i = 0; i < sectors.Length; i++) {
+				if (sectors[i].tag == tag) output.Add(i);
+			}
+			return output.ToArray();
+		}
+
+		public int LowestAdjacentCeiling(int sector) {
+			Sector[] sectors = AdjacentSectors(sector);
+			int output = sectors[0].ceilingHeight;
+			for (int i = 0; i < sectors.Length; i++) {
+				if (sectors[i].ceilingHeight < output) output = sectors[i].ceilingHeight;
+			}
+			return output;
+		}
+
+		public int HighestAdjecentFloor(int sector) {
+			Sector[] sectors = AdjacentSectors(sector);
+			int output = sectors[0].floorHeight;
+			for (int i = 0; i < sectors.Length; i++) {
+				if (sectors[i].floorHeight > output) output = sectors[i].floorHeight;
+			}
+			return output;
+		}
+
+		public int LowestAdjecentFloor(int sector) {
+			Sector[] sectors = AdjacentSectors(sector);
+			int output = sectors[0].floorHeight;
+			for (int i = 0; i < sectors.Length; i++) {
+				if (sectors[i].floorHeight < output) output = sectors[i].floorHeight;
+			}
+			return output;
+		}
+
+		public Sector[] AdjacentSectors(int sector) {
+			List<Sector> output = new List<Sector>();
+
+			int[] sectorLines = GetLinesOfSector(sector); 
+
+			for (int i = 0; i < sectorLines.Length; i++) {
+				int sectorIndex = sidedefs[linedefs[sectorLines[i]].front].sector;
+				if (sectorIndex != sector) {
+					Sector front = sectors[sectorIndex];
+					output.Add(front);
+				}
+				if (linedefs[sectorLines[i]].back != 0xFFFF && linedefs[sectorLines[i]].back != -1) {
+					int backSectorIndex = sidedefs[linedefs[sectorLines[i]].back].sector;
+					if (backSectorIndex != sector) {
+						Sector back = sectors[sectorIndex];
+						output.Add(back);
 					}
 				}
 			}

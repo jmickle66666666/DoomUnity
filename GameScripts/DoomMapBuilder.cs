@@ -55,9 +55,11 @@ public class DoomMapBuilder {
 	}
 
 	void MoveToLayer(Transform root, int layer) {
-		root.gameObject.layer = layer;
-		foreach(Transform child in root)
-			MoveToLayer(child, layer);
+		if (root.gameObject.layer != LayerMask.NameToLayer("Trigger")) {
+			root.gameObject.layer = layer;
+			foreach(Transform child in root)
+				MoveToLayer(child, layer);
+		}
 	}
 
 	public void BuildPlayer(GameObject prefab)

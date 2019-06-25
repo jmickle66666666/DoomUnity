@@ -92,6 +92,9 @@ namespace WadTools {
 
 			sectors = new Sector[data.Length / size];
 
+			lowestHeight = 0;
+			tallestHeight = 0;
+
 			for (int i = 0; i < data.Length; i+=size) {
 				Sector ns = new Sector() {
 					floorHeight = BitConverter.ToInt16(data, i),
@@ -102,6 +105,10 @@ namespace WadTools {
 					type = BitConverter.ToInt16(data, i + 22),
 					tag = BitConverter.ToInt16(data, i + 24)
 				};
+
+				if (ns.ceilingHeight > tallestHeight) tallestHeight = ns.ceilingHeight;
+				if (ns.floorHeight < lowestHeight) lowestHeight = ns.floorHeight;
+
 				sectors[i / size] = ns;
 			}
 		}

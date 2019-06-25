@@ -71,6 +71,30 @@ public class SectorObject : MonoBehaviour
         }
     }
 
+    public void SetFloorHeight(int height)
+    {  
+        targetFloorHeight = SectorHeightToPosition(height, initialFloorPosition);
+        moving = true;
+    }
+
+    public void SetCeilingHeight(int height)
+    {  
+        targetCeilingHeight = SectorHeightToPosition(height, initialCeilingPosition);
+        moving = true;
+    }
+
+    public void ResetFloorHeight()
+    {
+        targetFloorHeight = 0f;
+        moving = true;
+    }
+
+    public void ResetCeilingHeight()
+    {
+        targetFloorHeight = 0f;
+        moving = true;
+    }
+
     int PositionToSectorHeight(float height, int initial)
     {
         int offset = Mathf.RoundToInt(height * scale);
@@ -79,7 +103,6 @@ public class SectorObject : MonoBehaviour
 
     float SectorHeightToPosition(int height, int initial)
     {
-
         return (float)(height-initial) / scale;
     }
 }
