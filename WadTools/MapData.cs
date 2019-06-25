@@ -122,6 +122,24 @@ namespace WadTools {
 
 		}	
 
+		public int[] GetLinesOfSector(int sector) {
+			List<int> output = new List<int>();
+
+			for (int i = 0; i < linedefs.Length; i++) {
+				if (sidedefs[linedefs[i].front].sector == sector) {
+					output.Add(i);
+				} else {
+					if (linedefs[i].back != 0xFFFF && linedefs[i].back != -1) {
+						if (sidedefs[linedefs[i].back].sector == sector) {
+							output.Add(i);
+						}
+					}
+				}
+			}
+
+			return output.ToArray();
+		}
+
 		public static MapData Load(WadFile wad, string mapname) {
 			byte[] maplump = wad.GetLump(mapname);
 			MapData map = null;

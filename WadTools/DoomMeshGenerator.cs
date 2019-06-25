@@ -21,6 +21,10 @@ namespace WadTools {
         Material skyMaterial;
         NodeTriangulation nodeTri;
 
+        Transform lines;
+        Transform sectors;
+        SectorObject[] sectorObjects;
+
         public DoomMeshGenerator(WadFile wad, MapData map, NodeTriangulation nodeTri) 
         {
             this.wad = wad;
@@ -50,26 +54,49 @@ namespace WadTools {
 
             wallMaterials.Add("_SKY", MapTextureBuilder.BuildTextureMaterial(wad, "SKY1"));
             GameObject output = new GameObject("MAP");
-
-            // TRIANGULATE
             
+            lines = new GameObject("Lines").transform;
+            sectors = new GameObject("Sectors").transform;
+
+            lines.parent = output.transform;
+            sectors.parent = output.transform;
+
+            sectorObjects = new SectorObject[map.sectors.Length];
+
+            for (int i = 0; i < map.sectors.Length; i++) {
+                GameObject gameObject = new GameObject($"Sector {i}");
+                gameObject.transform.parent = sectors;
+                SectorObject sectorObject = gameObject.AddComponent<SectorObject>();
+                sectorObject.sector = i;
+                sectorObject.lines = map.GetLinesOfSector(i);
+                sectorObjects[i] = sectorObject;
+                sectorObject.floor = new GameObject("Floor").transform;
+                sectorObject.ceiling = new GameObject("Ceiling").transform;
+                sectorObject.floor.parent = sectorObject.transform;
+                sectorObject.ceiling.parent = sectorObject.transform;
+                sectorObject.initialFloorPosition = map.sectors[i].floorHeight;
+                sectorObject.initialCeilingPosition = map.sectors[i].ceilingHeight;
+
+                sectorObject.meshGenerator = this;
+            }
 
             // SECTORS
             for (int i = 0; i < nodeTri.subsectorHulls.Count; i++) {
                 if (nodeTri.subsectorHulls[i].hull.Length > 2) {
                     Sector sector = map.sectors[nodeTri.subsectorHulls[i].sector];
+                    Transform sectorTransform = sectors.GetChild(nodeTri.subsectorHulls[i].sector);
                     
                     SubsectorFloorObject(
                         MeshFromConvexHull(nodeTri.subsectorHulls[i].hull, sector.floorHeight, false),
                         sector,
                         sector.floorTexture == "F_SKY1"?skyMaterial:flatMaterials[sector.floorTexture]
-                    ).transform.SetParent(output.transform, false);
+                    ).transform.SetParent(sectorObjects[nodeTri.subsectorHulls[i].sector].floor, false);
 
                     SubsectorCeilingObject(
                         MeshFromConvexHull(nodeTri.subsectorHulls[i].hull, sector.ceilingHeight, true),
                         sector,
                         sector.ceilingTexture == "F_SKY1"?skyMaterial:flatMaterials[sector.ceilingTexture]
-                    ).transform.SetParent(output.transform, false);
+                    ).transform.SetParent(sectorObjects[nodeTri.subsectorHulls[i].sector].ceiling, false);
 
                 }
             }
@@ -77,10 +104,12 @@ namespace WadTools {
             // WALLS
 
             for (int i = 0; i < map.linedefs.Length; i++) {
+                var line = new GameObject($"Line {i}");
                 var quads = BuildLine(i);
                 for (int j = 0; j < quads.Length; j++) {
-                    quads[j].transform.SetParent(output.transform, false);
+                    quads[j].transform.SetParent(line.transform, false);
                 }
+                line.transform.parent = lines;
             }
 
             return output;        
@@ -110,6 +139,42 @@ namespace WadTools {
             mesh.vertices = vertices;
             mesh.triangles = triangles;
             return mesh;
+        }
+
+        public void RebuildSector(int sectorIndex, int floorHeight, int ceilingHeight)
+        {
+            Sector sector = map.sectors[sectorIndex];
+            sector.floorHeight = floorHeight;
+            sector.ceilingHeight = ceilingHeight;
+            SectorObject so = sectorObjects[sectorIndex];
+            Transform sectorTransform = sectors.GetChild(sectorIndex);
+            ClearSectorLines(sectorIndex);
+
+            for (int i = 0; i < so.lines.Length; i++) {
+                var quads = BuildLine(so.lines[i]);
+                for (int j = 0; j < quads.Length; j++) {
+                    quads[j].transform.SetParent(lines.GetChild(so.lines[i]), false);
+                }
+            }
+        }
+
+        void ClearLine(int line) {
+            Transform lineTransform = lines.GetChild(line);
+            ClearTransform(lineTransform);
+        }
+
+        void ClearSectorLines(int sector) {
+            Transform sectorTransform = sectors.GetChild(sector);
+            SectorObject so = sectorObjects[sector];
+            for (int i = 0; i < so.lines.Length; i++) {
+                ClearLine(so.lines[i]);
+            }
+        }
+
+        void ClearTransform(Transform transform) {
+            for (int i = 0; i < transform.childCount; i++) {
+                GameObject.Destroy(transform.GetChild(i).gameObject);
+            }
         }
 
         GameObject SubsectorFloorObject(Mesh mesh, Sector sector, Material floor) 
@@ -335,21 +400,6 @@ namespace WadTools {
             return mesh;
         }
 
-        // TODO?
-        // Mesh mergeMeshes(Mesh[] meshes) {
-        //     Mesh output = new Mesh();
-        //     List<Vector3> vertices = new List<Vector3>();
-        //     List<
-        //     int vertexCount = 0;
-        //     for (int i = 0; i < meshes.Length; i++) {
-
-        //         for (int j = 0; j < meshes[i].triangles.Length; j++) {
-        //             meshes[i].triangles[j] += vertexCount;
-        //         }
-        //         vertexCount += meshes[i].vertices.Length;
-        //     }
-        // }
-
         Vector2[] CalculateUVs(float length, Vector2 bottomHeight, Vector2 topHeight, Linedef line, bool front, SideOrientation orientation)
         {
             Sidedef side = null;
@@ -391,7 +441,7 @@ namespace WadTools {
                 if (orientation == SideOrientation.Middle) {
                     if (line.lowerUnpegged && !line.upperUnpegged) {
                         // Draw from bottom
-                        offset.y += size.y;
+                        offset.y -= size.y;
                     } else {
 
                     }
