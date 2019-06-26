@@ -44,7 +44,7 @@ public class LinedefTrigger : MonoBehaviour
         2, 3, 4, 5, 6, 8, 10, 12, 13, 16, 17, 19, 22, 25, 30, 35, 36, 37, 38, 39, 40, 44, 52, 53, 54, 56, 57, 58, 59, 72, 73, 74, 75, 76, 77, 79, 80, 81, 82, 83, 84, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 100, 104, 105, 106, 107, 108, 109, 110, 119, 120, 121, 124, 125, 126, 128, 129, 130, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 199, 200, 201, 202, 207, 208, 212, 219, 220, 227, 228, 231, 232, 235, 236, 239, 240, 243, 244, 256, 257, 262, 263, 264, 265, 266, 267, 268, 269, 270, 273, 274, 275, 338, 339, 348, 436, 437
     };
 
-    void Start()
+    public void Init()
     {
         repeatable = System.Array.IndexOf(repeatableActions, specialType) >= 0;
 
@@ -74,14 +74,36 @@ public class LinedefTrigger : MonoBehaviour
     {
         if (timerDone != null) return;
         didAction = false;
-        //TODO: 61, 11
 
         if (specialType == 1) Door(doorSlow, 4f);
+        if (specialType == 2) Door(doorSlow);
+        if (specialType == 11) LevelExit();
+        if (specialType == 20) Floor(map.NextHighestFloor, platSlow);
+        if (specialType == 26 && GameSetup.main.playerInventory.blueKeyCard) Door(doorSlow, 4f);
+        if (specialType == 27 && GameSetup.main.playerInventory.yellowKeyCard) Door(doorSlow, 4f);
+        if (specialType == 28 && GameSetup.main.playerInventory.redKeyCard) Door(doorSlow, 4f);
         if (specialType == 31) Door(doorSlow);
+        if (specialType == 32 && GameSetup.main.playerInventory.blueKeyCard) Door(doorSlow);
+        if (specialType == 33 && GameSetup.main.playerInventory.redKeyCard) Door(doorSlow);
+        if (specialType == 34 && GameSetup.main.playerInventory.yellowKeyCard) Door(doorSlow);
         if (specialType == 61) Door(doorSlow);
         if (specialType == 62) Floor(map.LowestAdjecentFloor, platFast, 3f);
+        if (specialType == 97) Teleport();
+        if (specialType == 99 && GameSetup.main.playerInventory.blueKeyCard) Door(doorFast);
         if (specialType == 102) Floor(map.HighestAdjecentFloor, platSlow);
         if (specialType == 103) Door(doorSlow);
+        if (specialType == 109) Door(doorFast);
+        if (specialType == 114) Door(doorFast, 4f);
+        if (specialType == 117) Door(doorFast, 4f);
+        if (specialType == 120) Floor(map.LowestAdjecentFloor, platFast, 3f);
+        if (specialType == 121) Floor(map.LowestAdjecentFloor, platFast, 3f);
+        if (specialType == 122) Floor(map.LowestAdjecentFloor, platFast, 3f);
+        if (specialType == 123) Floor(map.LowestAdjecentFloor, platFast, 3f);
+        if (specialType == 133 && GameSetup.main.playerInventory.blueKeyCard) Door(doorFast);
+        if (specialType == 134 && GameSetup.main.playerInventory.redKeyCard) Door(doorFast);
+        if (specialType == 135 && GameSetup.main.playerInventory.redKeyCard) Door(doorFast);
+        if (specialType == 136 && GameSetup.main.playerInventory.yellowKeyCard) Door(doorFast);
+        if (specialType == 137 && GameSetup.main.playerInventory.yellowKeyCard) Door(doorFast);
 
 
         if (!didAction) {
@@ -145,5 +167,41 @@ public class LinedefTrigger : MonoBehaviour
         }
 
         didAction = true;
+    }
+
+    void LevelExit()
+    {
+        GameSetup.main.NextMap();
+        didAction = true;
+    }
+
+    void Teleport()
+    {
+        for (int i = 0; i < map.things.Length; i++) {
+            if (map.things[i].type == 14) {
+                int thingSector = doomMesh.nodeTri.ThingSector(map.things[i]);
+                var sectors = map.GetSectorsWithTag(sectorTag);
+                for (int j = 0; j < sectors.Length; j++) {
+                    if (thingSector == sectors[j]) {
+                        Vector3 position = new Vector3(
+                            map.things[i].x * DoomMapBuilder.SCALE.x,
+                            map.sectors[thingSector].floorHeight * DoomMapBuilder.SCALE.y,
+                            map.things[i].y * DoomMapBuilder.SCALE.z
+                        );
+                        GameSetup.main.player.transform.position = position;
+
+                        GameSetup.main.player.transform.localEulerAngles = new Vector3(
+                            0f,
+                            90f - map.things[i].angle,
+                            0f
+                        );
+
+                        didAction = true;
+                        return;
+                    }
+                }
+            }
+        }
+        
     }
 }

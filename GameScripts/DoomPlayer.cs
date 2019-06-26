@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using WadTools;
 public class DoomPlayer : MonoBehaviour {
 
 	public CharacterController characterController;
@@ -27,6 +27,8 @@ public class DoomPlayer : MonoBehaviour {
 	bool onGround = false;
 	public float gravity = 1f;
 
+	public DoomMeshGenerator doomMesh;
+
 	RaycastHit useRay;
 
 	// Use this for initialization
@@ -38,6 +40,8 @@ public class DoomPlayer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (_locked) return;
+
+		Vector3 lastPos = transform.position;
 		
 		
 		if (noClip) {
@@ -83,6 +87,10 @@ public class DoomPlayer : MonoBehaviour {
 					trigger.Trigger();
 				}
 			}
+		}
+
+		if (!lastPos.Equals(transform.position)) {
+			doomMesh.CheckTriggers(lastPos, transform.position);
 		}
 	}
 

@@ -19,6 +19,9 @@ public class DoomMapBuilder {
 	Transform thingContainer;
 	NodeTriangulation nodeTri;
 	public DoomPlayer playerControl;
+	DoomMeshGenerator meshGenerator;
+	public GameObject level;
+	GameObject player;
 
 	public static Vector3 SCALE = new Vector3(0.015625f,0.01875f,0.015625f);  // 1/64
 
@@ -49,7 +52,8 @@ public class DoomMapBuilder {
         }
 
         nodeTri.TraverseNodes();
-		GameObject level = new DoomMeshGenerator(wad, map, nodeTri).BuildMesh();
+		meshGenerator = new DoomMeshGenerator(wad, map, nodeTri);
+		level = meshGenerator.BuildMesh();
         level.transform.SetParent(container, false); 
 		MoveToLayer(level.transform, LayerMask.NameToLayer("Level"));
 	}
@@ -64,7 +68,7 @@ public class DoomMapBuilder {
 
 	public void BuildPlayer(GameObject prefab)
 	{
-		GameObject player = GameObject.Instantiate(prefab);
+		player = GameObject.Instantiate(prefab);
 		int playerIndex = 0;
 
 		for (int i = map.things.Length - 1; i >= 0; i--) {
@@ -83,12 +87,15 @@ public class DoomMapBuilder {
 		);
 
 		playerControl = player.GetComponent<DoomPlayer>();
+		playerControl.doomMesh = meshGenerator;
 		Debug.Log(playerControl);
 
 		LevelEntity.playerEntity = playerControl.levelEntity;
 		LevelEntity.playerTransform = playerControl.camera.transform;
 		LevelEntity.player = player;
 		LevelEntity.mainCamera = playerControl.camera;
+
+		GameSetup.main.player = player;
 	}
 
 	Vector3 ThingSpawnPosition(Thing thing, bool scaled)
@@ -101,7 +108,7 @@ public class DoomMapBuilder {
 		return position;
 	}
 
-	public void BuildLevelEntities() {
+	public void BuildLevelEntities(bool spawnMonsters) {
 		for (int i = 0; i < map.things.Length; i++) {
 			if (!map.things[i].multiplayer) {
 				MultigenObject mobj = wad.multigen.GetObjectByDoomedNum(map.things[i].type);
@@ -113,10 +120,22 @@ public class DoomMapBuilder {
 						wad
 					);
 
-					newObject.transform.parent = thingContainer;
+					if (!spawnMonsters && newObject.MF_COUNTKILL) {
+						GameObject.Destroy(newObject.gameObject);
+					} else {
+						newObject.transform.parent = thingContainer;
+					}
+
 				}
 			}
 		}
+	}
+
+	public void Destroy()
+	{
+		GameObject.Destroy(container.gameObject);
+		GameObject.Destroy(thingContainer.gameObject);
+		GameObject.Destroy(player);
 	}
 
 }

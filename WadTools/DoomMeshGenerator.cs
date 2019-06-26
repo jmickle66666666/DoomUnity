@@ -19,12 +19,14 @@ namespace WadTools {
         Dictionary<string, Material> wallMaterials;
         Dictionary<string, Material> flatMaterials;
         Material skyMaterial;
-        NodeTriangulation nodeTri;
+        public NodeTriangulation nodeTri;
 
         Transform lines;
         Transform sectors;
         Transform triggers;
         public SectorObject[] sectorObjects;
+
+        List<LinedefTrigger> triggerList;
 
         public DoomMeshGenerator(WadFile wad, MapData map, NodeTriangulation nodeTri) 
         {
@@ -106,6 +108,8 @@ namespace WadTools {
 
             // WALLS
 
+            triggerList = new List<LinedefTrigger>();
+
             for (int i = 0; i < map.linedefs.Length; i++) {
                 var line = new GameObject($"Line {i}");
                 var quads = BuildLine(i);
@@ -116,13 +120,7 @@ namespace WadTools {
                 
                 if (map.linedefs[i].special != 0) {
                     var triggerObject = new GameObject($"Trigger {i}");
-                    Mesh mesh = BuildTriggerMesh(i);
-                    triggerObject.AddComponent<MeshFilter>().sharedMesh = mesh;
                     var trigger = triggerObject.AddComponent<LinedefTrigger>();
-                    var collider = triggerObject.AddComponent<MeshCollider>();
-                    collider.sharedMesh = mesh;
-                    collider.convex = true;
-                    collider.isTrigger = true;
                     triggerObject.layer = LayerMask.NameToLayer("Trigger");
                     triggerObject.transform.parent = triggers;
 
@@ -130,10 +128,62 @@ namespace WadTools {
                     trigger.sectorTag = map.linedefs[i].tag;
                     trigger.specialType = map.linedefs[i].special;
                     trigger.doomMesh = this;
+
+                    trigger.Init();
+
+                    if (trigger.triggerType == TriggerType.Use || trigger.triggerType == TriggerType.Shoot) {
+                        Mesh mesh = BuildTriggerMesh(i);
+                        triggerObject.AddComponent<MeshFilter>().sharedMesh = mesh;
+
+                        var collider = triggerObject.AddComponent<MeshCollider>();
+                        collider.sharedMesh = mesh;
+                        collider.convex = true;
+                        collider.isTrigger = true;
+                    } else { 
+                        triggerList.Add(trigger);
+                    }
                 }
             }
 
             return output;        
+        }
+
+        public void CheckTriggers(Vector3 start, Vector3 end)
+        {
+            Vector2 A = new Vector2(
+                start.x / DoomMapBuilder.SCALE.x,
+                start.z / DoomMapBuilder.SCALE.z
+            );
+            Vector2 B = new Vector2(
+                end.x / DoomMapBuilder.SCALE.x,
+                end.z / DoomMapBuilder.SCALE.z
+            );
+            for (int i = 0; i < triggerList.Count; i++) 
+            {
+                if (triggerList[i] != null && triggerList[i].triggerType == TriggerType.Walk) {
+                    Linedef line = map.linedefs[triggerList[i].linedefIndex];
+                    Vector2 C = new Vector2(
+                        map.vertices[line.start].x,
+                        map.vertices[line.start].y
+                    );
+                    Vector2 D = new Vector2(
+                        map.vertices[line.end].x,
+                        map.vertices[line.end].y
+                    );
+                    if (LinesIntersect(A, B, C, D)) {
+                        triggerList[i].Trigger();
+                    }
+                }
+            }
+        }
+
+        private static bool LinesIntersect(Vector2 A, Vector2 B, Vector2 C, Vector2 D) {
+
+			return (CCW(A,C,D) != CCW(B,C,D)) && (CCW(A,B,C) != CCW(A,B,D));
+        }
+
+        private static bool CCW(Vector2 A, Vector2 B, Vector2 C) {
+			return ((C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x));
         }
 
         Mesh MeshFromConvexHull(Vector2[] hull, float height, bool reversed) 
@@ -377,7 +427,7 @@ namespace WadTools {
         {
             if (!wallMaterials.ContainsKey(texture.ToUpper())) {
                 if (texture == "-") {
-                    Debug.LogWarning($"Visible side with texture -");
+                    // Debug.LogWarning($"Visible side with texture -");
                 } else {
                     Debug.LogError($"Can't find texture: {texture.ToUpper()}");
                 }
@@ -499,7 +549,9 @@ namespace WadTools {
                 if (orientation == SideOrientation.Lower) {
                     if (!line.lowerUnpegged) {
                         // draw from higher ceiling
-                        offset.y -= topHeight.y - bottomHeight.y;
+                        offset.y += topHeight.y - bottomHeight.y;
+                    } else {
+                        // offset.y -= size.y;
                     }
                 }
             }

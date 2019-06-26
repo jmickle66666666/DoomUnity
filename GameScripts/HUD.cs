@@ -109,6 +109,7 @@ public class HUD : MonoBehaviour {
 		cam.orthographicSize = 1;
 		cam.cullingMask = LayerMask.GetMask("HUD");
 		cam.clearFlags = CameraClearFlags.Depth;
+		cam.depth = 1;
 	}
 	
 	// Update is called once per frame

@@ -28,7 +28,8 @@ public class SectorObject : MonoBehaviour
 
     void Start()
     {
-        
+        targetFloorHeight = 0f;
+        targetCeilingHeight = 0f;
     }
 
     void FixedUpdate()
@@ -61,13 +62,6 @@ public class SectorObject : MonoBehaviour
                 PositionToSectorHeight(floor.position.y, initialFloorPosition),
                 PositionToSectorHeight(ceiling.position.y, initialCeilingPosition)
             );
-        } else {
-            if (sector == 6) {
-                if (Input.GetKeyDown(KeyCode.G)) {
-                    moving = true;
-                    targetCeilingHeight = -2f;
-                }
-            }
         }
     }
 
@@ -91,7 +85,7 @@ public class SectorObject : MonoBehaviour
 
     public void ResetCeilingHeight()
     {
-        targetFloorHeight = 0f;
+        targetCeilingHeight = 0f;
         moving = true;
     }
 

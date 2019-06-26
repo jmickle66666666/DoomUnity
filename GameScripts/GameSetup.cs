@@ -65,7 +65,7 @@ public class GameSetup : MonoBehaviour {
 
 	public static GameSetup main;
 	public GameObject playerPrefab;
-	private GameObject player;
+	public GameObject player;
 	private string currentMap = "";
 	private DoomMapBuilder mapBuilder;
 	// private DoomMeshGenerator meshBuilder;
@@ -92,12 +92,17 @@ public class GameSetup : MonoBehaviour {
 	public GameObject HUDObject;
 
 	private CommandlineArguments args;
+	public int levelIndex = 1;
+
+	public PlayerInventory playerInventory;
 
 	// Use this for initialization
 	void Start () {
 		main = this;
 		Settings.Init();
 		ParseArguments();
+
+		playerInventory = new PlayerInventory();
 
         Settings.Set("nomonsters", args.nomonsters ? "true" : "false");
 
@@ -331,16 +336,17 @@ public class GameSetup : MonoBehaviour {
 			menu.Show(false, true);
 			menuActive = false;
 		}
-		if (GameObject.Find(currentMap) != null) GameObject.Find(currentMap).name = "CLEAR";
-		time = Time.realtimeSinceStartup;
+
+		if (mapBuilder != null) mapBuilder.Destroy();
+
 		currentMap = mapName;
 
 		mapBuilder = new DoomMapBuilder(wad, new DoomMapData(wad, mapName));
 
 		mapBuilder.BuildMap();
 		mapBuilder.BuildPlayer(playerPrefab);
-		if (wad.multigen != null && Settings.Get("nomonsters", "false") == "false") {
-			mapBuilder.BuildLevelEntities();
+		if (wad.multigen != null) {
+			mapBuilder.BuildLevelEntities(Settings.Get("nomonsters", "false") == "false");
 		}
 
 		title.DisableCamera();
@@ -350,9 +356,7 @@ public class GameSetup : MonoBehaviour {
 		}
 
 		HUDObject.SetActive(true);
-		// GameObject.Destroy(GameObject.Find("CLEAR"));
 		HUD.SetMapName(mapinfo[currentMap].name);
-		// HUD.Message("Test!");
 
 		stBarObject.SetActive(true);
 	}
@@ -422,7 +426,15 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	void MenuPlay() {
-		BuildMap(GetMapName((mapFormat==MapFormat.MAP)?1:11));
+		playerInventory.FullReset();
+		levelIndex = (mapFormat==MapFormat.MAP)?1:11;
+		BuildMap(GetMapName(levelIndex));
+	}
+
+	public void NextMap() {
+		playerInventory.LevelReset();
+		levelIndex += 1;
+		BuildMap(GetMapName(levelIndex));
 	}
 
 	void MenuQuit() {
@@ -470,6 +482,7 @@ public class GameSetup : MonoBehaviour {
 
 					currentCheat = "";
 					cheatLevelChange = false;
+					levelIndex = levelChange;
 					WarpMap(GetMapName(levelChange));
 				}
 			}
@@ -500,6 +513,7 @@ public class GameSetup : MonoBehaviour {
 	}
 
 	public void WarpMap(string mapname) {
+		playerInventory.FullReset();
 		mapname = mapname.ToUpper();
 		if (wad.Contains(mapname)) {
 			HUD.Message("Warping to map: "+mapname);

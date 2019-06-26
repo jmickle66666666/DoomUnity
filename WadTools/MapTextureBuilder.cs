@@ -44,7 +44,7 @@ namespace WadTools {
             Dictionary<string, Material> output = new Dictionary<string, Material>();
             for (int i = 0; i < textures.Length; i++) {
 
-                if (textures[i] != "-" && wad.textureTable.Contains(textures[i].ToUpper())) { 
+                if (textures[i] != "-" && wad.textureTable.Contains(textures[i].ToUpper()) && !output.ContainsKey(textures[i].ToUpper())) { 
                     output.Add(textures[i].ToUpper(), BuildTextureMaterial(wad, textures[i]));
                 }
 

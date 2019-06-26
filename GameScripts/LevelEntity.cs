@@ -41,9 +41,10 @@ public class LevelEntity : MonoBehaviour {
 	static float stepHeight = 0.375f;
 
 	// flags
-	bool MF_MISSILE = false;
-	bool MF_SPECIAL = false;
-	bool MF_SOLID = false;
+	public bool MF_MISSILE = false;
+	public bool MF_SPECIAL = false;
+	public bool MF_SOLID = false;
+	public bool MF_COUNTKILL = false;
 
 	// Sounds
 	AudioClip seeSound;
@@ -93,6 +94,7 @@ public class LevelEntity : MonoBehaviour {
 		MF_MISSILE = mobj.data["flags"].Contains("MF_MISSILE");
 		MF_SPECIAL = mobj.data["flags"].Contains("MF_SPECIAL");
 		MF_SOLID = mobj.data["flags"].Contains("MF_SOLID");
+		MF_COUNTKILL = mobj.data["flags"].Contains("MF_COUNTKILL");
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.isTrigger = !MF_SOLID;
@@ -524,6 +526,10 @@ public class LevelEntity : MonoBehaviour {
 				ItemInfo info = ItemData.Get(state.spriteName);
 				DoomSound.PlaySoundAtPoint(wad, info.sound, transform.position);
 				HUD.Message(Locale.Get(info.message));
+
+				if (info.bonus == "RedKeyCard") GameSetup.main.playerInventory.redKeyCard = true;
+				if (info.bonus == "YellowKeyCard") GameSetup.main.playerInventory.yellowKeyCard = true;
+				if (info.bonus == "BlueKeyCard") GameSetup.main.playerInventory.blueKeyCard = true;
 
 				GameObject.Destroy(gameObject);
 			}

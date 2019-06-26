@@ -213,6 +213,17 @@ namespace WadTools {
             return map.sectors[side.sector];
         }
 
+        public int ThingSector(Thing thing)
+        {
+            int currentNode = map.nodes.Length-1;
+
+            Subsector subsector = TraverseToSubsector(in map.nodes[currentNode], new Vector2(thing.x, thing.y));
+            Seg firstSeg = map.segs[subsector.firstSeg];
+            Linedef line = map.linedefs[firstSeg.linedefIndex];
+            Sidedef side = map.sidedefs[firstSeg.direction?line.back:line.front];
+            return side.sector;
+        }
+
         Subsector TraverseToSubsector(in Node node, Vector2 point)
         {
             int nextNode = NodeSide(in node, point)?node.leftChild:node.rightChild;

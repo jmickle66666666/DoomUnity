@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
-
 /*
 Base class for map data.
 */
@@ -156,34 +155,50 @@ namespace WadTools {
 		}
 
 		public int LowestAdjacentCeiling(int sector) {
-			Sector[] sectors = AdjacentSectors(sector);
-			int output = sectors[0].ceilingHeight;
-			for (int i = 0; i < sectors.Length; i++) {
-				if (sectors[i].ceilingHeight < output) output = sectors[i].ceilingHeight;
+			var adjacentSectors = AdjacentSectors(sector);
+			int output = int.MaxValue;
+			foreach (Sector s in adjacentSectors) {
+				if (s.ceilingHeight < output) output = s.ceilingHeight;
 			}
+			if (output == int.MaxValue) UnityEngine.Debug.LogWarning("Failed to get Lowest Adjacent Ceiling");
 			return output;
 		}
 
 		public int HighestAdjecentFloor(int sector) {
-			Sector[] sectors = AdjacentSectors(sector);
-			int output = sectors[0].floorHeight;
-			for (int i = 0; i < sectors.Length; i++) {
-				if (sectors[i].floorHeight > output) output = sectors[i].floorHeight;
+			var adjacentSectors = AdjacentSectors(sector);
+			int output = int.MinValue;
+			foreach (Sector s in adjacentSectors) {
+				if (s.floorHeight > output) output = s.floorHeight;
 			}
+			if (output == int.MinValue) UnityEngine.Debug.LogWarning("Failed to get Highest Adjacent Floor");
 			return output;
 		}
 
 		public int LowestAdjecentFloor(int sector) {
-			Sector[] sectors = AdjacentSectors(sector);
-			int output = sectors[0].floorHeight;
-			for (int i = 0; i < sectors.Length; i++) {
-				if (sectors[i].floorHeight < output) output = sectors[i].floorHeight;
+			var adjacentSectors = AdjacentSectors(sector);
+			int output = int.MaxValue;
+			foreach (Sector s in adjacentSectors) {
+				if (s.floorHeight < output) output = s.floorHeight;
 			}
+			if (output == int.MaxValue) UnityEngine.Debug.LogWarning("Failed to get Lowest Adjacent Floor");
 			return output;
 		}
 
-		public Sector[] AdjacentSectors(int sector) {
-			List<Sector> output = new List<Sector>();
+		public int NextHighestFloor(int sector) {
+
+			var adjacentSectors = AdjacentSectors(sector);
+
+			int minFloor = sectors[sector].floorHeight;
+			int output = int.MaxValue;
+			foreach (Sector s in adjacentSectors) {
+				if (s.floorHeight > minFloor && s.floorHeight < output) output = s.floorHeight;
+			}
+			if (output == int.MaxValue) return minFloor;
+			return output;
+		}
+
+		public HashSet<Sector> AdjacentSectors(int sector) {
+			HashSet<Sector> output = new HashSet<Sector>();
 
 			int[] sectorLines = GetLinesOfSector(sector); 
 
@@ -196,13 +211,13 @@ namespace WadTools {
 				if (linedefs[sectorLines[i]].back != 0xFFFF && linedefs[sectorLines[i]].back != -1) {
 					int backSectorIndex = sidedefs[linedefs[sectorLines[i]].back].sector;
 					if (backSectorIndex != sector) {
-						Sector back = sectors[sectorIndex];
+						Sector back = sectors[backSectorIndex];
 						output.Add(back);
 					}
 				}
 			}
 
-			return output.ToArray();
+			return output;
 		}
 
 		public static MapData Load(WadFile wad, string mapname) {
