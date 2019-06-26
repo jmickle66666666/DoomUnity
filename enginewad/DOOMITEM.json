@@ -17,6 +17,38 @@
         "amount" : 1,
         "message" : "GOTARMBONUS"
     },
+    "STIM" : {
+        "bonus" : "Health",
+        "amount" : 10,
+        "message" : "GOTSTIM"
+    },
+    "MEDI" : {
+        "bonus" : "Health",
+        "amount" : 25,
+        "message" : "GOTMEDIKIT"
+    },
+    "CLIP" : {
+        "bonus" : "Bullets",
+        "amount" : 10,
+        "message" : "GOTCLIP"
+    },
+    "SHEL" : {
+        "bonus" : "Shells",
+        "amount" : 4,
+        "message" : "GOTSHELLS"
+    },
+    "YKEY" : {
+        "bonus" : "YellowKeyCard",
+        "message" : "GOTYELWCARD"
+    },
+    "BKEY" : {
+        "bonus" : "BlueKeyCard",
+        "message" : "GOTBLUECARD"
+    },
+    "RKEY" : {
+        "bonus" : "RedKeyCard",
+        "message" : "GOTREDCARD"
+    },
     "BFUG" : {
         "weapon" : "BFG",
         "sound" : "DSWPNUP",
